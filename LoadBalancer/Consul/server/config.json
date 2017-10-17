@@ -1,0 +1,21 @@
+{
+"advertise_addr":"<public_IP>",
+"client_addr":"<dns_IP/private_IP>",
+"bind_addr": "<private_IP>",
+"datacenter": "dc1",
+"data_dir": "/var/consul",
+"log_level": "INFO",
+"enable_syslog": true,
+"enable_debug": true,
+"node_name": "ConsulServer1",
+"server": true,
+"bootstrap":true,
+"leave_on_terminate": false,
+"skip_leave_on_interrupt": true,
+"rejoin_after_leave": true,
+"retry_join": [
+  "<consul_server1>:8301"
+  "<consul_server2>:8301"
+  ]
+
+}

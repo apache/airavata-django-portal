@@ -1,0 +1,16 @@
+{
+ "advertise_addr":"<public_IP>",
+ "bind_addr": "<private_IP>",
+ "datacenter": "dc1",
+ "data_dir": "/var/consul",
+ "log_level": "INFO",
+ "enable_syslog": true,
+ "enable_debug": true,
+ "node_name": "ConsulClient",
+ "server": false,
+   "service": {"name": "Portal", "tags": ["HTTP"], "port": 8000,
+   "check": {"id":"portal","name":"portal on port 8000", "http":"http://<Public_IP>:8000","interval": "10s","timeout":"1s"}},
+ "rejoin_after_leave": true,
+ "retry_join": ["<ConsulServer_IP>"]
+ }
+
