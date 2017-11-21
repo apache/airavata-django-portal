@@ -1,4 +1,0 @@
-- name: "Installing Consul"
-  yum:
-     name: haproxy
-     state: installed	 
