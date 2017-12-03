@@ -1,1 +1,1 @@
-consul agent -config-dir -ui /etc/consul.d/server
+consul agent -ui -config-dir /etc/consul.d/server
