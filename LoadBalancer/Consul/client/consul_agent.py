@@ -2,7 +2,6 @@ import json
 import os
 import subprocess
 
-
 if __name__ == '__main__':
         bashCommand = "ifconfig eth0 | grep -w inet | awk {'print $2'}"
         privateIP = subprocess.check_output(['bash','-c',bashCommand]).rstrip()
