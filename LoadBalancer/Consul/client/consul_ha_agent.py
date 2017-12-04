@@ -12,6 +12,10 @@ if __name__ == '__main__':
         #print(serviceEndPoint)
         hostname = subprocess.check_output(['bash','-c','hostname']).rstrip()
         #print(hostname)
+        with open('/home/consul/serverlist.txt') as reader:
+                servers = reader.readlines()
+                servers = [x.strip('\n') for x in servers]
+
         with open('/etc/consul.d/client/data.json','w') as outfile:
                 json.dump({
                 "bind_addr":privateIP,
@@ -23,9 +27,5 @@ if __name__ == '__main__':
                 "node_name": hostname,
                 "server": bool(0),
                 "rejoin_after_leave": bool(1),
-                "retry_join": [
-                        "10.10.10.5",
-                        "10.10.10.10",
-                        "10.10.10.9"
-                ]
+                "retry_join": servers
                 },outfile,indent=4)
