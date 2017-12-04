@@ -1,0 +1,28 @@
+- name: "Installing Packages"
+  yum: pkg={{ item }} state=installed
+  with_items:
+  - git
+  - vim
+  - zip
+
+- name: "Removing Anaconda"
+  yum: pkg=anaconda state=removed
+
+- name: "Creating Consul User"
+  user:
+    name: consul
+    createhome: yes
+    state: present
+  
+- name: "Copying Server List"
+  copy: src=../files/serverlist.txt dest=/home/consul owner=consul group=consul mode=0644
+
+- name: "Copy Consul Installation Binary"
+  copy: src=../files/consul_install.sh dest=/home/consul owner=consul group=consul mode=0755
+
+- name: "Install Consul"
+  shell: /home/consul/consul_install.sh
+  args:
+    chdir: /home/consul
+    executable: /bin/bash
+    creates: consul

@@ -1,0 +1,46 @@
+- name: "Install HAProxy"
+  yum: pkg=haproxy state=installed
+
+- name: "Create Consul Configuration Directory"
+  file:
+    path: /etc/consul.d/client
+    state: directory
+    mode: 0755
+    owner: consul
+    group: consul
+
+- name: "Create Consul Data Directory"
+  file:
+    path: /var/consul
+    state: directory
+    mode: 0755
+    owner: consul
+    group: consul
+
+- name: "Push Configuration Generator"
+  copy: src=../files/consul_ha_agent.py dest=/home/consul owner=consul group=consul mode=0644
+  
+- name: "Run Configuration Generator Script"
+  shell: python /home/consul/consul_ha_agent.py
+  
+- name: "Run Consul"
+  shell: /home/consul/consul agent -enable-script-checks -config-dir /etc/consul.d/client &
+  args:
+    chdir: /home/consul
+  become: true
+  become_user: consul
+
+- name: "Copy Consul Template"
+  copy: src=../files/install_consul_template.sh dest=/home/consul owner=consul group=consul mode=0755
+  
+- name: "Install Consul Template"
+  shell: /home/consul/install_consul_template.sh
+  args:
+    chdir: /home/consul
+    executable: /bin/bash
+    creates: consul-template
+
+- name: "Copy Consul Template"
+  copy: src=../files/haproxy.ctmpl dest=/home/consul owner=consul group=consul mode=0644
+  
+
