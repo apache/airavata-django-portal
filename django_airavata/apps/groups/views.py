@@ -2,6 +2,7 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from rest_framework.renderers import JSONRenderer
 
 from .forms import CreateForm, AddForm, RemoveForm
 from django.contrib import messages
@@ -30,14 +31,17 @@ def groups_manage(request):
         for group in owner_list:
             if group.ownerId == username:
                 owner.append(group)
+
         member_list = request.sharing_client.getAllMemberGroupsForUser(gateway_id, username)
         member = []
         for group in member_list:
             if group.ownerId != username:
-                member.append(group)
+                member.append(group)  
+
         return render(request, 'django_airavata_groups/groups_manage.html', {
-            'owner': owner, 'member': member
+            'groups_owners_data': owner, 'groups_members_data': member
         })
+
     except:
         logger.exception("Failed to load the Manage Groups page")
         return redirect('/')
