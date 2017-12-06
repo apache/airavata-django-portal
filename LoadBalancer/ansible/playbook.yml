@@ -17,4 +17,3 @@
   become: true
   roles:
   - haproxy
-  - consul-client

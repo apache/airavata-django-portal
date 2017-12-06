@@ -43,4 +43,7 @@
 - name: "Copy Consul Template"
   copy: src=../files/haproxy.ctmpl dest=/home/consul owner=consul group=consul mode=0644
   
-
+- name: "Run HaProxy"
+  shell: nohup /home/consul/consul-template -consul-addr `ifconfig | grep eth0 -A1 | grep inet | awk {'print $2'}` -template /home/consul/haproxy.ctmpl:/etc/haproxy/haproxy.cfg &
+  args:
+    chdir: /home/consul
