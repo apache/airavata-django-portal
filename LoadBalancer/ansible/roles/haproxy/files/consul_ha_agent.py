@@ -27,5 +27,6 @@ if __name__ == '__main__':
                 "node_name": hostname,
                 "server": bool(0),
                 "rejoin_after_leave": bool(1),
-                "retry_join": servers
+                "retry_join": servers,
+		"client_addr": "0.0.0.0"
                 },outfile,indent=4)

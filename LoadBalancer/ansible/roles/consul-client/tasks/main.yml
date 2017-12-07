@@ -1,3 +1,13 @@
+- name: "Install Python 3"
+  yum: pkg={{ item }} state=installed
+  with_items:
+  - python34
+
+- name: "Install pip for py3"
+  shell: curl -O https://bootstrap.pypa.io/get-pip.py && /usr/bin/python3.4 get-pip.py
+  args:
+    creates: get-pip.py
+  
 - name: "Create Consul Configuration Directory"
   file:
     path: /etc/consul.d/client
@@ -20,6 +30,36 @@
 - name: "Run Configuration Generator Script"
   shell: python /home/consul/consul_agent.py
 
+- name: "Clone Django from Git"
+  git:
+    repo: https://github.com/jerrin92/airavata-django-portal.git
+    dest: /home/centos/airavata-django
+  become: true
+  become_user: centos
+
+- name: "Copy Settings File"
+  copy: src=../files/settings_local.py dest=/home/centos/airavata-django/django_airavata
+
+- name: "Install Portal Requirements"
+  shell: pip install -r requirements.txt
+  args:
+    chdir: /home/centos/airavata-django
+
+- name: "Run Migration"
+  shell: /usr/bin/python3.4 manage.py migrate 
+  args:
+    chdir: /home/centos/airavata-django
+    creates: migration_done
+  become: true
+  become_user: centos
+
+- name: "Run Portal"
+  shell: nohup /usr/bin/python3.4 manage.py runserver 0.0.0.0:8000 &
+  args:
+    chdir: /home/centos/airavata-django
+  become: true
+  become_user: centos
+
 - name: "Run Consul"
   shell: touch consul_initial_run && /home/consul/consul agent -enable-script-checks -config-dir /etc/consul.d/client &
   args:
@@ -28,21 +68,16 @@
   become: true
   become_user: consul
 
-- name: "Clone Django from Git"
-  git:
-    repo: https://github.com/jerrin92/airavata-django-portal.git
-    dest: /home/centos/airavata-django
+#- name: "Copy test Flask Server"
+#  copy: src=../files/sample_app.py dest=/home/centos owner=centos group=centos mode=0644
 
-- name: "Copy test Flask Server"
-  copy: src=../files/sample_app.py dest=/home/centos owner=centos group=centos mode=0644
-
-- name: "Install Application Requirements"
-  shell: pip install Flask
+#- name: "Install Application Requirements"
+#  shell: pip install Flask
   
-- name: "Run the Portal Server"
-  shell: touch inital_portal_run && nohup python /home/centos/sample_app.py </dev/null >/dev/null 2>&1 &
-  args:
-    chdir: /home/centos
-    creates: initial_portal_run
-  become: true
-  become_user: centos
+#- name: "Run the Portal Server"
+#  shell: touch inital_portal_run && nohup python /home/centos/sample_app.py </dev/null >/dev/null 2>&1 &
+#  args:
+#    chdir: /home/centos
+#    creates: initial_portal_run
+#  become: true
+#  become_user: centos

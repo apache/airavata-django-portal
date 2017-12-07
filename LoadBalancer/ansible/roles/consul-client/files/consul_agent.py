@@ -8,7 +8,8 @@ if __name__ == '__main__':
         privateIP = subprocess.check_output(['bash','-c',bashCommand]).rstrip()
         bashCommand = "curl ipinfo.io/ip"
         publicIP = subprocess.check_output(['bash','-c',bashCommand]).rstrip()
-        serviceEndPoint = "http://"+publicIP+":8000"
+        #serviceEndPoint = "http://"+publicIP+":8000"
+ 	serviceEndPoint = privateIP+":8000"
         #print(serviceEndPoint)
         hostname = subprocess.check_output(['bash','-c','hostname']).rstrip()
         #print(hostname)
@@ -27,6 +28,6 @@ if __name__ == '__main__':
                 "server": bool(0),
                 "rejoin_after_leave": bool(1),
                 "service": {"name": "Portal", "tags": ["HTTP"], "port": 8000,
-                "check": {"id":"portal","name":"portal on port 8000", "http":serviceEndPoint,"interval": "10s","timeout":"1s"}},
+                "check": {"id":"portal","name":"portal on port 8000", "tcp": serviceEndPoint,"interval": "10s","timeout":"1s"}},
                 "retry_join": servers
                 },outfile,indent=4)

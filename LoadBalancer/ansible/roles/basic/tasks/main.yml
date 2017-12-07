@@ -4,6 +4,7 @@
   - git
   - vim
   - zip
+  - epel-release
 
 - name: "Removing Anaconda"
   yum: pkg=anaconda state=removed
