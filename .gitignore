@@ -4,3 +4,6 @@ settings_local.py
 .DS_Store
 node_modules
 dist/
+hosts
+playbook.retry
+serverlist.txt

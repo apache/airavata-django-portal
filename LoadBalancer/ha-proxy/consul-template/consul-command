@@ -1,0 +1,1 @@
+sudo consul-template -consul-addr <ha-proxy-server-addr>:<8500> -template /tmp/haproxy2.conf.ctmpl:/etc/haproxy/haproxy.cfg -log-level=debug

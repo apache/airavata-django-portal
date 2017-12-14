@@ -1,0 +1,29 @@
+- name: "Create Consul Configuration Directory"
+  file:
+    path: /etc/consul.d/server
+    state: directory
+    mode: 0755
+    owner: consul
+    group: consul
+
+- name: "Create Consul Data Directory"
+  file:
+    path: /var/consul
+    state: directory
+    mode: 0755
+    owner: consul
+    group: consul
+
+- name: "Push Configuration Generator"
+  copy: src=../files/consul_server.py dest=/home/consul owner=consul group=consul mode=0644
+
+- name: "Run Configuration Generator Script"
+  shell: python /home/consul/consul_server.py
+
+- name: "Run Consul Server"
+  shell: touch consul_initial_run && /home/consul/consul agent -ui -config-dir /etc/consul.d/server &
+  args:
+    chdir: /home/consul
+    creates: consul_initial_run
+  become: true
+  become_user: consul

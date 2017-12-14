@@ -1,0 +1,6 @@
+frontend http-in
+ bind *:80
+ default_backend www
+
+backend www{{range service "Portal"}}
+ server {{.ID}} {{.Address}}:{{.Port}}{{end}}

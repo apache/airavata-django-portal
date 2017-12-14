@@ -1,0 +1,19 @@
+- hosts: all
+  become: true
+  roles:
+  - basic
+
+- hosts: consulserver
+  become: true
+  roles:
+  - consul-server
+
+- hosts: portalserver
+  become: true
+  roles:
+  - consul-client
+
+- hosts: haproxyserver
+  become: true
+  roles:
+  - haproxy
