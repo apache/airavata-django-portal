@@ -1,5 +1,6 @@
 *.pyc
 db.sqlite3
+.idea/
 settings_local.py
 .DS_Store
 node_modules

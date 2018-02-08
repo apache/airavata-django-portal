@@ -1,0 +1,47 @@
+{% extends 'dashboard/base.html' %}
+{% block title %} Allocation Manager - Admin{% endblock %}
+{% block body %}
+    {% if all_requests %}
+        <h3 style="margin-left: 7%">Requests to Approve/Reject</h3>
+        <!-- All Requests-->
+        <div class="container">
+          <table class="table table-hover table-bordered table-striped table-responsive">
+            <thead class="thead-inverse">
+              <tr style="background-color: #337ab7;color:white">
+                <th>Request-ID</th>
+                <th>Request Title</th>
+                <th>Request Description</th>
+                <th>Allocation Requested</th>
+                <th style="text-align: center">Assign Reviewer(s)</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for request in all_requests %}
+                  <tr>
+                    <td>{{ request.id }}</td>
+                    <td>{{ request.request_title }}</td>
+                    <td>{{ request.request_description }}</td>
+                    <td>{{ request.service_units}}</td>
+                    <td>
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <select class="selectpicker" data-style="btn-primary" data-live-search="true" multiple>
+                                    <option>Reviewer 1</option>
+                                    <option>Reviewer 2</option>
+                                    <option>Reviewer 3</option>
+                                    <option>Reviewer 4</option>
+                                </select>
+                                <button type="submit" class="btn btn-success">Assign</button>
+                            </div>
+                        </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+    {%  else %}
+        <h3>No Requests to Review</h3>
+    {% endif %}
+{%  endblock %}

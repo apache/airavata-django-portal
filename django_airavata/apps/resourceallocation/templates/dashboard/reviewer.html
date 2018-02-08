@@ -1,0 +1,33 @@
+{% extends 'dashboard/base.html' %}
+{% block title %} Allocation Manager - Reviewer{% endblock %}
+{% block body %}
+    {% if all_requests %}
+        <h3 style="margin-left: 7%">Requests to Review</h3>
+        <!-- All Requests-->
+        <div class="container">
+          <table class="table table-hover table-bordered table-striped table-responsive">
+            <thead class="thead-inverse">
+              <tr style="background-color: #337ab7;color:white">
+                <th>Request-ID</th>
+                <th>Request Title</th>
+                <th>Request Description</th>
+                <th>Allocation Requested</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for request in all_requests %}
+                  <tr>
+                    <td>{{ request.id }}</td>
+                    <td>{{ request.request_title }}</td>
+                    <td>{{ request.request_description }}</td>
+                    <td>{{ request.service_units}}</td>
+                  </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+    {%  else %}
+        <h3>No Requests to Review</h3>
+    {% endif %}
+{%  endblock %}

@@ -1,0 +1,211 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Create a New Request{% endblock %}
+{% block request_active %}active{% endblock %}
+
+{%  block body %}
+
+    <div class="container-fluid">
+        <h2>New Request</h2>
+        <div class="row">
+            <div class="col-sm-12 col-md-7">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+
+                      <!-- Tabular Category of questions in the form-->
+                      <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#category1">General Description</a></li>
+                        <li><a data-toggle="tab" href="#category2">Typical Job Description</a></li>
+                        <li><a data-toggle="tab" href="#category3">Resource Description</a></li>
+                        <li><a data-toggle="tab" href="#category4">Additional Details</a></li>
+                      </ul>
+
+                      <div class="tab-content">
+                        <div id="category1" class="tab-pane fade in active">
+                          <h3></h3>
+{#                          <p>Please provi</p>#}
+                          <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+{#                            {% include 'dashboard/form-template.html' %}#}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="title">Request Title</label>
+                                <div class="col-sm-10">
+                                  <input type="text" class="form-control" id="title" placeholder="Enter Request Title">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="description">Request Description</label>
+                                <div class="col-sm-10">
+                                  <input type="text" class="form-control" id="description" placeholder="Enter Request Description">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="allocation-type">Allocation Type</label>
+                                <div class="col-sm-10">
+                                  <div class="dropdown">
+                                      <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Select Allocation
+                                      <span class="caret"></span></button>
+                                      <ul class="dropdown-menu">
+                                        <li><a href="#">Community</a></li>
+                                        <li><a href="#">Campus</a></li>
+                                        <li><a href="#">External</a></li>
+                                      </ul>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="apps">Applications to be used</label>
+                                <div class="col-sm-10">
+{#                                  <PLACEHOLDER options #}
+                                    <select class="selectpicker" data-style="btn-primary" data-live-search="true" multiple>
+                                         <optgroup label="Web">
+                                            <option>PHP</option>
+                                            <option>CSS</option>
+                                            <option>HTML</option>
+                                            <option>CSS 3</option>
+                                            <option>Bootstrap</option>
+                                            <option>JavaScript</option>
+                                        </optgroup>
+                                        <optgroup label="Programming">
+                                          <option>Java</option>
+                                          <option>C#</option>
+                                          <option>Python</option>
+                                        </optgroup>
+                                    </select>
+{#                                    <input type="text" class="form-control "placeholder="Other">#}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="keywords">Keywords</label>
+                                <div class="col-sm-10">
+                                  <input type="text" id="keywords" placeholder="Keywords">
+                                </div>
+                            </div>
+                            <div>
+                                <a class="btn btn-info btnNext" style="text-align:left; margin: 10% 10% 0 0">Next</a>
+                            </div>
+                          </form>
+                        </div>
+                        <div id="category2" class="tab-pane fade">
+                          <h3></h3>
+{#                          <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>#}
+                          <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+{#                            {% include 'dashboard/form-template.html' %}#}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="disk-usage">Disk usage range per job</label>
+                                <div class="col-sm-10">
+                                  <input type="range" min="0" max="100" class="slider" id="disk-usage" placeholder="Enter Disk Usage per Job">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="memory-cpu">Max Memory per CPU</label>
+                                <div class="col-sm-10">
+                                  <input type="number" min="0" class="form-control" id="memory-cpu" placeholder="Enter Max Memory per CPU">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="cpu-per-job">Number of CPUs per job</label>
+                                <div class="col-sm-10">
+                                  <input type="number" min="0" class="form-control" id="cpu-per-job" placeholder="Enter Number of CPUs per job">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="typical-su">Typical SU per Job</label>
+                                <div class="col-sm-10">
+                                  <input type="number" min="0" class="form-control" id="typical-su" placeholder="Enter Typical SU per Job">
+                                </div>
+                            </div>
+                            <div>
+                                <a class="btn btn-info btnPrevious" style="text-align:left; margin: 10% 10% 0 0">Previous</a>
+                                <a class="btn btn-info btnNext" style="text-align:left; margin: 10% 0 0 0">Next</a>
+                            </div>
+                          </form>
+                        </div>
+                        <div id="category3" class="tab-pane fade">
+                          <h3></h3>
+{#                          <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>#}
+                          <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+{#                            {% include 'dashboard/form-template.html' %}#}
+
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="allocation">Total Allocation Requested</label>
+                                <div class="col-sm-10">
+                                  <input type="text" class="form-control" id="allocation" placeholder="Enter Requested Allocation">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="specific-resources">Specific Resources</label>
+                                <div class="col-sm-10">
+                                  <input type="text" class="form-control" id="specific-resources" placeholder="Enter Specific Resources">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="apps">Resource Type</label>
+                                <div class="col-sm-10">
+{#                                  <PLACEHOLDER options #}
+                                    <select class="selectpicker" data-style="btn-primary" data-live-search="true">
+                                      <option>On-Demand</option>
+                                      <option>Large Memory</option>
+                                      <option>GPUs</option>
+                                     </select>
+{#                                    <input type="text" class="form-control "placeholder="Other">#}
+                                </div>
+                            </div>
+                            <div>
+                                <a class="btn btn-info btnPrevious" style="text-align:left; margin: 10% 10% 0 0">Previous</a>
+                                <a class="btn btn-info btnNext" style="text-align:left; margin: 10% 0 0 0">Next</a>
+                            </div>
+                          </form>
+                        </div>
+                        <div id="category4" class="tab-pane fade">
+                          <h3></h3>
+{#                          <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>#}
+                          <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+{#                            {% include 'dashboard/form-template.html' %}#}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="comments">Additional Comments</label>
+                                <div class="col-sm-10">
+                                  <input type="text" class="form-control" id="comments" placeholder="Enter Additional Comments">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                 <label class="control-label col-sm-2" for="upload-file">Relevant Documents</label>
+                                 <div class="col-sm-10">
+                                    <input id="upload-file" type="file" class="file" data-preview-file-type="text">
+                                 </div>
+                            </div>
+
+                            <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+{#                            {% include 'dashboard/form-template.html' %}#}
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <a class="btn btn-info btnPrevious">Previous</a>
+                                    <button type="submit" class="btn btn-success">Submit</button>
+                                </div>
+                            </div>
+                            </form>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script for previous and next buttons-->
+    <script>
+        $(document).ready(function(){
+            $('.btnNext').click(function(){
+              $('.nav-tabs > .active').next('li').find('a').trigger('click');
+            });
+
+            $('.btnPrevious').click(function(){
+              $('.nav-tabs > .active').prev('li').find('a').trigger('click');
+            });  
+        });
+    </script>
+{% endblock %}

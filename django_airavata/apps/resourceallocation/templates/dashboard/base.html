@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title%} Allocation Manager - {% endblock %}</title>
+    <!-- Loads the path to your static files -->
+    {% load staticfiles %}
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Spectral+SC" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/css/bootstrap-select.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.4.5/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'dashboard/style.css' %}"/>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/js/bootstrap-select.min.js"></script>
+    <!-- the main fileinput plugin file -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.4.5/js/fileinput.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <!--Header -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#topNavBar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{%  url 'dashboard:index' %}">Allocation Manager</a>
+        </div>
+
+        <!-- Requests -->
+        <div class="collapse navbar-collapse" id="topNavBar">
+
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="{% url 'dashboard:index' %}">
+                        <span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>&nbsp
+                        Requests
+                    </a>
+                </li>
+            </ul>
+
+
+            <form class="navbar-form navbar-left" role="search" method="get" action="#">
+                <div class="form-group">
+                    <input type="text" class="form-control" name="q" value="">
+                </div>
+                <button type="submit" class="btn btn-default">Search</button>
+            </form>
+
+
+            <ul class="nav navbar-nav navbar-right">
+                <li class="">
+                    <a href="{% url 'dashboard:request-add' %}">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp
+                        Create Request
+                    </a>
+                </li>
+                <li class="">
+                    <a href="#">
+                        <span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+{% block body %}
+{% endblock %}
+</body>
+</html>

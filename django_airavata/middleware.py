@@ -1,6 +1,7 @@
 
 from airavata.api import Airavata
 from airavata.api.sharing import SharingRegistryService
+from allocation_manager_cpi import AllocationRegistryService
 from airavata.service.profile.groupmanager.cpi.constants \
     import GROUP_MANAGER_CPI_NAME
 from airavata.service.profile.groupmanager.cpi import GroupManagerService
@@ -61,6 +62,15 @@ def get_airavata_client(transport):
     client=Airavata.Client(protocol)
     return client
 
+def get_allocation_manager_client(transport):
+
+    # Airavata currently uses Binary Protocol
+    protocol = TBinaryProtocol.TBinaryProtocol(transport)
+
+    # Create a Airavata client to use the protocol encoder
+    client = AllocationRegistryService.Client(protocol)
+    return client
+
 def get_sharing_client(transport):
 
     protocol = TBinaryProtocol.TBinaryProtocol(transport)
@@ -90,6 +100,38 @@ def get_tenant_profile_client(protocol):
 def get_user_profile_client(protocol):
     multiplex_prot = TMultiplexedProtocol(protocol, USER_PROFILE_CPI_NAME)
     return UserProfileService.Client(multiplex_prot)
+
+def allocation_manager_client(get_response):
+    "Open and close Sharing registry client for each request"
+
+    def middleware(request):
+
+        # If user is logged in create an airavata api client for the request
+        #if request.user.is_authenticated:
+        transport = get_transport(settings.RESOURCE_ALLOCATION_API_HOST, settings.RESOURCE_ALLOCATION_API_PORT, settings.RESOURCE_ALLOCATION_API_SECURE)
+        allocation_manager_client = get_allocation_manager_client(transport)
+
+        try:
+            transport.open()
+        except Exception as e:
+            logger.exception("Failed to open thrift connection to Allocation Manager server")
+
+        if transport.isOpen():
+            request.allocation_manager_client = allocation_manager_client
+        else:
+            # if request.sharing_client is None, this will indicate to view
+            # code that the Sharing server is down
+            request.allocation_manager_client = None
+
+        response = get_response(request)
+
+        if transport.isOpen():
+            transport.close()
+
+
+        return response
+
+    return middleware
 
 
 def airavata_client(get_response):

@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'^workspace/', include('django_airavata.apps.workspace.urls')),
     url(r'^api/', include('django_airavata.apps.api.urls')),
     url(r'^groups/', include('django_airavata.apps.groups.urls')),
+    url(r'^resourceallocation/', include('django_airavata.apps.resourceallocation.urls')),
     url(r'^$', views.home, name='home')
 ]

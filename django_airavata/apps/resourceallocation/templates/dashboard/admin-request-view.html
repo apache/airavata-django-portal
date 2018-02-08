@@ -1,0 +1,155 @@
+{% extends 'dashboard/base.html' %}
+{% block title %} Allocation Manager - Admin{% endblock %}
+{% block body %}
+
+
+        <!-- All Requests-->
+        <div class="container">
+
+          <div class="form-group">
+            <h3>Request Title <small>Title goes here</small></h3>
+            <h4>Select a Reviewer </h4>
+                <select class="selectpicker" data-style="btn-primary" data-live-search="true">
+
+                        <option>Reviewer 1</option>
+                        <option>Reviewer 2</option>
+                        <option>Reviewer 3</option>
+                        <option>Reviewer 4</option>
+                        <option>Reviewer 5</option>
+                        <option>Reviewer 6</option>
+                   </select>
+        </div>
+            <table class="table table-hover table-bordered table-striped table-responsive">
+                <thead class="thead-inverse">
+                  <tr style="background-color: #337ab7;color:white">
+                    <th>Request Fields</th>
+                    <th>User Submitted</th>
+                    <th>Reviewer Submitted</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td>Allocation type</td>
+                        <td>Community</td>
+                        <td>Community</td>
+                    </tr>
+                    <tr>
+                        <td>Applications to be used</td>
+                        <td>
+                            <div class="dropdown">
+                              <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Selected Applications
+                              <span class="caret"></span></button>
+                              <ul class="dropdown-menu">
+                                <li>HTML</li>
+                                <li>CSS</li>
+                                <li>JavaScript</li>
+                              </ul>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                              <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Selected Applications
+                              <span class="caret"></span></button>
+                              <ul class="dropdown-menu">
+                                <li>HTML</li>
+                                <li>CSS</li>
+                                <li>JavaScript</li>
+                              </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Disk Usage Range Per Job</td>
+                        <td>50-500</td>
+                        <td>50-250</td>
+                    </tr>
+                    <tr>
+                        <td>Field of Science</td>
+                        <td>Science Gateways</td>
+                        <td>Science Gateways</td>
+                    </tr>
+                    <tr>
+                        <td>Keywords</td>
+                        <td>keyword 1, keyword 2, keyword 3</td>
+                        <td>keyword 1, keyword 2, keyword 3</td>
+                    </tr>
+                    <tr>
+                        <td>Max Memory Per CPU</td>
+                        <td>40GB</td>
+                        <td>20GB</td>
+                    </tr>
+                    <tr>
+                        <td>Num CPUs Per Job</td>
+                        <td>4</td>
+                        <td>4</td>
+                    </tr>
+                    <tr>
+                        <td>Service Units</td>
+                        <td>50000</td>
+                        <td>45000</td>
+                    </tr>
+                    <tr>
+                        <td>Typical Service Units/Job</td>
+                        <td>60</td>
+                        <td>49</td>
+                    </tr>
+                </tbody>
+             </table>
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#approve">Approve</button>
+            <!-- Modal -->
+                  <div class="modal fade" id="approve" role="dialog">
+                    <div class="modal-dialog modal-sm">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title">Approve Request</h4>
+                        </div>
+                        <div class="modal-body">
+
+                          <div class="form-group">
+                                Start Date :
+                                <input type="date" id="start" style="border: none;" >
+                          </div>
+                          <div class="form-group">
+                                End Date :
+                                <input type="date"id="end" style="border: none;">
+                          </div>
+                          <div>
+                                Allocation Units:
+                                <input type="text"id="allocation-units">
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" >Approve</button>
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#reject">Reject</button>
+            <!-- Modal -->
+                  <div class="modal fade" id="reject" role="dialog">
+                    <div class="modal-dialog modal-sm">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title">Reject Request</h4>
+                        </div>
+                        <div class="modal-body">
+
+                          <div class="form-group">
+                                Reason :
+                                <input type="text" id="reject-reason" >
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" >Reject</button>
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+        </div>
+
+ {%  endblock %}

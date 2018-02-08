@@ -1,0 +1,12 @@
+{% extends 'dashboard/base.html' %}
+{% block title %} Request Details{% endblock %}
+
+{% block body %}
+
+    <h1>{{ request.request_title }}</h1>
+    <h3>{{ request.request_description }} </h3>
+
+    {% if error_message %}
+        <p><strong>{{ error_message }}</strong></p>
+    {% endif %}
+{%  endblock %}

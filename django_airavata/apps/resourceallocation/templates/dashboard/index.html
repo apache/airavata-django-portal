@@ -1,0 +1,36 @@
+{% extends 'dashboard/base.html' %}
+{% block title %} Allocation Manager - Home{% endblock %}
+{% block body %}
+    {% if all_requests %}
+        <h3 style="margin-left: 7%">My Requests</h3>
+        <!-- All Requests-->
+        <div class="container">
+          <table class="table table-hover table-bordered table-striped table-responsive">
+            <thead class="thead-inverse">
+              <tr style="background-color: #337ab7;color:white">
+                <th>Request-ID</th>
+                <th>Request Title</th>
+                <th>Request Description</th>
+                <th>Allocation Requested</th>
+                <th>Allocation Status</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for request in all_requests %}
+                  <tr>
+                    <td>{{ request.projectId }}</td>
+                    <td>{{ request.title }}</td>
+                    <td>{{ request.projectDescription }}</td>
+                    <td>{{ request.serviceUnits }}</td>
+                    <td>{{ request.status }}</td>
+                  </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+
+    {%  else %}
+        <h3>You don't have any requests</h3>
+    {% endif %}
+{%  endblock %}
