@@ -1,7 +1,7 @@
 {% extends 'dashboard/base.html' %}
 {% block title %} Allocation Manager - Admin{% endblock %}
 {% block body %}
-    {% if all_requests %}
+    {% if all_requests and reviewerDetailsList  %}
         <h3 style="margin-left: 7%">Requests to Approve/Reject</h3>
         <!-- All Requests-->
         <div class="container">
@@ -12,24 +12,28 @@
                 <th>Request Title</th>
                 <th>Request Description</th>
                 <th>Allocation Requested</th>
+            <th>Allocation Status</th>
                 <th style="text-align: center">Assign Reviewer(s)</th>
               </tr>
             </thead>
             <tbody>
                 {% for request in all_requests %}
+
                   <tr>
-                    <td>{{ request.id }}</td>
-                    <td>{{ request.request_title }}</td>
-                    <td>{{ request.request_description }}</td>
-                    <td>{{ request.service_units}}</td>
+                    <td>{{ request.projectId }}</td>
+                    <td>{{ request.title }}</td>
+                    <td>{{ request.projectDescription }}</td>
+                     <td>{{ request.serviceUnits }}</td>
+                    <td>{{ request.status }}</td>
                     <td>
                         <div class="form-group">
                             <div class="col-sm-10">
+
                                 <select class="selectpicker" data-style="btn-primary" data-live-search="true" multiple>
-                                    <option>Reviewer 1</option>
-                                    <option>Reviewer 2</option>
-                                    <option>Reviewer 3</option>
-                                    <option>Reviewer 4</option>
+                                     {% load my_templatetag %}
+                                    {% for reviewer_detail_list in reviewerDetailsList|index:forloop.counter0 %}
+                                        <option>{{reviewer_detail_list.fullName}}</option>
+                                    {% endfor %}
                                 </select>
                                 <button type="submit" class="btn btn-success">Assign</button>
                             </div>

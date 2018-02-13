@@ -1,10 +1,14 @@
+import datetime
+
 from django.views import generic
 from django.views.generic import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.urls import reverse_lazy
-from .forms import UserForm
+from rest_framework.renderers import JSONRenderer
+
+from .forms import UserForm, RequestCreateForm
 from django.conf import settings
 from .models import Request
 from django.core import serializers
@@ -12,9 +16,26 @@ from allocation_manager_models.ttypes import UserAllocationDetail
 import logging
 logger = logging.getLogger(__name__)
 
+
+def admin(request):
+    #user = request.user.username
+
+    try:
+        details = request.allocation_manager_client.getAllRequestsForAdmin("admin")
+        #print(details[0].projectId)
+        reviewerDetailsList = []
+        for detail in details:
+            reviewerDetails = request.allocation_manager_client.getAllUnassignedReviewersForRequest(detail.projectId)
+            reviewerDetailsList.append(reviewerDetails)
+        #print(details)
+        #print(reviewerDetailsList)
+        return render(request, 'dashboard/admin.html', {'all_requests': details,'reviewerDetailsList':reviewerDetailsList})
+    except Exception as e:
+        logger.exception("Failed to load resource allocation details")
+        return redirect('dashboard/index.html')
+
 def index(request):
-    print("here")
-    user = request.user.username
+    #user = request.user.username
 
     try:
         details = request.allocation_manager_client.getAllRequestsForAdmin("admin")
@@ -48,12 +69,7 @@ class ReviewerView(generic.ListView):
         return Request.objects.all()
 
 
-class AdminView(generic.ListView):
-    template_name = 'dashboard/admin.html'
-    context_object_name = 'all_requests'
 
-    def get_queryset(self):
-        return Request.objects.all()
 
 class AdminRequestView(generic.ListView):
     model = Request
@@ -79,17 +95,22 @@ def requestCreate(request):
               'keywords', 'max_memory_per_cpu', 'num_cpus_per_job', 'request_reviewed_and_funded_by',
               'request_date', 'service_units', 'specific_resource_selection', 'typical_su_per_job']
     try:
-        return render(request, 'dashboard/request_form.html')
-        object1 = UserAllocationDetail();
-        object1.projectId = "123456789";
-        object1.title = fields[0]
-        details = request.allocation_manager_client.createAllocationRequest(object1)
-        return render(request, 'dashboard/request_form.html', {
-            'all_requests': details
-        })
+        if(request.method=='POST'):
+            reqObj = UserAllocationDetail();
+            reqObj.projectId = "12345678";
+            reqObj.title = request.POST['title']
+            reqObj.requestedDate = int(datetime.datetime.now().strftime("%s"))*1000
+            reqObj.projectDescription = request.POST['description']
+            reqObj.typeOfAllocation = request.POST['allocationType']
+            reqObj.username = "admin"
+            details = request.allocation_manager_client.createAllocationRequest(reqObj)
+            print(details)
+            return redirect('/resourceallocation')
+        else:
+            return render(request, 'dashboard/request_form.html')
     except Exception as e:
         logger.exception("Failed to load resource allocation details")
-        return redirect('dashboard/index.html')
+        return redirect('/resourceallocation')
 
 class RequestUpdate(UpdateView):
     model = Request

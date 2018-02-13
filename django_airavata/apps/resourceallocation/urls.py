@@ -14,7 +14,7 @@ urlpatterns = [
 
 
     # /dashboard/admin
-    url(r'^admin/$', views.AdminView.as_view(), name='admin'),
+    url(r'^admin/$', views.admin, name='admin'),
 
     # /dashboard/admin/141
     url(r'^admin/request-view/$', views.AdminRequestView.as_view(), name='admin-request-view'),

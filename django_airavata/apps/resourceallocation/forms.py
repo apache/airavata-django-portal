@@ -8,3 +8,9 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password']
+
+
+class RequestCreateForm(forms.Form):
+    title = forms.CharField(required=True)
+    projectDescription = forms.CharField()
+    typeOfAllocation = forms.CharField()
