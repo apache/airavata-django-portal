@@ -1,0 +1,172 @@
+{% extends 'dashboard/base.html' %}
+{% block title %} Allocation Manager - Admin{% endblock %}
+{% block body %}
+
+    <!-- All Requests-->
+    <div class="container">
+        <h3>{{ userSubmittedDetails.title|capfirst }}</h3>
+    <form class="form-horizontal" action="" method="post">
+                        {% csrf_token %}
+        <table class="table table-hover table-bordered table-striped table-responsive">
+            <thead class="thead-inverse">
+              <tr style="background-color: #337ab7;color:white">
+                <th>Request Fields</th>
+                <th>User Submitted</th>
+                <th>Reviewer Submitted</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Allocation type</td>
+                    <td>{{ userSubmittedDetails.typeOfAllocation|capfirst }}</td>
+                    <td>
+                        <div>
+                            <select required="true" id="allocationType" name="allocationType">
+                              <option value="">None</option>
+                              <option {% if reviewerReview.typeOfAllocation == "community" %}selected {% endif %} value="community">Community</option>
+                              <option {% if reviewerReview.typeOfAllocation == "campus" %}selected {% endif %} value="campus">Campus</option>
+                              <option {% if reviewerReview.typeOfAllocation == "external" %}selected {% endif %} value="external">External</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Applications to be used</td>
+                    <td>{{ userSubmittedDetails.applicationsToBeUsed|capfirst }}</td>
+                    <td>
+                        <div>
+                            <select id ="application" name="application" class="selectpicker" data-style="btn-primary" data-live-search="true" multiple>
+                                 <optgroup label="Web">
+                                    <option {% if "PHP" in reviewerReview.applicationsToBeUsed %}selected {% endif %}>PHP</option>
+                                    <option {% if "CSS" in reviewerReview.applicationsToBeUsed %}selected {% endif %}>CSS</option>
+                                    <option {% if "HTML" in reviewerReview.applicationsToBeUsed %}selected {% endif %}>HTML</option>
+                                    <option {% if "Bootstrap" in reviewerReview.applicationsToBeUsed %}selected {% endif %}>Bootstrap</option>
+                                </optgroup>
+                                <optgroup label="Programming">
+                                  <option {% if "Java" in reviewerReview.applicationsToBeUsed %}selected {% endif %}>Java</option>
+                                  <option {% if "C#" in reviewerReview.applicationsToBeUsed %}selected {% endif %}>C#</option>
+                                  <option {% if "Python" in reviewerReview.applicationsToBeUsed %}selected {% endif %}>Python</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Disk Usage Range Per Job</td>
+                    <td>{{ userSubmittedDetails.diskUsageRangePerJob }}</td>
+                    <td>
+                        <div>
+                            {% if reviewerReview and reviewerReview.projectId %}
+                                <input type="text" class="form-control" name="diskUsage" value="{{ reviewerReview.diskUsageRangePerJob }}"required="true">
+                            {%  else %}
+                                <input type="text" class="form-control" name="diskUsage" placeholder="Enter disk usage range" required="true">
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                <!--<tr>
+                    <td>Field of Science</td>
+                    <td>{{ userSubmittedDetails.fieldOfScience|capfirst }}</td>
+                    <td>
+                        <div class="form-group">
+                            {% if reviewerReview and reviewerReview.projectId %}
+                                <input type="text" class="form-control" name="fieldOfScience" value="{{ reviewerReview.fieldOfScience }}"required="true">
+                            {%  else %}
+                                <input type="text" class="form-control" name="fieldOfScience" placeholder="Enter field of science" required="true">
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>-->
+                <tr>
+                    <td>Keywords</td>
+                    <td>{{ userSubmittedDetails.keywords|capfirst }}</td>
+                    <td>
+                        <div>
+                            {% if reviewerReview and reviewerReview.projectId %}
+                                <input type="text" class="form-control" name="keywords" value="{{ reviewerReview.keywords }}"required="true">
+                            {%  else %}
+                                <input type="text" class="form-control" name="keywords" placeholder="Enter keywords" required="true">
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Max Memory Per CPU</td>
+                    <td>{{ userSubmittedDetails.maxMemoryPerCpu }}</td>
+                    <td>
+                        <div>
+                            {% if reviewerReview and reviewerReview.projectId %}
+                                <input type="text" class="form-control" name="maxMemoryPerCpu" value="{{ reviewerReview.maxMemoryPerCpu }}"required="true">
+                            {%  else %}
+                                <input type="text" class="form-control" name="maxMemoryPerCpu" placeholder="Enter maximum memory per CPU" required="true">
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Num CPUs Per Job</td>
+                    <td>{{ userSubmittedDetails.numberOfCpuPerJob }}</td>
+                    <td>
+                        <div>
+                            {% if reviewerReview and reviewerReview.projectId %}
+                                <input type="text" class="form-control" name="numberOfCpuPerJob" value="{{ reviewerReview.numberOfCpuPerJob }}"required="true">
+                            {%  else %}
+                                <input type="text" class="form-control" name="numberOfCpuPerJob" placeholder="Enter number of CPU per job" required="true">
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Service Units</td>
+                    <td>{{ userSubmittedDetails.serviceUnits }}</td>
+                    <td>
+                        <div>
+                            {% if reviewerReview and reviewerReview.projectId %}
+                                <input type="text" class="form-control" name="serviceUnits" value="{{ reviewerReview.serviceUnits }}"required="true">
+                            {%  else %}
+                                <input type="text" class="form-control" name="numberOfCpuPerJob" placeholder="Enter service units" required="true">
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Typical Service Units/Job</td>
+                    <td>{{ userSubmittedDetails.typicalSuPerJob }}</td>
+                    <td>
+                        <div>
+                            {% if reviewerReview and reviewerReview.projectId %}
+                                <input type="text" class="form-control" name="numberOfCpuPerJob" value="{{ reviewerReview.typicalSuPerJob }}"required="true">
+                            {%  else %}
+                                <input type="text" class="form-control" name="typicalSuPerJob" placeholder="Enter SU per job units" required="true">
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+         </table>
+
+        <button type="submit" class="btn btn-block btn-success" >Save</button>
+
+            </form>
+        <br/>
+        <br/>
+        <br/>
+        <!-- Modal -->
+              <div class="modal fade" id="save" role="dialog">
+                <div class="modal-dialog modal-sm">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Approve Request</h4>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" >Approve</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+    </div>
+{%  endblock %}

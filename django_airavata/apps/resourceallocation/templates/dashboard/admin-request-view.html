@@ -5,20 +5,22 @@
 
         <!-- All Requests-->
         <div class="container">
-
-          <div class="form-group">
-            <h3>Request Title <small>Title goes here</small></h3>
-            <h4>Select a Reviewer </h4>
-                <select class="selectpicker" data-style="btn-primary" data-live-search="true">
-
-                        <option>Reviewer 1</option>
-                        <option>Reviewer 2</option>
-                        <option>Reviewer 3</option>
-                        <option>Reviewer 4</option>
-                        <option>Reviewer 5</option>
-                        <option>Reviewer 6</option>
+            <div class="form-group">
+            <h3>{{ userSubmittedDetails.title|capfirst }}</h3>
+              <form action="" method="post">
+                            {% csrf_token %}
+                <select onchange="this.form.submit()" class="selectpicker" data-style="btn-primary" data-live-search="true" name="selectedReviewer">
+                    <option>Select the assigned reviewer</option>
+                    {% for reviewer in assignedReviewersList %}
+                        <option value="{{reviewer.username}}" {% if reviewer.username == selectedReviewer %}selected="selected"{% endif %}>
+                           {{reviewer.fullName|capfirst}}
+                        </option>
+                    {% endfor %}
                    </select>
-        </div>
+              </form>
+            </div>
+
+            {% if reviewerReview and reviewerReview.projectId %}
             <table class="table table-hover table-bordered table-striped table-responsive">
                 <thead class="thead-inverse">
                   <tr style="background-color: #337ab7;color:white">
@@ -31,12 +33,14 @@
 
                     <tr>
                         <td>Allocation type</td>
-                        <td>Community</td>
-                        <td>Community</td>
+                        <td>{{ userSubmittedDetails.typeOfAllocation|capfirst }}</td>
+                        <td>{{ reviewerReview.typeOfAllocation|capfirst }}</td>
                     </tr>
                     <tr>
                         <td>Applications to be used</td>
-                        <td>
+                        <td>{{ userSubmittedDetails.applicationsToBeUsed|capfirst }}</td>
+                        <td>{{ reviewerReview.applicationsToBeUsed|capfirst }}</td>
+                       <!-- <td>
                             <div class="dropdown">
                               <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Selected Applications
                               <span class="caret"></span></button>
@@ -57,73 +61,76 @@
                                 <li>JavaScript</li>
                               </ul>
                             </div>
-                        </td>
+                        </td>-->
                     </tr>
                     <tr>
                         <td>Disk Usage Range Per Job</td>
-                        <td>50-500</td>
-                        <td>50-250</td>
-                    </tr>
-                    <tr>
-                        <td>Field of Science</td>
-                        <td>Science Gateways</td>
-                        <td>Science Gateways</td>
+                        <td>{{ userSubmittedDetails.diskUsageRangePerJob }}</td>
+                        <td>{{ reviewerReview.diskUsageRangePerJob }}</td>
                     </tr>
                     <tr>
                         <td>Keywords</td>
-                        <td>keyword 1, keyword 2, keyword 3</td>
-                        <td>keyword 1, keyword 2, keyword 3</td>
+                        <td>{{ userSubmittedDetails.keywords|capfirst }}</td>
+                        <td>{{ reviewerReview.keywords|capfirst }}</td>
                     </tr>
                     <tr>
                         <td>Max Memory Per CPU</td>
-                        <td>40GB</td>
-                        <td>20GB</td>
+                        <td>{{ userSubmittedDetails.maxMemoryPerCpu }}</td>
+                        <td>{{ reviewerReview.maxMemoryPerCpu }}</td>
                     </tr>
                     <tr>
                         <td>Num CPUs Per Job</td>
-                        <td>4</td>
-                        <td>4</td>
+                        <td>{{ userSubmittedDetails.numberOfCpuPerJob }}</td>
+                        <td>{{ reviewerReview.numberOfCpuPerJob }}</td>
                     </tr>
                     <tr>
                         <td>Service Units</td>
-                        <td>50000</td>
-                        <td>45000</td>
+                        <td>{{ userSubmittedDetails.serviceUnits }}</td>
+                        <td>{{ reviewerReview.serviceUnits }}</td>
                     </tr>
                     <tr>
                         <td>Typical Service Units/Job</td>
-                        <td>60</td>
-                        <td>49</td>
+                        <td>{{ userSubmittedDetails.typicalSuPerJob }}</td>
+                        <td>{{ reviewerReview.typicalSuPerJob }}</td>
                     </tr>
                 </tbody>
              </table>
+
+
             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#approve">Approve</button>
             <!-- Modal -->
                   <div class="modal fade" id="approve" role="dialog">
                     <div class="modal-dialog modal-sm">
                       <div class="modal-content">
+                           <form action="" method="post">
+                               {% csrf_token %}
                         <div class="modal-header">
+
                           <button type="button" class="close" data-dismiss="modal">&times;</button>
                           <h4 class="modal-title">Approve Request</h4>
+
                         </div>
                         <div class="modal-body">
 
                           <div class="form-group">
                                 Start Date :
-                                <input type="date" id="start" style="border: none;" >
+                                <input required type="date" name="start" style="border: none;" >
                           </div>
                           <div class="form-group">
                                 End Date :
-                                <input type="date"id="end" style="border: none;">
+                                <input required type="date" name="end" style="border: none;">
                           </div>
                           <div>
                                 Allocation Units:
-                                <input type="text"id="allocation-units">
+                                <input required type="text" name="allocation-units">
                           </div>
+
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-success" >Approve</button>
+                            <button type="submit" class="btn btn-success" >Approve</button>
                           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         </div>
+                           </form>
                       </div>
                     </div>
                   </div>
@@ -132,6 +139,8 @@
                   <div class="modal fade" id="reject" role="dialog">
                     <div class="modal-dialog modal-sm">
                       <div class="modal-content">
+                           <form action="" method="post">
+                                {% csrf_token %}
                         <div class="modal-header">
                           <button type="button" class="close" data-dismiss="modal">&times;</button>
                           <h4 class="modal-title">Reject Request</h4>
@@ -140,16 +149,21 @@
 
                           <div class="form-group">
                                 Reason :
-                                <input type="text" id="reject-reason" >
+                                <input required type="text" name="reject-reason" >
                           </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" >Reject</button>
+                            <button type="submit" class="btn btn-danger" >Reject</button>
                           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         </div>
+                           </form>
                       </div>
                     </div>
                   </div>
         </div>
-
+            {% elif selectedReviewer == "" %}
+                <h3 style="margin-left: 7%"><br/>Select assigned reviewer</h3><div></div>
+            {%  else %}
+                <h3 style="margin-left: 7%"><br/>Sorry, no review for this request has been submitted yet!</h3>
+            {% endif %}
  {%  endblock %}

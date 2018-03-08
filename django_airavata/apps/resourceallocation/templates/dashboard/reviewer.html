@@ -8,7 +8,7 @@
           <table class="table table-hover table-bordered table-striped table-responsive">
             <thead class="thead-inverse">
               <tr style="background-color: #337ab7;color:white">
-                <th>Request-ID</th>
+                <th>Request Id</th>
                 <th>Request Title</th>
                 <th>Request Description</th>
                 <th>Allocation Requested</th>
@@ -17,10 +17,10 @@
             <tbody>
                 {% for request in all_requests %}
                   <tr>
-                    <td>{{ request.id }}</td>
-                    <td>{{ request.request_title }}</td>
-                    <td>{{ request.request_description }}</td>
-                    <td>{{ request.service_units}}</td>
+                    <td><a href="/resourceallocation/reviewer/request-view?projectId={{ request.projectId|urlencode }}&reviewerId={{ reviewerId|urlencode }}">{{ request.projectId }}</a></td>
+                    <td>{{ request.title }}</td>
+                    <td>{{ request.projectDescription }}</td>
+                    <td>{{ request.serviceUnits}}</td>
                   </tr>
                 {% endfor %}
             </tbody>
@@ -28,6 +28,6 @@
         </div>
 
     {%  else %}
-        <h3>No Requests to Review</h3>
+        <h3 style="margin-left: 7%"><br/>Sorry, currently there are no requests to review!</h3>
     {% endif %}
 {%  endblock %}
