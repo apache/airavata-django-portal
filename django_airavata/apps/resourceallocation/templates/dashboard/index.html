@@ -8,7 +8,7 @@
           <table class="table table-hover table-bordered table-striped table-responsive">
             <thead class="thead-inverse">
               <tr style="background-color: #337ab7;color:white">
-                <th>Request-ID</th>
+                <th>Request Id</th>
                 <th>Request Title</th>
                 <th>Request Description</th>
                 <th>Allocation Requested</th>
@@ -18,7 +18,8 @@
             <tbody>
                 {% for request in all_requests %}
                   <tr>
-                    <td>{{ request.projectId }}</td>
+                    <td><a href="/resourceallocation/request/add/?projectId={{ request.projectId|urlencode }}&status={{ request.status|urlencode }}">
+                    {{ request.projectId }}</a></td>
                     <td>{{ request.title }}</td>
                     <td>{{ request.projectDescription }}</td>
                     <td>{{ request.serviceUnits }}</td>

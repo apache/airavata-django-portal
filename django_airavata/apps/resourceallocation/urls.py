@@ -10,16 +10,17 @@ urlpatterns = [
 
     url(r'^$', views.index, name="index"),
     # /dashboard/reviewer
-   url(r'^reviewer/$', views.ReviewerView.as_view(), name='reviewer'),
+   url(r'^reviewer/$', views.ReviewerView, name='reviewer'),
 
 
     # /dashboard/admin
     url(r'^admin/$', views.admin, name='admin'),
 
     # /dashboard/admin/141
-    url(r'^admin/request-view/$', views.AdminRequestView.as_view(), name='admin-request-view'),
+    url(r'^admin/request-view/$', views.AdminRequestView, name='admin-request-view'),
 
-
+    # /dashboard/reviewer/141
+    url(r'^reviewer/request-view/$', views.ReviewerRequestView, name='reviewer-request-view'),
 
     url(r'^register/$', views.UserFormView.as_view(), name='register'),
 
