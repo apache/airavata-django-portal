@@ -6,6 +6,8 @@ from django.views.generic import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from airavata.model.security.ttypes import AuthzToken
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from rest_framework.renderers import JSONRenderer
 
@@ -15,6 +17,7 @@ from .models import Request
 from django.core import serializers
 from allocation_manager_models.ttypes import UserAllocationDetail
 from allocation_manager_models.ttypes import ReviewerAllocationDetail
+from allocation_manager_models.ttypes import UserSpecificResourceDetail
 import logging
 logger = logging.getLogger(__name__)
 
@@ -128,13 +131,16 @@ def ReviewerRequestView(request):
     return render(request, 'dashboard/reviewer-request-view.html',
                   {'userSubmittedDetails': userSubmittedDetails,
                    'reviewerReview': reviewerReview})
-
+#@login_required
 def index(request):
 
     try:
-        details = request.allocation_manager_client.getAllRequestsForAdmin("admin")
+        #authz_token = request.authz_token
+        authz_token = AuthzToken("")
+        details = request.allocation_manager_client.getAllRequestsForAdmin(authz_token,"admin")
+        details_specific = request.allocation_manager_client.getUserSpecificResource(authz_token,details[0].projectId)
         return render(request, 'dashboard/index.html', {
-            'all_requests': details
+            'all_requests': details,'all_requests_specific':details_specific
         })
     except Exception as e:
         logger.exception("Failed to load resource allocation details")
@@ -169,45 +175,51 @@ class DetailView(generic.DetailView):
 def requestCreate(request):
 
     try:
+        authz_token = AuthzToken("")
         projectId = request.GET.get('projectId')
-        status = request.GET.get('status')
         projectDetails = UserAllocationDetail()
+        userSpecificDetails = []
 
+        reqSpecificList = []
         '''Get the project details for an existing request'''
         if(projectId is not None):
-            projectDetails = request.allocation_manager_client.getAllocationRequest(projectId)
-            print(projectDetails)
+            projectDetails = request.allocation_manager_client.getAllocationRequest(authz_token,int(projectId))
+            userSpecificDetails = request.allocation_manager_client.getUserSpecificResource(authz_token, int(projectId))
 
         if(request.method=='POST'):
             reqObj = UserAllocationDetail();
 
             if(projectId is not None):
-                reqObj.projectId = projectId
-            else:
-                reqObj.projectId = "6";
+                reqObj.projectId = int(projectId)
 
             reqObj.title = request.POST['title']
             reqObj.requestedDate = int(datetime.datetime.now().strftime("%s"))*1000
             reqObj.projectDescription = request.POST['description']
-            reqObj.typeOfAllocation = request.POST['allocationType']
-            reqObj.applicationsToBeUsed = ",".join(request.POST.getlist('application'))
             reqObj.keywords = request.POST['keywords']
             reqObj.diskUsageRangePerJob = int(request.POST['diskUsage'])
             reqObj.maxMemoryPerCpu = int(request.POST['memorycpu'])
             reqObj.numberOfCpuPerJob = int(request.POST['cpuPerJob'])
             reqObj.typicalSuPerJob = int(request.POST['typicalSu'])
-            reqObj.serviceUnits = int(request.POST['allocation'])
-            reqObj.specificResourceSelection = request.POST['resourceType']
+            reqObj.comments = request.POST['comments']
             reqObj.username = "admin"
-
+            for i in range(0, len(userSpecificDetails)):
+                userSpecificDetails[i].applicationsToBeUsed = ",".join(request.POST.getlist('application' + str(i + 1)))
+                userSpecificDetails[i].requestedServiceUnits = int(request.POST.getlist('allocation')[i])
+                userSpecificDetails[i].resourceType = request.POST.getlist('resourceType')[i]
+                userSpecificDetails[i].specificResource = request.POST.getlist('specificResources')[i]
+                reqSpecificList.append(userSpecificDetails[i])
             if (projectId is not None):
-                request.allocation_manager_client.updateAllocationRequest(reqObj)
+                request.allocation_manager_client.updateAllocationRequest(authz_token,reqObj)
+                request.allocation_manager_client.updateUserSpecificResource(authz_token,int(projectId),reqSpecificList)
             else:
-                request.allocation_manager_client.createAllocationRequest(reqObj)
+                createdProjectId = request.allocation_manager_client.createAllocationRequest(reqObj)
+                for i in range(0, len(reqSpecificList)):
+                    reqSpecificList.get(i).projectId = createdProjectId
+                    request.allocation_manager_client.createUserSpecificResource(reqSpecificList.get(i))
             return redirect('/resourceallocation')
         else:
             return render(request, 'dashboard/request_form.html',
-                          {'projectDetails': projectDetails})
+                          {'projectDetails': projectDetails,'projectSpecificDetails':userSpecificDetails})
     except Exception as e:
         logger.exception("Failed to load resource allocation details")
         return redirect('/resourceallocation')

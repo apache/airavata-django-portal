@@ -10,20 +10,34 @@
               <tr style="background-color: #337ab7;color:white">
                 <th>Request Id</th>
                 <th>Request Title</th>
-                <th>Request Description</th>
-                <th>Allocation Requested</th>
                 <th>Allocation Status</th>
               </tr>
             </thead>
             <tbody>
                 {% for request in all_requests %}
                   <tr>
-                    <td><a href="/resourceallocation/request/add/?projectId={{ request.projectId|urlencode }}&status={{ request.status|urlencode }}">
+                    <td><a href="/resourceallocation/request/add/?projectId={{ request.projectId|urlencode }}">
                     {{ request.projectId }}</a></td>
                     <td>{{ request.title }}</td>
-                    <td>{{ request.projectDescription }}</td>
-                    <td>{{ request.serviceUnits }}</td>
-                    <td>{{ request.status }}</td>
+                    <td>{{ request.allocationStatus }}</td>
+                  </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+            <table class="table table-hover table-bordered table-striped table-responsive">
+            <thead class="thead-inverse">
+              <tr style="background-color: #337ab7;color:white">
+                <th>Specific Resource Name</th>
+                <th>Allocation Requested</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for request_specific in all_requests_specific %}
+                  <tr>
+                    <td>{{ request_specific.specificResource }}</td>
+                    <td>{{ request_specific.requestedServiceUnits }}</td>
+                    <td>{{ request_specific.subStatus }}</td>
                   </tr>
                 {% endfor %}
             </tbody>
