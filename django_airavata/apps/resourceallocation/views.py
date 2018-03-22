@@ -202,20 +202,33 @@ def requestCreate(request):
             reqObj.typicalSuPerJob = int(request.POST['typicalSu'])
             reqObj.comments = request.POST['comments']
             reqObj.username = "admin"
-            for i in range(0, len(userSpecificDetails)):
-                userSpecificDetails[i].applicationsToBeUsed = ",".join(request.POST.getlist('application' + str(i + 1)))
-                userSpecificDetails[i].requestedServiceUnits = int(request.POST.getlist('allocation')[i])
-                userSpecificDetails[i].resourceType = request.POST.getlist('resourceType')[i]
-                userSpecificDetails[i].specificResource = request.POST.getlist('specificResources')[i]
-                reqSpecificList.append(userSpecificDetails[i])
+
+            oldLen = len(userSpecificDetails)
+            for i in range(0, len(request.POST.getlist('specificResources'))):
+                if(i >= oldLen):
+                    userSpecObj = UserSpecificResourceDetail()
+                    if (projectId is not None):
+                        userSpecObj.projectId = int(projectId)
+                    userSpecObj.applicationsToBeUsed = ",".join(request.POST.getlist('application' + str(i + 1)))
+                    userSpecObj.requestedServiceUnits = int(request.POST.getlist('allocation')[i])
+                    userSpecObj.resourceType = request.POST.getlist('resourceType')[i]
+                    userSpecObj.specificResource = request.POST.getlist('specificResources')[i]
+                    reqSpecificList.append(userSpecObj)
+                else:
+                    userSpecificDetails[i].applicationsToBeUsed = ",".join(request.POST.getlist('application' + str(i + 1)))
+                    userSpecificDetails[i].requestedServiceUnits = int(request.POST.getlist('allocation')[i])
+                    userSpecificDetails[i].resourceType = request.POST.getlist('resourceType')[i]
+                    userSpecificDetails[i].specificResource = request.POST.getlist('specificResources')[i]
+                    reqSpecificList.append(userSpecificDetails[i])
+
             if (projectId is not None):
                 request.allocation_manager_client.updateAllocationRequest(authz_token,reqObj)
                 request.allocation_manager_client.updateUserSpecificResource(authz_token,int(projectId),reqSpecificList)
             else:
-                createdProjectId = request.allocation_manager_client.createAllocationRequest(reqObj)
+                createdProjectId = request.allocation_manager_client.createAllocationRequest(authz_token,reqObj)
                 for i in range(0, len(reqSpecificList)):
-                    reqSpecificList.get(i).projectId = createdProjectId
-                    request.allocation_manager_client.createUserSpecificResource(reqSpecificList.get(i))
+                    reqSpecificList[i].projectId = createdProjectId
+                    request.allocation_manager_client.createUserSpecificResource(authz_token, reqSpecificList[i])
             return redirect('/resourceallocation')
         else:
             return render(request, 'dashboard/request_form.html',
