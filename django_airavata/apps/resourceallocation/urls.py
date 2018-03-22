@@ -22,19 +22,6 @@ urlpatterns = [
     # /dashboard/reviewer/141
     url(r'^reviewer/request-view/$', views.ReviewerRequestView, name='reviewer-request-view'),
 
-    url(r'^register/$', views.UserFormView.as_view(), name='register'),
-
-    # /dashboard/712/
-    # url(r'^(?P<request_id>[0-9]+)/$', views.detail, name='detail'),
-    url(r'^(?P<pk>[0-9]+)/$', views.DetailView.as_view(), name='detail'),
-
-
     # /dashboard/request/add
     url(r'^request/add/$', views.requestCreate, name='request-add'),
-
-    # /dashboard/request/2/
-    url(r'^request/(?P<pk>[0-9]+)/$', views.RequestUpdate.as_view(), name='request-update'),
-
-    # /dashboard/request/2/delete/
-    url(r'^request/(?P<pk>[0-9]+)/delete/$', views.RequestDelete.as_view(), name='request-delete'),
 ]

@@ -10,8 +10,6 @@
               <tr style="background-color: #337ab7;color:white">
                 <th>Request Id</th>
                 <th>Request Title</th>
-                <th>Request Description</th>
-                <th>Allocation Requested</th>
               </tr>
             </thead>
             <tbody>
@@ -19,8 +17,6 @@
                   <tr>
                     <td><a href="/resourceallocation/reviewer/request-view?projectId={{ request.projectId|urlencode }}&reviewerId={{ reviewerId|urlencode }}">{{ request.projectId }}</a></td>
                     <td>{{ request.title }}</td>
-                    <td>{{ request.projectDescription }}</td>
-                    <td>{{ request.serviceUnits}}</td>
                   </tr>
                 {% endfor %}
             </tbody>

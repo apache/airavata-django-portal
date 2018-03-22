@@ -12,8 +12,8 @@
                 <select onchange="this.form.submit()" class="selectpicker" data-style="btn-primary" data-live-search="true" name="selectedReviewer">
                     <option>Select the assigned reviewer</option>
                     {% for reviewer in assignedReviewersList %}
-                        <option value="{{reviewer.username}}" {% if reviewer.username == selectedReviewer %}selected="selected"{% endif %}>
-                           {{reviewer.fullName|capfirst}}
+                        <option value="{{reviewer.reviewerUsername}}" {% if reviewer.reviewerUsername == selectedReviewer %}selected="selected"{% endif %}>
+                           {{reviewer.reviewerUsername|capfirst}}
                         </option>
                     {% endfor %}
                    </select>
