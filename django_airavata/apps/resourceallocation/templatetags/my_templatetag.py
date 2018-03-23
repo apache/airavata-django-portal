@@ -21,3 +21,7 @@ def getSpecificResource(Queryset):
 @register.filter
 def getResourceType(Queryset):
     return Queryset.resourceType
+
+@register.filter
+def getComments(Queryset):
+    return Queryset.comments

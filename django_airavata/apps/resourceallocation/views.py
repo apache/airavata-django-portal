@@ -49,36 +49,43 @@ def AdminRequestView(request):
     projectReviewList = request.allocation_manager_client.getAllReviewsForARequest(authz_token,projectId)
     reviewerReview = ReviewerAllocationDetail()
     userSubmittedDetails = request.allocation_manager_client.getAllocationRequest(authz_token,projectId)
-    print(projectReviewList)
+    userSpecificDetailsList = request.allocation_manager_client.getUserSpecificResource(authz_token, projectId)
+    specificDetails = request.allocation_manager_client.getReviewerSpecificResource(authz_token, projectId)
+    reviewerSpecificDetailsList = []
     selectedReviewer = ''
+
     if (request.method == 'POST'):
         s = request.POST.get('start')
-        rejecttionReason = request.POST.get('reject-reason')
+        rejectionReason = request.POST.get('reject-reason')
+        specificResource = request.POST.get('specific-resource')
         startDate = None
         if s is not None:
             startDate = time.mktime(datetime.datetime.strptime(s, "%Y-%m-%d").timetuple())
             s = request.POST.get('end')
             endDate = time.mktime(datetime.datetime.strptime(s, "%Y-%m-%d").timetuple())
             serviceUnits = request.POST.get('allocation-units')
+
         if(startDate is not None):
-            request.allocation_manager_client.approveRequest(authz_token,projectId,"admin",int(startDate),int(endDate),int(serviceUnits))
+            request.allocation_manager_client.approveRequest(authz_token,projectId,"admin",int(startDate),int(endDate),int(serviceUnits),specificResource)
             return redirect('/resourceallocation/admin')
-        if rejecttionReason is not None:
-            request.allocation_manager_client.rejectRequest(authz_token,projectId,"admin")
+        if rejectionReason is not None:
+            request.allocation_manager_client.rejectRequest(authz_token,projectId,"admin",rejectionReason,specificResource)
             return redirect('/resourceallocation/admin')
         selectedReviewer = request.POST.get('selectedReviewer')
         for review in projectReviewList:
             if(review.username == selectedReviewer):
                 reviewerReview = review
 
+        for review in specificDetails:
+            if (review.username == selectedReviewer):
+                reviewerSpecificDetailsList.append(review)
 
     assignedReviewersList = request.allocation_manager_client.getAllAssignedReviewersForRequest(authz_token,projectId)
-    print('yo')
-    print(assignedReviewersList)
     return render(request, 'dashboard/admin-request-view.html',
                   {'userSubmittedDetails': userSubmittedDetails,
                    'assignedReviewersList': assignedReviewersList,
-                   'reviewerReview': reviewerReview, 'selectedReviewer': selectedReviewer})
+                   'reviewerReview': reviewerReview, 'selectedReviewer': selectedReviewer,'userSpecificDetailsList': userSpecificDetailsList,
+                   'reviewerSpecificDetailsList':reviewerSpecificDetailsList})
 
 def ReviewerView(request):
     try:
@@ -120,7 +127,7 @@ def ReviewerRequestView(request):
         reqObj.maxMemoryPerCpu = int(request.POST['maxMemoryPerCpu'])
         reqObj.numberOfCpuPerJob = int(request.POST['numberOfCpuPerJob'])
         reqObj.typicalSuPerJob = int(request.POST['typicalSuPerJob'])
-        reqObj.documents = int(request.POST['documents'])
+        #reqObj.documents = int(request.POST['documents'])
         reqObj.username = reviewerId
         request.allocation_manager_client.updateRequestByReviewer(authz_token,reqObj)
         for i in range(0, len(request.POST.getlist('specificResources'))):
@@ -128,27 +135,20 @@ def ReviewerRequestView(request):
             reviewerSpecObj.projectId = int(projectId)
             reviewerSpecObj.comments = request.POST.getlist('comments')[i]
             reviewerSpecObj.applicationsToBeUsed = ",".join(request.POST.getlist('application' + str(i + 1)))
-            reviewerSpecObj.reviewedServiceUnits = int(request.POST.getlist('allocation')[i])
+            if request.POST.getlist('allocation')[i]!='':
+                reviewerSpecObj.reviewedServiceUnits = int(request.POST.getlist('allocation')[i])
             reviewerSpecObj.resourceType = request.POST.getlist('resourceType')[i]
             reviewerSpecObj.specificResource = request.POST.getlist('specificResources')[i]
+            reviewerSpecObj.username = reviewerId
             reviewerSpecificDetailsList.append(reviewerSpecObj)
-
         request.allocation_manager_client.updateReviewerSpecificResource(authz_token, int(projectId), reviewerSpecificDetailsList)
 
         return redirect('/resourceallocation/reviewer')
-
-    # specificDetails.append(userSpecificDetailsList)
-    # specificDetails.append(reviewerSpecificDetailsList)
-    #
-    # return render(request, 'dashboard/reviewer-request-view.html',
-    #               {'userSubmittedDetails': userSubmittedDetails,
-    #                'reviewerReview': reviewerReview,'specificDetails':specificDetails})
-    print(reviewerSpecificDetailsList)
-    print(len(userSpecificDetailsList))
     return render(request, 'dashboard/reviewer-request-view.html',
                   {'userSubmittedDetails': userSubmittedDetails,
                    'reviewerReview': reviewerReview, 'userSpecificDetailsList': userSpecificDetailsList,
                    'reviewerSpecificDetailsList':reviewerSpecificDetailsList})
+
 #@login_required
 def index(request):
 
