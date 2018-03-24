@@ -14,20 +14,27 @@ logger = logging.getLogger(__name__)
 def admin(request):
     try:
         authz_token = request.authz_token
-        gateway_id = settings.GATEWAY_ID
-        group_id = "reviewers"
+        loggedinUser = authz_token.claimsMap['userName']
+
+        reviewerGroup = request.profile_service['group_manager'].getGroup(authz_token, settings.REVIEWER_GROUP_ID)
+        allReviewersList = []
+        loggedinUserGroups = getLoggedInRoles(request)
+        if('admin' not in loggedinUserGroups):
+            return redirect('/resourceallocation')
+
+        for reviewer in reviewerGroup.members:
+            allReviewersList.append(reviewer.split('@')[0])
         if (request.method == 'POST'):
             selectedReviewers = request.POST.getlist('selectedReviewers')
             projectId = int(request.POST['projectId'])
 
             #Assign reviwers to the project
             for reviewerId in selectedReviewers:
-                request.allocation_manager_client.assignReviewers(authz_token,projectId, reviewerId, "admin")
+                request.allocation_manager_client.assignReviewers(authz_token,projectId, reviewerId, loggedinUser)
 
-        details = request.allocation_manager_client.getAllRequestsForAdmin(authz_token,"admin")
+        details = request.allocation_manager_client.getAllRequestsForAdmin(authz_token,loggedinUser)
         reviewerDetailsList = []
         for detail in details:
-            allReviewersList = ['reviewer1','reviewer2']
             assignedReviewerDetails = request.allocation_manager_client.getAllAssignedReviewersForRequest(authz_token,
                 detail.projectId)
             allAssignedReviewerList= []
@@ -45,6 +52,7 @@ def admin(request):
 @login_required
 def AdminRequestView(request):
     authz_token = request.authz_token
+    loggedinUser = authz_token.claimsMap['userName']
     projectId = int(request.GET.get('projectId'))
     projectReviewList = request.allocation_manager_client.getAllReviewsForARequest(authz_token,projectId)
     reviewerReview = ReviewerAllocationDetail()
@@ -66,10 +74,10 @@ def AdminRequestView(request):
             serviceUnits = request.POST.get('allocation-units')
 
         if(startDate is not None):
-            request.allocation_manager_client.approveRequest(authz_token,projectId,"admin",int(startDate),int(endDate),int(serviceUnits),specificResource)
+            request.allocation_manager_client.approveRequest(authz_token,projectId,loggedinUser,int(startDate),int(endDate),int(serviceUnits),specificResource)
             return redirect('/resourceallocation/admin')
         if rejectionReason is not None:
-            request.allocation_manager_client.rejectRequest(authz_token,projectId,"admin",rejectionReason,specificResource)
+            request.allocation_manager_client.rejectRequest(authz_token,projectId,loggedinUser,rejectionReason,specificResource)
             return redirect('/resourceallocation/admin')
         selectedReviewer = request.POST.get('selectedReviewer')
         for review in projectReviewList:
@@ -91,10 +99,15 @@ def AdminRequestView(request):
 def ReviewerView(request):
     try:
         authz_token = request.authz_token
-        details = request.allocation_manager_client.getAllRequestsForReviewers(authz_token,"reviewer2")
-        reviewerId = "reviewer2"
+        loggedinUser = authz_token.claimsMap['userName']
+
+        loggedinUserGroups = getLoggedInRoles(request)
+        if ('reviewer' not in loggedinUserGroups):
+            return redirect('/resourceallocation')
+
+        details = request.allocation_manager_client.getAllRequestsForReviewers(authz_token,loggedinUser)
         return render(request, 'dashboard/reviewer.html', {
-            'all_requests': details, 'reviewerId':reviewerId
+            'all_requests': details, 'reviewerId':loggedinUser
         })
     except Exception as e:
         logger.exception("Failed to load resource allocation details")
@@ -103,8 +116,9 @@ def ReviewerView(request):
 @login_required
 def ReviewerRequestView(request):
     authz_token = request.authz_token
+    loggedinUser = authz_token.claimsMap['userName']
     projectId = int(request.GET.get('projectId'))
-    reviewerId = request.GET.get('reviewerId')
+    reviewerId = loggedinUser
     reviewerReview = ReviewerAllocationDetail()
     reviewerSpecificDetailsList = []
     userSubmittedDetails = request.allocation_manager_client.getAllocationRequest(authz_token,projectId)
@@ -154,19 +168,29 @@ def ReviewerRequestView(request):
 def index(request):
 
     try:
-        gateway_id = settings.GATEWAY_ID
         authz_token = request.authz_token
-        print(authz_token)
-        print("#########")
-        group1 = request.airavata_client.getGroup(authz_token, gateway_id,settings.ADMIN_GROUP_ID)
-        print(group1)
-        print("#####")
-        details = request.allocation_manager_client.getAllRequestsForAdmin(authz_token,"admin")
-        if not details:
-            details_specific = request.allocation_manager_client.getUserSpecificResource(authz_token,details[0].projectId)
-        return render(request, 'dashboard/index.html', {
+        loggedinUser = authz_token.claimsMap['userName']
+        loggedinUserGroups = getLoggedInRoles(request)
+
+        print(loggedinUserGroups)
+        if len(loggedinUserGroups) > 1:
+            #chnage this later
+            loggedinUserGroup = loggedinUserGroups[0]
+        else:
+            loggedinUserGroup = loggedinUserGroups[0]
+        if loggedinUserGroup == 'user':
+            details = request.allocation_manager_client.getAllRequestsForAdmin(authz_token,loggedinUser)
+            details_specific = []
+            if len(details) > 0:
+                details_specific = request.allocation_manager_client.getUserSpecificResource(authz_token,details[0].projectId)
+            return render(request, 'dashboard/index.html', {
             'all_requests': details,'all_requests_specific':details_specific
-        })
+            })
+        elif loggedinUserGroup == 'admin':
+            return redirect('/resourceallocation/admin')
+        elif loggedinUserGroup == 'reviewer':
+            return redirect('/resourceallocation/reviewer')
+
     except Exception as e:
         logger.exception("Failed to load resource allocation details")
         return redirect('/resourceallocation')
@@ -175,6 +199,7 @@ def index(request):
 def requestCreate(request):
     try:
         authz_token = request.authz_token
+        loggedinUser = authz_token.claimsMap['userName']
         projectId = request.GET.get('projectId')
         projectDetails = UserAllocationDetail()
         userSpecificDetails = []
@@ -200,7 +225,7 @@ def requestCreate(request):
             reqObj.numberOfCpuPerJob = int(request.POST['cpuPerJob'])
             reqObj.typicalSuPerJob = int(request.POST['typicalSu'])
             reqObj.comments = request.POST['comments']
-            reqObj.username = "admin"
+            reqObj.username = loggedinUser
 
             oldLen = len(userSpecificDetails)
             for i in range(0, len(request.POST.getlist('specificResources'))):
@@ -234,4 +259,22 @@ def requestCreate(request):
                           {'projectDetails': projectDetails,'projectSpecificDetails':userSpecificDetails})
     except Exception as e:
         logger.exception("Failed to load resource allocation details")
-        return redirect('/resourceallocation')
+        return redirect('/resourceallocation')\
+
+
+def getLoggedInRoles(request):
+    authz_token = request.authz_token
+    loggedinUser = authz_token.claimsMap['userName']
+    loggedinUserGroups = []
+
+    adminGroup = request.profile_service['group_manager'].getGroup(authz_token, settings.ADMIN_GROUP_ID)
+    reviewerGroup = request.profile_service['group_manager'].getGroup(authz_token, settings.REVIEWER_GROUP_ID)
+    userGroup = request.profile_service['group_manager'].getGroup(authz_token, settings.USER_GROUP_ID)
+    if (loggedinUser + '@seagrid' in adminGroup.members):
+        loggedinUserGroups.append('admin')
+    if (loggedinUser + '@seagrid' in reviewerGroup.members):
+        loggedinUserGroups.append('reviewer')
+    if (loggedinUser + '@seagrid' in userGroup.members):
+        loggedinUserGroups.append('user')
+
+    return loggedinUserGroups
