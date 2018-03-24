@@ -2,6 +2,7 @@ import datetime
 import time
 from django.shortcuts import render, redirect
 from airavata.model.security.ttypes import AuthzToken
+from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from allocation_manager_models.ttypes import UserAllocationDetail, ReviewerSpecificResourceDetail
 from allocation_manager_models.ttypes import ReviewerAllocationDetail
@@ -9,10 +10,10 @@ from allocation_manager_models.ttypes import UserSpecificResourceDetail
 import logging
 logger = logging.getLogger(__name__)
 
-
+@login_required
 def admin(request):
     try:
-        authz_token = AuthzToken("")
+        authz_token = request.authz_token
         gateway_id = settings.GATEWAY_ID
         group_id = "reviewers"
         if (request.method == 'POST'):
@@ -26,8 +27,6 @@ def admin(request):
         details = request.allocation_manager_client.getAllRequestsForAdmin(authz_token,"admin")
         reviewerDetailsList = []
         for detail in details:
-            #members = request.sharing_client.getGroupMembersOfTypeUser(gateway_id, group_id, 0, -1)
-            #print(members)
             allReviewersList = ['reviewer1','reviewer2']
             assignedReviewerDetails = request.allocation_manager_client.getAllAssignedReviewersForRequest(authz_token,
                 detail.projectId)
@@ -43,8 +42,9 @@ def admin(request):
         logger.exception("Failed to load resource allocation details")
         return redirect('/resourceallocation')
 
+@login_required
 def AdminRequestView(request):
-    authz_token = AuthzToken("")
+    authz_token = request.authz_token
     projectId = int(request.GET.get('projectId'))
     projectReviewList = request.allocation_manager_client.getAllReviewsForARequest(authz_token,projectId)
     reviewerReview = ReviewerAllocationDetail()
@@ -87,9 +87,10 @@ def AdminRequestView(request):
                    'reviewerReview': reviewerReview, 'selectedReviewer': selectedReviewer,'userSpecificDetailsList': userSpecificDetailsList,
                    'reviewerSpecificDetailsList':reviewerSpecificDetailsList})
 
+@login_required
 def ReviewerView(request):
     try:
-        authz_token = AuthzToken("")
+        authz_token = request.authz_token
         details = request.allocation_manager_client.getAllRequestsForReviewers(authz_token,"reviewer2")
         reviewerId = "reviewer2"
         return render(request, 'dashboard/reviewer.html', {
@@ -99,8 +100,9 @@ def ReviewerView(request):
         logger.exception("Failed to load resource allocation details")
         return redirect('/resourceallocation')
 
+@login_required
 def ReviewerRequestView(request):
-    authz_token = AuthzToken("")
+    authz_token = request.authz_token
     projectId = int(request.GET.get('projectId'))
     reviewerId = request.GET.get('reviewerId')
     reviewerReview = ReviewerAllocationDetail()
@@ -127,7 +129,6 @@ def ReviewerRequestView(request):
         reqObj.maxMemoryPerCpu = int(request.POST['maxMemoryPerCpu'])
         reqObj.numberOfCpuPerJob = int(request.POST['numberOfCpuPerJob'])
         reqObj.typicalSuPerJob = int(request.POST['typicalSuPerJob'])
-        #reqObj.documents = int(request.POST['documents'])
         reqObj.username = reviewerId
         request.allocation_manager_client.updateRequestByReviewer(authz_token,reqObj)
         for i in range(0, len(request.POST.getlist('specificResources'))):
@@ -149,14 +150,20 @@ def ReviewerRequestView(request):
                    'reviewerReview': reviewerReview, 'userSpecificDetailsList': userSpecificDetailsList,
                    'reviewerSpecificDetailsList':reviewerSpecificDetailsList})
 
-#@login_required
+@login_required
 def index(request):
 
     try:
-        #authz_token = request.authz_token
-        authz_token = AuthzToken("")
+        gateway_id = settings.GATEWAY_ID
+        authz_token = request.authz_token
+        print(authz_token)
+        print("#########")
+        group1 = request.airavata_client.getGroup(authz_token, gateway_id,settings.ADMIN_GROUP_ID)
+        print(group1)
+        print("#####")
         details = request.allocation_manager_client.getAllRequestsForAdmin(authz_token,"admin")
-        details_specific = request.allocation_manager_client.getUserSpecificResource(authz_token,details[0].projectId)
+        if not details:
+            details_specific = request.allocation_manager_client.getUserSpecificResource(authz_token,details[0].projectId)
         return render(request, 'dashboard/index.html', {
             'all_requests': details,'all_requests_specific':details_specific
         })
@@ -164,10 +171,10 @@ def index(request):
         logger.exception("Failed to load resource allocation details")
         return redirect('/resourceallocation')
 
+@login_required
 def requestCreate(request):
-
     try:
-        authz_token = AuthzToken("")
+        authz_token = request.authz_token
         projectId = request.GET.get('projectId')
         projectDetails = UserAllocationDetail()
         userSpecificDetails = []
