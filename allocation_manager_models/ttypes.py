@@ -625,6 +625,7 @@ class ReviewerSpecificResourceDetail(object):
      - resourceType
      - reviewedServiceUnits
      - specificResource
+     - username
     """
 
     thrift_spec = (
@@ -636,9 +637,10 @@ class ReviewerSpecificResourceDetail(object):
         (5, TType.STRING, 'resourceType', 'UTF8', None, ),  # 5
         (6, TType.I64, 'reviewedServiceUnits', None, None, ),  # 6
         (7, TType.STRING, 'specificResource', 'UTF8', None, ),  # 7
+        (8, TType.STRING, 'username', 'UTF8', None, ),  # 8
     )
 
-    def __init__(self, id=None, applicationsToBeUsed=None, comments=None, projectId=None, resourceType=None, reviewedServiceUnits=None, specificResource=None,):
+    def __init__(self, id=None, applicationsToBeUsed=None, comments=None, projectId=None, resourceType=None, reviewedServiceUnits=None, specificResource=None, username=None,):
         self.id = id
         self.applicationsToBeUsed = applicationsToBeUsed
         self.comments = comments
@@ -646,6 +648,7 @@ class ReviewerSpecificResourceDetail(object):
         self.resourceType = resourceType
         self.reviewedServiceUnits = reviewedServiceUnits
         self.specificResource = specificResource
+        self.username = username
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -691,6 +694,11 @@ class ReviewerSpecificResourceDetail(object):
                     self.specificResource = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.STRING:
+                    self.username = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -728,6 +736,10 @@ class ReviewerSpecificResourceDetail(object):
         if self.specificResource is not None:
             oprot.writeFieldBegin('specificResource', TType.STRING, 7)
             oprot.writeString(self.specificResource.encode('utf-8') if sys.version_info[0] == 2 else self.specificResource)
+            oprot.writeFieldEnd()
+        if self.username is not None:
+            oprot.writeFieldBegin('username', TType.STRING, 8)
+            oprot.writeString(self.username.encode('utf-8') if sys.version_info[0] == 2 else self.username)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()

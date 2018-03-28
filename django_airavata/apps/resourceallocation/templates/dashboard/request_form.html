@@ -36,10 +36,10 @@
                             <label class="control-label col-sm-2">Description</label>
                             <div class="col-sm-10">
                                 {% if projectDetails and projectDetails.projectId %}
-                                    <input name="description" type="text" class="form-control"
-                                       value="{{ projectDetails.projectDescription }}" required="true">
+                                    <textarea name="description" class="form-control"
+                                              required="true">{{ projectDetails.projectDescription }} </textarea>
                                 {%  else %}
-                                    <input name="description" type="text" class="form-control" placeholder="Enter Request Description" required="true">
+                                <textarea name="description" type="text" class="form-control" placeholder="Enter Request Description" required="true"></textarea>
                                 {% endif %}
                             </div>
                         </div>
@@ -55,12 +55,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label col-sm-2">Disk usage range per job</label>
+                            <label class="control-label col-sm-2">Disk usage per job</label>
                             <div class="col-sm-10">
                                 {% if projectDetails and projectDetails.projectId %}
                                     <input type="text" class="form-control" name="diskUsage" value="{{ projectDetails.diskUsageRangePerJob }}">
                                 {%  else %}
-                                    <input type="text" class="form-control" name="diskUsage" placeholder="Enter Disk Usage per Job">
+                                    <input type="text" class="form-control" name="diskUsage" placeholder="Enter Disk Usage per Job in MBs">
                                 {% endif %}
                             </div>
                         </div>
@@ -71,7 +71,7 @@
                                     <input type="number" min="0" class="form-control" name="memorycpu"
                                        value="{{ projectDetails.maxMemoryPerCpu }}">
                                 {%  else %}
-                                    <input type="number" min="0" class="form-control"  name="memorycpu" placeholder="Enter Max Memory per CPU">
+                                    <input type="number" min="0" class="form-control"  name="memorycpu" placeholder="Enter Max Memory per CPU in MBs">
                                 {% endif %}
                             </div>
                         </div>
@@ -83,7 +83,7 @@
                                            value="{{ projectDetails.numberOfCpuPerJob}}">
                                 {%  else %}
                                     <input type="number" min="0" class="form-control" name="cpuPerJob"
-                                           placeholder="Enter Number of CPUs per job">
+                                           placeholder="Enter Number of CPUs per job in Node hours">
                                 {% endif %}
                             </div>
                         </div>
@@ -95,7 +95,7 @@
                                            value="{{ projectDetails.typicalSuPerJob}}">
                                 {%  else %}
                                     <input type="number" min="0" class="form-control"  name="typicalSu"
-                                           placeholder="Enter Typical SU per Job">
+                                           placeholder="Enter Typical SU per Job in Node hours">
                                 {% endif %}
                             </div>
                         </div>
@@ -108,7 +108,7 @@
                                        value="{{projectDetails.comments}}">
                                 {%  else %}
                                     <input type="text" class="form-control" name="comments" class="comments"
-                                       placeholder="Enter Additional Comments">
+                                       placeholder="Enter additional comments specifying things like workflows,data integration">
                                 {% endif %}
                             </div>
                         </div>
@@ -147,10 +147,10 @@
                                     <label class="control-label col-sm-2 app">Total Allocation Requested</label>
                                     <div class="col-sm-10">
                                         {% if projectDetails and projectDetails.projectId %}
-                                            <input type="text" class="form-control" name="allocation"
+                                            <input required type="text" class="form-control" name="allocation"
                                                    value="{{ projectSpecificDetail.requestedServiceUnits }}">
                                         {%  else %}
-                                            <input type="text" class="form-control" name="allocation"
+                                            <input required type="text" class="form-control" name="allocation"
                                                    placeholder="Enter Requested Allocation">
                                         {% endif %}
                                     </div>

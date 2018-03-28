@@ -83,7 +83,7 @@ def AdminRequestView(request):
         for review in projectReviewList:
             if(review.username == selectedReviewer):
                 reviewerReview = review
-
+        print(specificDetails)
         for review in specificDetails:
             if (review.username == selectedReviewer):
                 reviewerSpecificDetailsList.append(review)
@@ -139,10 +139,10 @@ def ReviewerRequestView(request):
         reqObj = ReviewerAllocationDetail()
         reqObj.projectId = projectId
         reqObj.reviewDate = int(datetime.datetime.now().strftime("%s")) * 1000
-        reqObj.diskUsageRangePerJob = int(request.POST['diskUsage'])
-        reqObj.maxMemoryPerCpu = int(request.POST['maxMemoryPerCpu'])
-        reqObj.numberOfCpuPerJob = int(request.POST['numberOfCpuPerJob'])
-        reqObj.typicalSuPerJob = int(request.POST['typicalSuPerJob'])
+        if request.POST['diskUsage'] is not '': reqObj.diskUsageRangePerJob = int(request.POST['diskUsage'])
+        if request.POST['maxMemoryPerCpu'] is not '': reqObj.maxMemoryPerCpu = int(request.POST['maxMemoryPerCpu'])
+        if request.POST['numberOfCpuPerJob'] is not '': reqObj.numberOfCpuPerJob = int(request.POST['numberOfCpuPerJob'])
+        if request.POST['typicalSuPerJob'] is not '': reqObj.typicalSuPerJob = int(request.POST['typicalSuPerJob'])
         reqObj.username = reviewerId
         request.allocation_manager_client.updateRequestByReviewer(authz_token,reqObj)
         for i in range(0, len(request.POST.getlist('specificResources'))):

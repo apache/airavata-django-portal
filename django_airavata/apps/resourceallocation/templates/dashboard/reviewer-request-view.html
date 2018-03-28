@@ -5,6 +5,7 @@
     <!-- All Requests-->
 <div class="container" xmlns:reviewerSpecificDetailsList xmlns:reviewerSpecificDetailsList>
         <h3>{{ userSubmittedDetails.title|capfirst }}</h3>
+    <p>{{ userSubmittedDetails.projectDescription|capfirst }}</p>
     <form class="form-horizontal" action="" method="post">
                         {% csrf_token %}
         <table class="table table-hover table-bordered table-striped table-responsive">
@@ -17,14 +18,14 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>Disk Usage Range Per Job</td>
+                    <td>Disk Usage Per Job</td>
                     <td>{{ userSubmittedDetails.diskUsageRangePerJob }}</td>
                     <td>
                         <div>
                             {% if reviewerReview and reviewerReview.projectId %}
-                                <input type="text" class="form-control" name="diskUsage" value="{{ reviewerReview.diskUsageRangePerJob }}"required="true">
+                                <input type="text" class="form-control" name="diskUsage" value="{{ reviewerReview.diskUsageRangePerJob }}">
                             {%  else %}
-                                <input type="text" class="form-control" name="diskUsage" placeholder="Enter disk usage range" required="true">
+                                <input type="text" class="form-control" name="diskUsage" placeholder="Enter disk usage range in MBs">
                             {% endif %}
                         </div>
                     </td>
@@ -35,9 +36,9 @@
                     <td>
                         <div>
                             {% if reviewerReview and reviewerReview.projectId %}
-                                <input type="text" class="form-control" name="maxMemoryPerCpu" value="{{ reviewerReview.maxMemoryPerCpu }}"required="true">
+                                <input type="text" class="form-control" name="maxMemoryPerCpu" value="{{ reviewerReview.maxMemoryPerCpu }}">
                             {%  else %}
-                                <input type="text" class="form-control" name="maxMemoryPerCpu" placeholder="Enter maximum memory per CPU" required="true">
+                                <input type="text" class="form-control" name="maxMemoryPerCpu" placeholder="Enter maximum memory per CPU in MBs" >
                             {% endif %}
                         </div>
                     </td>
@@ -48,9 +49,9 @@
                     <td>
                         <div>
                             {% if reviewerReview and reviewerReview.projectId %}
-                                <input type="text" class="form-control" name="numberOfCpuPerJob" value="{{ reviewerReview.numberOfCpuPerJob }}"required="true">
+                                <input type="text" class="form-control" name="numberOfCpuPerJob" value="{{ reviewerReview.numberOfCpuPerJob }}">
                             {%  else %}
-                                <input type="text" class="form-control" name="numberOfCpuPerJob" placeholder="Enter number of CPU per job" required="true">
+                                <input type="text" class="form-control" name="numberOfCpuPerJob" placeholder="Enter number of CPU per job  in Node hours">
                             {% endif %}
                         </div>
                     </td>
@@ -61,9 +62,9 @@
                     <td>
                         <div>
                             {% if reviewerReview and reviewerReview.projectId %}
-                                <input type="text" class="form-control" name="typicalSuPerJob" value="{{ reviewerReview.typicalSuPerJob }}"required="true">
+                                <input type="text" class="form-control" name="typicalSuPerJob" value="{{ reviewerReview.typicalSuPerJob }}">
                             {%  else %}
-                                <input type="text" class="form-control" name="typicalSuPerJob" placeholder="Enter SU per job units" required="true">
+                                <input type="text" class="form-control" name="typicalSuPerJob" placeholder="Enter SU per job  in Node hours">
                             {% endif %}
                         </div>
                     </td>
@@ -179,10 +180,10 @@
                                 <div class="col-sm-10">
                                     {% load my_templatetag %}
                                     {% if reviewerSpecificDetailsList and reviewerSpecificDetailsList|index:forloop.counter0 %}
-                                        <input type="text" class="form-control" name="allocation"
+                                        <input required type="text" class="form-control" name="allocation"
                                                value="{{ reviewerSpecificDetailsList|index:forloop.counter0|getReviewedServiceUnits }}">
                                     {%  else %}
-                                        <input type="text" class="form-control" name="allocation"
+                                        <input required type="text" class="form-control" name="allocation"
                                                placeholder="Enter Requested Allocation">
                                     {% endif %}
                                 </div>
@@ -231,7 +232,7 @@
                                                value="{{ reviewerSpecificDetailsList|index:forloop.counter0|getComments }}">
                                     {%  else %}
                                         <input type="text" class="form-control" name="comments"
-                                               placeholder="Enter Additional Comments">
+                                               placeholder="Enter additional comments specifying things like workflows,data integration">
                                     {% endif %}
                                 </div>
                             </div>
