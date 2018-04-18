@@ -3,9 +3,25 @@
 {% block request_active %}active{% endblock %}
  <head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="module" src="django_airavata/apps/resourceallocation/templates/dashboard/FetchUtils.js"></script>
 </head>
 {%  block body %}
 <script>
+
+    function getApplicationDeployments(e){
+        var allDeployments = "{{all_deployments}}";
+
+        var appDeployments = []
+        var selectedAppId = e.value;
+        for (var key in allDeployments) {
+            if(allDeployments[key].appModuleId == selectedAppId){
+                appDeployments=allDeployments[key];
+            }
+        }
+
+        alert(appDeployments)
+    }
+    
     function addSpecificResource(){
         var currCount = $('.app').length;
         var newElement = $("div.emptySpecRes").html().replace('Specific Resource','Specific Resource '+ currCount)
@@ -13,261 +29,278 @@
         $('#divSpecificResource').append(newElement);
 }
 </script>
-<div class="container-fluid">
-    <h2>New Request</h2>
-    <div class="row">
-        <div class="col-sm-12 col-md-7">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    {# <p>Please provide</p>#}
-                    <form class="form-horizontal" action="" method="post">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label class="control-label col-sm-2" >Title</label>
-                            <div class="col-sm-10">
-                                {% if projectDetails and projectDetails.projectId %}
-                                    <input type="text" class="form-control" name="title" value="{{ projectDetails.title }}"required="true">
-                                {%  else %}
-                                    <input type="text" class="form-control" name="title" placeholder="Enter Request Title" required="true">
-                                {% endif %}
+    {% if not projectId and not canSubmit %}
+        <div>
+            <h3>Request for this user already exists, please add a new Specific resource in the edit option</h3>
+        </div>
+    {% else %}
+        <div class="container-fluid">
+        <h2>New Request</h2>
+        <div class="row">
+            <div class="col-sm-12 col-md-7">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        {# <p>Please provide</p>#}
+                        <form class="form-horizontal" action="" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" >Title *</label>
+                                <div class="col-sm-10">
+                                    {% if projectDetails and projectDetails.projectId %}
+                                        <input type="text" class="form-control" name="title" value="{{ projectDetails.title }}"required="true">
+                                    {%  else %}
+                                        <input type="text" class="form-control" name="title" placeholder="Enter Request Title" required="true">
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-2">Description</label>
-                            <div class="col-sm-10">
-                                {% if projectDetails and projectDetails.projectId %}
-                                    <textarea name="description" class="form-control"
-                                              required="true">{{ projectDetails.projectDescription }} </textarea>
-                                {%  else %}
-                                <textarea name="description" type="text" class="form-control" placeholder="Enter Request Description" required="true"></textarea>
-                                {% endif %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">Description *</label>
+                                <div class="col-sm-10">
+                                    {% if projectDetails and projectDetails.projectId %}
+                                        <textarea name="description" class="form-control"
+                                                  required="true">{{ projectDetails.projectDescription }} </textarea>
+                                    {%  else %}
+                                    <textarea name="description" type="text" class="form-control" placeholder="Enter Request Description" required="true"></textarea>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-2">Keywords</label>
-                            <div class="col-sm-10">
-                                {% if projectDetails and projectDetails.projectId %}
-                                    <input name="keywords" class="form-control" type="text" value="{{ projectDetails.keywords }}">
-                                {%  else %}
-                                    <input name="keywords" class="form-control" type="text" placeholder="Keywords">
-                                {% endif %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">Keywords</label>
+                                <div class="col-sm-10">
+                                    {% if projectDetails and projectDetails.projectId %}
+                                        <input name="keywords" class="form-control" type="text" value="{{ projectDetails.keywords }}">
+                                    {%  else %}
+                                        <input name="keywords" class="form-control" type="text" placeholder="Keywords">
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <label class="control-label col-sm-2">Disk usage per job</label>
-                            <div class="col-sm-10">
-                                {% if projectDetails and projectDetails.projectId %}
-                                    <input type="text" class="form-control" name="diskUsage" value="{{ projectDetails.diskUsageRangePerJob }}">
-                                {%  else %}
-                                    <input type="text" class="form-control" name="diskUsage" placeholder="Enter Disk Usage per Job in MBs">
-                                {% endif %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">Disk usage per job</label>
+                                <div class="col-sm-10">
+                                    {% if projectDetails and projectDetails.projectId %}
+                                        <input type="text" class="form-control" name="diskUsage" value="{{ projectDetails.diskUsageRangePerJob }}">
+                                    {%  else %}
+                                        <input type="text" class="form-control" name="diskUsage" placeholder="Enter Disk Usage per Job in MBs">
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-2">Max Memory per CPU</label>
-                            <div class="col-sm-10">
-                                {% if projectDetails and projectDetails.projectId %}
-                                    <input type="number" min="0" class="form-control" name="memorycpu"
-                                       value="{{ projectDetails.maxMemoryPerCpu }}">
-                                {%  else %}
-                                    <input type="number" min="0" class="form-control"  name="memorycpu" placeholder="Enter Max Memory per CPU in MBs">
-                                {% endif %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">Max Memory per CPU</label>
+                                <div class="col-sm-10">
+                                    {% if projectDetails and projectDetails.projectId %}
+                                        <input type="number" min="0" class="form-control" name="memorycpu"
+                                           value="{{ projectDetails.maxMemoryPerCpu }}">
+                                    {%  else %}
+                                        <input type="number" min="0" class="form-control"  name="memorycpu" placeholder="Enter Max Memory per CPU in MBs">
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-2">Number of CPUs per job</label>
-                            <div class="col-sm-10">
-                                {% if projectDetails and projectDetails.projectId %}
-                                    <input type="number" min="0" class="form-control" name="cpuPerJob"
-                                           value="{{ projectDetails.numberOfCpuPerJob}}">
-                                {%  else %}
-                                    <input type="number" min="0" class="form-control" name="cpuPerJob"
-                                           placeholder="Enter Number of CPUs per job in Node hours">
-                                {% endif %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">Number of CPUs per job</label>
+                                <div class="col-sm-10">
+                                    {% if projectDetails and projectDetails.projectId %}
+                                        <input type="number" min="0" class="form-control" name="cpuPerJob"
+                                               value="{{ projectDetails.numberOfCpuPerJob}}">
+                                    {%  else %}
+                                        <input type="number" min="0" class="form-control" name="cpuPerJob"
+                                               placeholder="Enter Number of CPUs per job in Node hours">
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-2">Typical SU per Job</label>
-                            <div class="col-sm-10">
-                                {% if projectDetails and projectDetails.projectId %}
-                                    <input type="number" min="0" class="form-control" name="typicalSu"
-                                           value="{{ projectDetails.typicalSuPerJob}}">
-                                {%  else %}
-                                    <input type="number" min="0" class="form-control"  name="typicalSu"
-                                           placeholder="Enter Typical SU per Job in Node hours">
-                                {% endif %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">Typical SU per Job</label>
+                                <div class="col-sm-10">
+                                    {% if projectDetails and projectDetails.projectId %}
+                                        <input type="number" min="0" class="form-control" name="typicalSu"
+                                               value="{{ projectDetails.typicalSuPerJob}}">
+                                    {%  else %}
+                                        <input type="number" min="0" class="form-control"  name="typicalSu"
+                                               placeholder="Enter Typical SU per Job in Node hours">
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <label class="control-label col-sm-2">Additional Comments</label>
-                            <div class="col-sm-10">
-                                {% if projectDetails and projectDetails.projectId %}
-                                    <input type="text" class="form-control" name="comments" class="comments"
-                                       value="{{projectDetails.comments}}">
-                                {%  else %}
-                                    <input type="text" class="form-control" name="comments" class="comments"
-                                       placeholder="Enter additional comments specifying things like workflows,data integration">
-                                {% endif %}
+                            <div class="form-group">
+                                <label class="control-label col-sm-2">Additional Comments</label>
+                                <div class="col-sm-10">
+                                    {% if projectDetails and projectDetails.projectId %}
+                                        <input type="text" class="form-control" name="comments" class="comments"
+                                           value="{{projectDetails.comments}}">
+                                    {%  else %}
+                                        <input type="text" class="form-control" name="comments" class="comments"
+                                           placeholder="Enter additional comments specifying things like workflows,data integration">
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-sm-2" for="uploadFile">Relevant Documents</label>
-                            <div class="col-sm-10">
-                                <input name="uploadFile" id="uploadFile" type="file" class="file" data-preview-file-type="text">
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="uploadFile">Relevant Documents</label>
+                                <div class="col-sm-10">
+                                    <input name="uploadFile" id="uploadFile" type="file" class="file" data-preview-file-type="text">
+                                </div>
                             </div>
-                        </div>
 
-                        <div id="divSpecificResource">
-                           {% for projectSpecificDetail in projectSpecificDetails %}
-                                <hr>
-                                <h4>Specific Resource {{forloop.counter}}</h4>
-                                <div class="form-group">
-                                        <label class="control-label col-sm-2" for="application">Applications to be used</label>
+                            <div id="divSpecificResource">
+                               {% for projectSpecificDetail in projectSpecificDetails %}
+                                    <hr>
+                                    <h4>Specific Resource {{forloop.counter}}</h4>
+                                    <div class="form-group">
+                                            <label class="control-label col-sm-2" for="application">Applications to be used</label>
+                                            <div class="col-sm-10">
+                {#                                  <PLACEHOLDER options #}
+                                                <select id ="application" onchange="getApplicationDeployments(this)" name="application{{forloop.counter}}" data-style="btn-primary" data-live-search="true" >
+                                                     {% for app in applications %}
+                                                        <option value="{{ app.appModuleId }}" {% if app.appModuleId in projectSpecificDetail.applicationsToBeUsed %}selected {% endif %}>{{ app.appModuleName }}</optionvalue>
+                                                    {% endfor %}
+                                                    
+                                                </select>
+                {#                                    <input type="text" class="form-control "placeholder="Other">#}
+                                            </div>
+                </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2" for="resourceType">Resource Type</label>
                                         <div class="col-sm-10">
-            {#                                  <PLACEHOLDER options #}
-                                            <select id ="application" name="application{{forloop.counter}}" class="selectpicker" data-style="btn-primary" data-live-search="true" multiple>
-                                                 <optgroup label="Web">
-                                                    <option {% if "PHP" in projectSpecificDetail.applicationsToBeUsed %}selected {% endif %}>PHP</option>
-                                                    <option {% if "CSS" in projectSpecificDetail.applicationsToBeUsed %}selected {% endif %}>CSS</option>
-                                                    <option {% if "HTML" in projectSpecificDetail.applicationsToBeUsed %}selected {% endif %}>HTML</option>
-                                                    <option {% if "Bootstrap" in projectSpecificDetail.applicationsToBeUsed %}selected {% endif %}>Bootstrap</option>
-                                                </optgroup>
-                                                <optgroup label="Programming">
-                                                  <option {% if "Java" in projectSpecificDetail.applicationsToBeUsed %}selected {% endif %}>Java</option>
-                                                  <option {% if "C#" in projectSpecificDetail.applicationsToBeUsed %}selected {% endif %}>C#</option>
-                                                  <option {% if "Python" in projectSpecificDetail.applicationsToBeUsed %}selected {% endif %}>Python</option>
-                                                </optgroup>
-                                            </select>
-            {#                                    <input type="text" class="form-control "placeholder="Other">#}
+                {#                                  <PLACEHOLDER options #}
+                                            <select id="resourceType" name="resourceType" data-style="btn-primary" data-live-search="true">
+                                              <option {% if projectSpecificDetail.resourceType == "On-Demand" %}selected {% endif %} >On-Demand</option>
+                                              <option {% if projectSpecificDetail.resourceType == "Large Memory" %}selected {% endif %} >Large Memory</option>
+                                              <option {% if projectSpecificDetail.resourceType == "GPUs" %}selected {% endif %} >GPUs</option>
+                                             </select>
+                {#                                    <input type="text" class="form-control "placeholder="Other">#}
                                         </div>
-            </div>
-                                <div class="form-group">
-                                    <label class="control-label col-sm-2 app">Total Allocation Requested</label>
-                                    <div class="col-sm-10">
-                                        {% if projectDetails and projectDetails.projectId %}
-                                            <input required type="text" class="form-control" name="allocation"
-                                                   value="{{ projectSpecificDetail.requestedServiceUnits }}">
-                                        {%  else %}
-                                            <input required type="text" class="form-control" name="allocation"
-                                                   placeholder="Enter Requested Allocation">
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-sm-2">Specific Resources</label>
-                                    <div class="col-sm-10">
-                                        {% if projectDetails and projectDetails.projectId %}
-                                            <input type="text" class="form-control" name="specificResources"
-                                                   value="{{ projectSpecificDetail.specificResource }}">
-                                        {%  else %}
-                                            <input type="text" class="form-control" name="specificResources"
-                                                   placeholder="Enter Specific Resources">
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-sm-2" for="resourceType">Resource Type</label>
-                                    <div class="col-sm-10">
-            {#                                  <PLACEHOLDER options #}
-                                        <select id="resourceType" name="resourceType" class="selectpicker" data-style="btn-primary" data-live-search="true">
-                                          <option {% if projectSpecificDetail.resourceType == "On-Demand" %}selected {% endif %} >On-Demand</option>
-                                          <option {% if projectSpecificDetail.resourceType == "Large Memory" %}selected {% endif %} >Large Memory</option>
-                                          <option {% if projectSpecificDetail.resourceType == "GPUs" %}selected {% endif %} >GPUs</option>
-                                         </select>
-            {#                                    <input type="text" class="form-control "placeholder="Other">#}
-                                    </div>
-                               </div>
+                                   </div>
 
-                                <div class="form-group">
-                                        <label class="control-label col-sm-2">Sub Status</label>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">Specific Resources *</label>
+                                        <div class="col-sm-10">
+                                            {% if projectDetails and projectDetails.projectId %}
+                                                <input required type="text" class="form-control" name="specificResources"
+                                                       value="{{ projectSpecificDetail.specificResource }}">
+                                            {%  else %}
+                                                <input required type="text" class="form-control" name="specificResources"
+                                                       placeholder="Enter Specific Resources">
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2 app">Total Allocation Requested *</label>
+                                        <div class="col-sm-10">
+                                            {% if projectDetails and projectDetails.projectId %}
+                                                <input required type="text" class="form-control" name="allocation"
+                                                       value="{{ projectSpecificDetail.requestedServiceUnits }}">
+                                            {%  else %}
+                                                <input required type="text" class="form-control" name="allocation"
+                                                       placeholder="Enter Requested Allocation">
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                            <label class="control-label col-sm-2">Sub Status</label>
+                                            <div class="col-sm-10">
+                                                {% if projectDetails and projectDetails.projectId %}
+                                                 <input type="text" readonly class="form-control"
+                                                           value="{{ projectSpecificDetail.subStatus}}">
+                                                {% endif %}
+                                            </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-2">Current Allocation Units</label>
                                         <div class="col-sm-10">
                                             {% if projectDetails and projectDetails.projectId %}
                                              <input type="text" readonly class="form-control"
-                                                       value="{{ projectSpecificDetail.subStatus}}">
+                                                       value="{{ projectSpecificDetail.usedServiceUnits}}">
                                             {% endif %}
                                         </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-sm-2">Current Allocation Units</label>
-                                    <div class="col-sm-10">
-                                        {% if projectDetails and projectDetails.projectId %}
-                                         <input type="text" readonly class="form-control"
-                                                   value="{{ projectSpecificDetail.usedServiceUnits}}">
-                                        {% endif %}
                                     </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-
-                        <input type="button" class="btn btn-success btn-xs" onclick="addSpecificResource()" value="Add Specific Resource">
-<br/><br/>
-                        <div class="form-group">
-                            <div class="col-sm-offset-2 col-sm-10">
-                                 {% if projectDetails.allocationStatus is None %}
-                                    <button type="submit" class="btn btn-success btn-lg">Submit</button>
-                                {%  else %}
-                                     <button  {% ifnotequal projectDetails.allocationStatus "PENDING" %}
-                                disabled {% endifnotequal %} type="submit" class="btn btn-success">Submit</button>
-                                {% endif %}
+                                {% endfor %}
                             </div>
-                        </div>
-                    </form>
 
-<div class="emptySpecRes" style="display: none;">
-    <hr>
-    <h4>Specific Resource </h4>
-    <div class="form-group">
-            <label class="control-label col-sm-2" for="app">Applications to be used</label>
+                            <input type="button" class="btn btn-success btn-xs" onclick="addSpecificResource()" value="Add resource to the request">
+    <br/><br/>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                     {% if projectDetails.allocationStatus is None %}
+                                        <button type="submit" class="btn btn-success btn-lg">Submit</button>
+                                    {%  else %}
+                                         <button  {% ifnotequal projectDetails.allocationStatus "PENDING" %}
+                                    disabled {% endifnotequal %} type="submit" class="btn btn-success">Submit</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </form>
+
+    <div class="emptySpecRes" style="display: none;">
+
+        <hr>
+        <h4>Specific Resource </h4>
+        <div class="form-group">
+                <label class="control-label col-sm-2" for="app">Applications to be used</label>
+                <div class="col-sm-10">
+    {#                                  <PLACEHOLDER options #}
+                    <select id="app" name="application" data-style="btn-primary" data-live-search="true">
+                        {% for app in applications %}
+                                            <option value="{{ app.appModuleId }}">{{ app.appModuleName }}</option>
+                        {% endfor %}
+                    </select>
+    {#                                    <input type="text" class="form-control "placeholder="Other">#}
+                </div>
+    </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="res">Resource Type</label>
             <div class="col-sm-10">
-{#                                  <PLACEHOLDER options #}
-                <select id="app" name="application" class="selectpicker" data-style="btn-primary" data-live-search="true" multiple>
-                     <optgroup label="Web">
-                        <option value="php">PHP</option>
-                        <option value="css">CSS</option>
-                        <option value="html">HTML</option>
-                        <option value="bs">Bootstrap</option>
-                    </optgroup>
-                    <optgroup label="Programming">
-                      <option value="java">Java</option>
-                      <option value="c">C#</option>
-                      <option value="py">Python</option>
-                    </optgroup>
-                </select>
-{#                                    <input type="text" class="form-control "placeholder="Other">#}
+    {#          <PLACEHOLDER options #}
+                <select id ="res" name="resourceType" data-style="btn-primary" data-live-search="true">
+                  <option value="On-Demand">On-Demand</option>
+                  <option value="Large Memory">Large Memory</option>
+                  <option value="GPUs">GPUs</option>
+                 </select>
+    {#           <input type="text" class="form-control "placeholder="Other">#}
             </div>
-</div>
-    <div class="form-group">
-        <label class="control-label col-sm-2 app">Total Allocation Requested</label>
-        <div class="col-sm-10">
-            <input type="text" class="form-control" name="allocation"
-                   placeholder="Enter Requested Allocation">
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-sm-2">Specific Resources *</label>
+            <div class="col-sm-10">
+                <input required type="text" class="form-control" name="specificResources"
+                           placeholder="Enter Specific Resources">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2 app">Total Allocation Requested *</label>
+            <div class="col-sm-10">
+                <input required type="text" class="form-control" name="allocation"
+                       placeholder="Enter Requested Allocation">
+            </div>
         </div>
     </div>
-    <div class="form-group">
-        <label class="control-label col-sm-2">Specific Resources</label>
-        <div class="col-sm-10">
-            <input type="text" class="form-control" name="specificResources"
-                       placeholder="Enter Specific Resources">
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="control-label col-sm-2" for="res">Resource Type</label>
-        <div class="col-sm-10">
-{#          <PLACEHOLDER options #}
-            <select id ="res" name="resourceType" class="selectpicker" data-style="btn-primary" data-live-search="true">
-              <option value="On-Demand">On-Demand</option>
-              <option value="Large Memory">Large Memory</option>
-              <option value="GPUs">GPUs</option>
-             </select>
-{#           <input type="text" class="form-control "placeholder="Other">#}
-        </div>
-    </div>
-</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+    {% endif %}
+
 {% endblock %}
+
+<div class="modal fade" id="alertBox" role="dialog">
+                    <div class="modal-dialog modal-sm">
+                      <div class="modal-content">
+                        <div class="modal-header">
+
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title">Request already exists</h4>
+
+                        </div>
+                        <div class="modal-body">
+                            <p>Request already exists, please create a supplement request</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>

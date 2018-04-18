@@ -5,13 +5,9 @@ app_name ='dashboard'
 
 urlpatterns = [
     # /dashboard/
-    # url(r'^$', views.index, name='index'),
-    #url(r'^$', views.IndexView.as_view(), name='index'),
-
     url(r'^$', views.index, name="index"),
     # /dashboard/reviewer
    url(r'^reviewer/$', views.ReviewerView, name='reviewer'),
-
 
     # /dashboard/admin
     url(r'^admin/$', views.admin, name='admin'),
@@ -24,4 +20,7 @@ urlpatterns = [
 
     # /dashboard/request/add
     url(r'^request/add/$', views.requestCreate, name='request-add'),
+
+    #/dashboard/unauthorized
+    url(r'^unauthorized/$', views.unauthorized, name='unauthorized'),
 ]

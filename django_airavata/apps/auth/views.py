@@ -7,7 +7,7 @@ from django.urls import reverse
 from requests_oauthlib import OAuth2Session
 
 import logging
-import urllib.parse
+from urllib.parse import quote
 
 logger = logging.getLogger(__name__)
 
