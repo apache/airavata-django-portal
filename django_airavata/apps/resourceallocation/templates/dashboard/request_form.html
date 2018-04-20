@@ -9,19 +9,27 @@
 <script>
 
     function getApplicationDeployments(e){
-        var allDeployments = "{{all_deployments}}";
+        var allDeployments = "{{all_deployments|escapejs}}";
+        allDeployments = JSON.parse(allDeployments);
 
         var appDeployments = []
         var selectedAppId = e.value;
+        var specResDdl = e.parentElement.parentElement.nextElementSibling.nextElementSibling.firstElementChild.nextElementSibling.firstElementChild;
+
+        //Empty the specific resource dropdown
+        $(specResDdl).empty();
+
         for (var key in allDeployments) {
             if(allDeployments[key].appModuleId == selectedAppId){
-                appDeployments=allDeployments[key];
+                appDeployments.push(allDeployments[key]);
+                appDeployId = allDeployments[key].appDeploymentId.split('_')[0];
+                //Bind the specific resource ddl;
+                $(specResDdl)
+                .append('<option value=' + appDeployId + '>' + appDeployId + '</option>');
             }
         }
-
-        alert(appDeployments)
     }
-    
+
     function addSpecificResource(){
         var currCount = $('.app').length;
         var newElement = $("div.emptySpecRes").html().replace('Specific Resource','Specific Resource '+ currCount)
@@ -175,11 +183,16 @@
                                         <label class="control-label col-sm-2">Specific Resources *</label>
                                         <div class="col-sm-10">
                                             {% if projectDetails and projectDetails.projectId %}
-                                                <input required type="text" class="form-control" name="specificResources"
-                                                       value="{{ projectSpecificDetail.specificResource }}">
+                                            {% load my_templatetag %}
+                                             <select class="specRes" name="specificResources" data-style="btn-primary" data-live-search="true">
+                                                 {% for dep in allDeploys%}
+                                                     {% if dep.appModuleId == projectSpecificDetail.applicationsToBeUsed %}
+                                                        <option value="{{ dep.appDeploymentId }}" {% if projectSpecificDetail.specificResource == dep.appDeploymentId %}selected {% endif %} >{{ dep.appDeploymentId|split }}</option>
+                                                     {% endif %}
+                                                 {% endfor%}
+                                             </select>
                                             {%  else %}
-                                                <input required type="text" class="form-control" name="specificResources"
-                                                       placeholder="Enter Specific Resources">
+                                                <select class="specRes" name="specificResources" data-style="btn-primary" data-live-search="true"></select>
                                             {% endif %}
                                         </div>
                                     </div>
@@ -222,7 +235,7 @@
     <br/><br/>
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-10">
-                                     {% if projectDetails.allocationStatus is None %}
+                                    {% if projectDetails.allocationStatus is None %}
                                         <button type="submit" class="btn btn-success btn-lg">Submit</button>
                                     {%  else %}
                                          <button  {% ifnotequal projectDetails.allocationStatus "PENDING" %}
@@ -239,13 +252,14 @@
         <div class="form-group">
                 <label class="control-label col-sm-2" for="app">Applications to be used</label>
                 <div class="col-sm-10">
-    {#                                  <PLACEHOLDER options #}
-                    <select id="app" name="application" data-style="btn-primary" data-live-search="true">
+    {# <PLACEHOLDER options #}
+                    <select id="app" onchange="getApplicationDeployments(this)" name="application" data-style="btn-primary" data-live-search="true">
+                        <option >--Select Application to use--</option>
                         {% for app in applications %}
-                                            <option value="{{ app.appModuleId }}">{{ app.appModuleName }}</option>
+                          <option value="{{ app.appModuleId }}">{{ app.appModuleName }}</option>
                         {% endfor %}
                     </select>
-    {#                                    <input type="text" class="form-control "placeholder="Other">#}
+    {# <input type="text" class="form-control "placeholder="Other">#}
                 </div>
     </div>
 
@@ -265,8 +279,9 @@
         <div class="form-group">
             <label class="control-label col-sm-2">Specific Resources *</label>
             <div class="col-sm-10">
-                <input required type="text" class="form-control" name="specificResources"
-                           placeholder="Enter Specific Resources">
+                <select class="specRes" name="specificResources" data-style="btn-primary" data-live-search="true">
+                    <option >--Select the specific Resource--</option>
+                </select>
             </div>
         </div>
         <div class="form-group">

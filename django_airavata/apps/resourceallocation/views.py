@@ -224,21 +224,8 @@ def requestCreate(request):
         all_deployments = request.airavata_client.getAllApplicationDeployments(authz_token, settings.GATEWAY_ID)
         serializer = serializers.ApplicationDeploymentDescriptionSerializer(all_deployments, many=True,
                                                                           context={'request': request})
-        #
-        # print('####')
-        # all_deployments = json.dumps(serializer.data,separators=(',', ':'))
-        # print(all_deployments)
-        A = []
-        B = []
-        appDeploymentList = []
-        for dep in all_deployments:
-            deployment = []
-            deployment.append(dep.appDeploymentId)
-            deployment.append(dep.appModuleId)
-            appDeploymentList.append(deployment)
 
-        print(appDeploymentList)
-            #A.append(dep.appDeploymentId)
+        all_deployments = json.dumps(serializer.data)
         reqSpecificList = []
         '''Get the project details for an existing request'''
         if(projectId is not None):
@@ -301,7 +288,8 @@ def requestCreate(request):
             canSubmit = request.allocation_manager_client.canSubmitRequest(authz_token, loggedinUser)
             return render(request, 'dashboard/request_form.html',
                           {'projectDetails': projectDetails,'projectSpecificDetails':userSpecificDetails,
-                           'canSubmit': canSubmit, 'projectId':projectId,'applications':applications,'all_deployments':appDeploymentList})
+                           'canSubmit': canSubmit, 'projectId':projectId,'applications':applications,
+                           'all_deployments':all_deployments, 'allDeploys':serializer.data})
     except Exception as e:
         logger.exception("Failed to load resource allocation details")
         return redirect('/resourceallocation')
