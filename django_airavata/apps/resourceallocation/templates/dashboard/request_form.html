@@ -38,9 +38,10 @@
 }
 </script>
     {% if not projectId and not canSubmit %}
-        <div>
-            <h3>Request for this user already exists, please add a new Specific resource in the edit option</h3>
-        </div>
+        <div class="container-fluid">
+             <h1 style="background-color: #337ab7;color:white;text-align: center;"> Request already exists</h1>
+             <p style="font-size: 20px;text-align: center;">Request for this user already exists, please add a new Specific resource in the edit option</p>
+         </div>
     {% else %}
         <div class="container-fluid">
         <h2>New Request</h2>

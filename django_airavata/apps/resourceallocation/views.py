@@ -231,6 +231,8 @@ def requestCreate(request):
         if(projectId is not None):
             projectDetails = request.allocation_manager_client.getAllocationRequest(authz_token,int(projectId))
             userSpecificDetails = request.allocation_manager_client.getUserSpecificResource(authz_token, int(projectId))
+            if(loggedinUser != projectDetails.username):
+                return redirect('/resourceallocation')
 
         if(request.method=='POST'):
             reqObj = UserAllocationDetail();
