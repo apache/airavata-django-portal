@@ -39,12 +39,16 @@
 </script>
     {% if not projectId and not canSubmit %}
         <div class="container-fluid">
-             <h1 style="background-color: #337ab7;color:white;text-align: center;"> Request already exists</h1>
-             <p style="font-size: 20px;text-align: center;">Request for this user already exists, please add a new Specific resource in the edit option</p>
+             <h1 style="background-color: #337ab7;color:white;text-align: center;"> Request Exists</h1>
+            <p style="font-size: 20px;text-align: center;">Request for this user already exists! <br/>Please use the <i><b>'Add resource to the request'</b></i> feature in the request edit option for any additional requests.</p>
          </div>
     {% else %}
         <div class="container-fluid">
-        <h2>New Request</h2>
+        {% if not projectId%}
+            <h2>New Request</h2>
+        {% else %}
+            <h2>Edit Request</h2>
+        {% endif %}
         <div class="row">
             <div class="col-sm-12 col-md-7">
                 <div class="panel panel-default">
@@ -88,9 +92,9 @@
                                 <label class="control-label col-sm-2">Disk usage per job</label>
                                 <div class="col-sm-10">
                                     {% if projectDetails and projectDetails.projectId %}
-                                        <input type="text" class="form-control" name="diskUsage" value="{{ projectDetails.diskUsageRangePerJob }}">
+                                        <input type="number" class="form-control" name="diskUsage" value="{{ projectDetails.diskUsageRangePerJob }}">
                                     {%  else %}
-                                        <input type="text" class="form-control" name="diskUsage" placeholder="Enter Disk Usage per Job in MBs">
+                                        <input type="number" class="form-control" name="diskUsage" placeholder="Enter Disk Usage per Job in MBs">
                                     {% endif %}
                                 </div>
                             </div>
@@ -188,7 +192,7 @@
                                              <select class="specRes" name="specificResources" data-style="btn-primary" data-live-search="true">
                                                  {% for dep in allDeploys%}
                                                      {% if dep.appModuleId == projectSpecificDetail.applicationsToBeUsed %}
-                                                        <option value="{{ dep.appDeploymentId }}" {% if projectSpecificDetail.specificResource == dep.appDeploymentId %}selected {% endif %} >{{ dep.appDeploymentId|split }}</option>
+                                                        <option value="{{ dep.appDeploymentId|split }}" {% if projectSpecificDetail.specificResource == dep.appDeploymentId|split %}selected {% endif %} >{{ dep.appDeploymentId|split }}</option>
                                                      {% endif %}
                                                  {% endfor%}
                                              </select>
@@ -202,10 +206,10 @@
                                         <label class="control-label col-sm-2 app">Total Allocation Requested *</label>
                                         <div class="col-sm-10">
                                             {% if projectDetails and projectDetails.projectId %}
-                                                <input required type="text" class="form-control" name="allocation"
+                                                <input required type="number" class="form-control" name="allocation"
                                                        value="{{ projectSpecificDetail.requestedServiceUnits }}">
                                             {%  else %}
-                                                <input required type="text" class="form-control" name="allocation"
+                                                <input required type="number" class="form-control" name="allocation"
                                                        placeholder="Enter Requested Allocation">
                                             {% endif %}
                                         </div>
@@ -235,12 +239,12 @@
                             <input type="button" class="btn btn-success btn-xs" onclick="addSpecificResource()" value="Add resource to the request">
     <br/><br/>
                             <div class="form-group">
-                                <div class="col-sm-offset-2 col-sm-10">
+                                <div style="width: 100%; display: flex; align-items: center; justify-content: center;">
                                     {% if projectDetails.allocationStatus is None %}
-                                        <button type="submit" class="btn btn-success btn-lg">Submit</button>
+                                        <button type="submit" class="btn btn-success btn-lg">Save the request</button>
                                     {%  else %}
                                          <button  {% ifnotequal projectDetails.allocationStatus "PENDING" %}
-                                    disabled {% endifnotequal %} type="submit" class="btn btn-success">Submit</button>
+                                    disabled {% endifnotequal %} type="submit" class="btn btn-success">Save the request</button>
                                     {% endif %}
                                 </div>
                             </div>
@@ -288,7 +292,7 @@
         <div class="form-group">
             <label class="control-label col-sm-2 app">Total Allocation Requested *</label>
             <div class="col-sm-10">
-                <input required type="text" class="form-control" name="allocation"
+                <input required type="number" class="form-control" name="allocation"
                        placeholder="Enter Requested Allocation">
             </div>
         </div>

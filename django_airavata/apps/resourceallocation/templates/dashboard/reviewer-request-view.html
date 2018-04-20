@@ -1,5 +1,5 @@
 {% extends 'dashboard/base.html' %}
-{% block title %} Allocation Manager - Admin{% endblock %}
+{% block title %} Allocation Manager - Reviewer View{% endblock %}
 {% block body %}
 
     <!-- All Requests-->
@@ -82,7 +82,7 @@
             {#                                  <PLACEHOLDER options #}
                                             <select disabled id ="application" class="selectpicker" data-style="btn-primary" data-live-search="true" multiple>
                                                 {% for app in applications %}
-                                                    <option {% if app.appModuleId in projectSpecificDetail.applicationsToBeUsed %}selected {% endif %}>{{ app.appModuleName }}</option>
+                                                  <option value="{{ app.appModuleId }}" {% if app.appModuleId in projectSpecificDetail.applicationsToBeUsed %}selected {% endif %}>{{ app.appModuleName }}</option>
                                                 {% endfor %}
                                             </select>
             {#                                    <input type="text" class="form-control "placeholder="Other">#}
@@ -105,8 +105,17 @@
                                 <div class="form-group">
                                     <label class="control-label col-sm-2">Specific Resources</label>
                                     <div class="col-sm-10">
-                                            <input readonly type="text" class="form-control"
-                                                   value="{{ projectSpecificDetail.specificResource }}">
+            {#                                  <PLACEHOLDER options #}
+                                        <select disabled class="specRes selectpicker" name="specificResources" data-style="btn-primary" data-live-search="true">
+                                                 <option>Nothing Selected</option>
+                                                 {% load my_templatetag %}
+                                                 {% for dep in allDeploys%}
+                                                     {% if dep.appModuleId == projectSpecificDetail.applicationsToBeUsed %}
+                                                        <option value="{{ dep.appDeploymentId|split }}" {% if projectSpecificDetail.specificResource == dep.appDeploymentId|split %}selected {% endif %} >{{ dep.appDeploymentId|split }}</option>
+                                                     {% endif %}
+                                                 {% endfor%}
+                                        </select>
+             {#                            <input type="text" class="form-control "placeholder="Other">#}
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -124,49 +133,14 @@
                                         <label class="control-label col-sm-2" for="application">Applications to be used</label>
                                         <div class="col-sm-10">
             {#                                  <PLACEHOLDER options #}
-                                            <select id ="application" name="application{{forloop.counter}}" class="selectpicker" data-style="btn-primary" data-live-search="true" multiple>
-                                                 <optgroup label="Web">
-                                                     {% load my_templatetag %}
-                                                    {% if reviewerSpecificDetailsList and reviewerSpecificDetailsList|index:forloop.counter0 and "PHP" in reviewerSpecificDetailsList|index:forloop.counter0|getApplicationsToBeUsed %}
-                                                       <option selected="selected">PHP</option>
-                                                        {%  else %}
-                                                        <option >PHP</option>
-                                                    {% endif %}
-                                                     {% if reviewerSpecificDetailsList and reviewerSpecificDetailsList|index:forloop.counter0 and "CSS" in reviewerSpecificDetailsList|index:forloop.counter0|getApplicationsToBeUsed %}
-                                                       <option selected="selected">CSS</option>
-                                                        {%  else %}
-                                                        <option >CSS</option>
-                                                    {% endif %}
-                                                     {% if reviewerSpecificDetailsList and reviewerSpecificDetailsList|index:forloop.counter0 and "HTML" in reviewerSpecificDetailsList|index:forloop.counter0|getApplicationsToBeUsed %}
-                                                       <option selected="selected">HTML</option>
-                                                        {%  else %}
-                                                        <option >HTML</option>
-                                                    {% endif %}
-                                                     {% if reviewerSpecificDetailsList and reviewerSpecificDetailsList|index:forloop.counter0 and "Bootstrap" in reviewerSpecificDetailsList|index:forloop.counter0|getApplicationsToBeUsed %}
-                                                       <option selected="selected">Bootstrap</option>
-                                                        {%  else %}
-                                                        <option >Bootstrap</option>
-                                                    {% endif %}
-                                                </optgroup>
-                                                <optgroup label="Programming">
-                                                    {% if reviewerSpecificDetailsList and reviewerSpecificDetailsList|index:forloop.counter0 and "Java" in reviewerSpecificDetailsList|index:forloop.counter0|getApplicationsToBeUsed %}
-                                                       <option selected="selected">Java</option>
-                                                        {%  else %}
-                                                        <option >Java</option>
-                                                    {% endif %}
-                                                {% if reviewerSpecificDetailsList and reviewerSpecificDetailsList|index:forloop.counter0 and "C#" in reviewerSpecificDetailsList|index:forloop.counter0|getApplicationsToBeUsed %}
-                                                       <option selected="selected">C#</option>
-                                                        {%  else %}
-                                                        <option >C#</option>
-                                                    {% endif %}
-                                                {% if reviewerSpecificDetailsList and reviewerSpecificDetailsList|index:forloop.counter0 and "Python" in reviewerSpecificDetailsList|index:forloop.counter0|getApplicationsToBeUsed %}
-                                                       <option selected="selected">Python</option>
-                                                        {%  else %}
-                                                        <option >Python</option>
-                                                    {% endif %}
-                                                </optgroup>
+                                            <select disabled id ="application" name="application{{forloop.counter}}" class="selectpicker" data-style="btn-primary" data-live-search="true">
+                                                    <option>Nothing Selected</option>
+                                                     {% for app in applications %}
+                                                     <option value="{{ app.appModuleId }}" {% if app.appModuleId in projectSpecificDetail.applicationsToBeUsed %}selected {% endif %}>{{ app.appModuleName }}</option>
+                                                    {% endfor %}
                                             </select>
             {#                                    <input type="text" class="form-control "placeholder="Other">#}
+                                            <input type="hidden" name="application{{forloop.counter}}" value="{{ projectSpecificDetail.applicationsToBeUsed }}" />
                                         </div>
             </div>
                           <div class="form-group">
@@ -199,8 +173,19 @@
                              <div class="form-group">
                                     <label class="control-label col-sm-2">Specific Resources</label>
                                     <div class="col-sm-10">
-                                            <input readonly type="text" name="specificResources" class="form-control"
-                                                   value="{{ projectSpecificDetail.specificResource }}">
+                                        {#                                  <PLACEHOLDER options #}
+                                        <select disabled class="specRes selectpicker" name="specificResources" data-style="btn-primary" data-live-search="true">
+                                                 <option>Nothing Selected</option>
+                                                 {% load my_templatetag %}
+                                                 {% for dep in allDeploys%}
+                                                     {% if dep.appModuleId == projectSpecificDetail.applicationsToBeUsed %}
+                                                        <option value="{{ dep.appDeploymentId|split }}" {% if projectSpecificDetail.specificResource == dep.appDeploymentId|split %}selected {% endif %} >{{ dep.appDeploymentId|split }}</option>
+                                                     {% endif %}
+                                                 {% endfor%}
+                                        </select>
+             {#                            <input type="text" class="form-control "placeholder="Other">#}
+                                            <input type="hidden" name="specificResources" value="{{ projectSpecificDetail.specificResource }}" />
+
                                     </div>
                                 </div>
 
@@ -211,10 +196,10 @@
                                 <div class="col-sm-10">
                                     {% load my_templatetag %}
                                     {% if reviewerSpecificDetailsList and reviewerSpecificDetailsList|index:forloop.counter0 %}
-                                        <input required type="text" class="form-control" name="allocation"
+                                        <input required type="number" class="form-control" name="allocation"
                                                value="{{ reviewerSpecificDetailsList|index:forloop.counter0|getReviewedServiceUnits }}">
                                     {%  else %}
-                                        <input required type="text" class="form-control" name="allocation"
+                                        <input required type="number" class="form-control" name="allocation"
                                                placeholder="Enter Requested Allocation">
                                     {% endif %}
                                 </div>
@@ -241,8 +226,9 @@
             </tbody>
          </table>
 
-        <button type="submit" class="btn btn-block btn-success" >Save</button>
-
+        <div style="width: 100%; display: flex; align-items: center; justify-content: center;">
+            <button type="submit" class="btn btn-lg btn-success">Save the review</button>
+        </div>
             </form>
         <br/>
         <br/>

@@ -10,7 +10,6 @@ from allocation_manager_models.ttypes import ReviewerAllocationDetail
 from allocation_manager_models.ttypes import UserSpecificResourceDetail
 import logging
 from django_airavata.apps.api import serializers
-from django_airavata.apps.api.views import ApplicationModuleViewSet
 logger = logging.getLogger(__name__)
 
 class appDeployment:
@@ -129,61 +128,77 @@ def ReviewerView(request):
 
 @login_required
 def ReviewerRequestView(request):
-    authz_token = request.authz_token
-    loggedinUser = authz_token.claimsMap['userName']
-    projectId = int(request.GET.get('projectId'))
-    reviewerId = loggedinUser
-    reviewerReview = ReviewerAllocationDetail()
-    reviewerSpecificDetailsList = []
-    userSubmittedDetails = request.allocation_manager_client.getAllocationRequest(authz_token,projectId)
-    userSpecificDetailsList = request.allocation_manager_client.getUserSpecificResource(authz_token,projectId)
-    specificDetails = request.allocation_manager_client.getReviewerSpecificResource(authz_token, projectId)
-    reviewsList = request.allocation_manager_client.getAllReviewsForARequest(authz_token,projectId)
-    applications = request.airavata_client.getAllAppModules(authz_token, settings.GATEWAY_ID)
-    print(applications)
-    for review in reviewsList:
-        if(review.username == reviewerId):
-            reviewerReview = review
+    try:
+        authz_token = request.authz_token
+        loggedinUser = authz_token.claimsMap['userName']
+        projectId = int(request.GET.get('projectId'))
+        reviewerId = loggedinUser
+        reviewerReview = ReviewerAllocationDetail()
+        reviewerSpecificDetailsList = []
+        userSubmittedDetails = request.allocation_manager_client.getAllocationRequest(authz_token,projectId)
+        userSpecificDetailsList = request.allocation_manager_client.getUserSpecificResource(authz_token,projectId)
+        specificDetails = request.allocation_manager_client.getReviewerSpecificResource(authz_token, projectId)
+        reviewsList = request.allocation_manager_client.getAllReviewsForARequest(authz_token,projectId)
+        applications = request.airavata_client.getAllAppModules(authz_token, settings.GATEWAY_ID)
+        all_deployments = request.airavata_client.getAllApplicationDeployments(authz_token, settings.GATEWAY_ID)
+        serializer = serializers.ApplicationDeploymentDescriptionSerializer(all_deployments, many=True,
+                                                                              context={'request': request})
 
-    #For extracting reviewer specific resource
-    for review in specificDetails:
-        if(review.username == reviewerId):
-            reviewerSpecificDetailsList.append(review)
+        all_deployments = json.dumps(serializer.data)
 
-    if (request.method == 'POST'):
-        reqObj = ReviewerAllocationDetail()
-        reqObj.projectId = projectId
-        reqObj.reviewDate = int(datetime.datetime.now().strftime("%s")) * 1000
-        if request.POST['diskUsage'] is not '': reqObj.diskUsageRangePerJob = int(request.POST['diskUsage'])
-        if request.POST['maxMemoryPerCpu'] is not '': reqObj.maxMemoryPerCpu = int(request.POST['maxMemoryPerCpu'])
-        if request.POST['numberOfCpuPerJob'] is not '': reqObj.numberOfCpuPerJob = int(request.POST['numberOfCpuPerJob'])
-        if request.POST['typicalSuPerJob'] is not '': reqObj.typicalSuPerJob = int(request.POST['typicalSuPerJob'])
-        reqObj.username = reviewerId
-        request.allocation_manager_client.updateRequestByReviewer(authz_token,reqObj)
-        for i in range(0, len(request.POST.getlist('specificResources'))):
-            reviewerSpecObj = ReviewerSpecificResourceDetail()
-            reviewerSpecObj.projectId = int(projectId)
-            reviewerSpecObj.comments = request.POST.getlist('comments')[i]
-            reviewerSpecObj.applicationsToBeUsed = ",".join(request.POST.getlist('application' + str(i + 1)))
-            if request.POST.getlist('allocation')[i]!='':
-                reviewerSpecObj.reviewedServiceUnits = int(request.POST.getlist('allocation')[i])
-            reviewerSpecObj.resourceType = request.POST.getlist('resourceType')[i]
-            reviewerSpecObj.specificResource = request.POST.getlist('specificResources')[i]
-            reviewerSpecObj.username = reviewerId
-            reviewerSpecificDetailsList.append(reviewerSpecObj)
-        request.allocation_manager_client.updateReviewerSpecificResource(authz_token, int(projectId), reviewerSpecificDetailsList)
+        for review in reviewsList:
+            if(review.username == reviewerId):
+                reviewerReview = review
 
-        return redirect('/resourceallocation/reviewer')
-    return render(request, 'dashboard/reviewer-request-view.html',
-                  {'userSubmittedDetails': userSubmittedDetails,
-                   'reviewerReview': reviewerReview, 'userSpecificDetailsList': userSpecificDetailsList,
-                   'reviewerSpecificDetailsList':reviewerSpecificDetailsList,
-                   'applications': applications})
+        #For extracting reviewer specific resource
+        for review in specificDetails:
+            if(review.username == reviewerId):
+                reviewerSpecificDetailsList.append(review)
+
+        if (request.method == 'POST'):
+            reqObj = ReviewerAllocationDetail()
+            reqObj.projectId = projectId
+            reqObj.reviewDate = int(datetime.datetime.now().strftime("%s")) * 1000
+            if request.POST['diskUsage'] is not '': reqObj.diskUsageRangePerJob = int(request.POST['diskUsage'])
+            if request.POST['maxMemoryPerCpu'] is not '': reqObj.maxMemoryPerCpu = int(request.POST['maxMemoryPerCpu'])
+            if request.POST['numberOfCpuPerJob'] is not '': reqObj.numberOfCpuPerJob = int(request.POST['numberOfCpuPerJob'])
+            if request.POST['typicalSuPerJob'] is not '': reqObj.typicalSuPerJob = int(request.POST['typicalSuPerJob'])
+            reqObj.username = reviewerId
+            request.allocation_manager_client.updateRequestByReviewer(authz_token,reqObj)
+            print("len")
+            print(len(request.POST.getlist('allocation')))
+            for i in range(0, len(request.POST.getlist('allocation'))):
+                print("hey1")
+                reviewerSpecObj = ReviewerSpecificResourceDetail()
+                reviewerSpecObj.projectId = int(projectId)
+                reviewerSpecObj.comments = request.POST.getlist('comments')[i]
+                reviewerSpecObj.applicationsToBeUsed = ",".join(request.POST.getlist('application' + str(i + 1)))
+                print(reviewerSpecObj.applicationsToBeUsed)
+                print("revsu")
+                print(request.POST.getlist('specificResources'))
+                print("wcdasd")
+                if request.POST.getlist('allocation')[i]!='':
+                    reviewerSpecObj.reviewedServiceUnits = int(request.POST.getlist('allocation')[i])
+                reviewerSpecObj.resourceType = request.POST.getlist('resourceType')[i]
+                reviewerSpecObj.specificResource = request.POST.getlist('specificResources')[i]
+                reviewerSpecObj.username = reviewerId
+                reviewerSpecificDetailsList.append(reviewerSpecObj)
+            request.allocation_manager_client.updateReviewerSpecificResource(authz_token, int(projectId), reviewerSpecificDetailsList)
+
+            return redirect('/resourceallocation/reviewer')
+        return render(request, 'dashboard/reviewer-request-view.html',
+                      {'userSubmittedDetails': userSubmittedDetails,
+                       'reviewerReview': reviewerReview, 'userSpecificDetailsList': userSpecificDetailsList,
+                       'reviewerSpecificDetailsList':reviewerSpecificDetailsList,
+                       'applications': applications,'all_deployments':all_deployments,
+                   'allDeploys':serializer.data})
+
+    except Exception as e:
+        logger.exception("Failed to load resource allocation details")
+        return redirect('/resourceallocation')
 
 @login_required
 def index(request):
-
-
     try:
         authz_token = request.authz_token
         loggedinUser = authz_token.claimsMap['userName']
@@ -244,10 +259,10 @@ def requestCreate(request):
             reqObj.requestedDate = int(datetime.datetime.now().strftime("%s"))*1000
             reqObj.projectDescription = request.POST['description']
             reqObj.keywords = request.POST['keywords']
-            reqObj.diskUsageRangePerJob = int(request.POST['diskUsage'])
-            reqObj.maxMemoryPerCpu = int(request.POST['memorycpu'])
-            reqObj.numberOfCpuPerJob = int(request.POST['cpuPerJob'])
-            reqObj.typicalSuPerJob = int(request.POST['typicalSu'])
+            reqObj.diskUsageRangePerJob = int(request.POST['diskUsage'] or 0)
+            reqObj.maxMemoryPerCpu = int(request.POST['memorycpu'] or 0)
+            reqObj.numberOfCpuPerJob = int(request.POST['cpuPerJob'] or 0)
+            reqObj.typicalSuPerJob = int(request.POST['typicalSu'] or 0)
             reqObj.comments = request.POST['comments']
             reqObj.username = loggedinUser
 
