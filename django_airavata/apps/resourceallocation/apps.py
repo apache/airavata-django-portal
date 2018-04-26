@@ -9,6 +9,6 @@ class DashboardConfig(AiravataAppConfig):
     url_home = 'dashboard:index'
     fa_icon_class = 'fa-flask'
     app_description = """
-        Launch applications and manage your experiments and projects.
+        Application for allocating the resource in seagrid.
     """
 

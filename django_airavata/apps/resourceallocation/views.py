@@ -2,6 +2,8 @@ import datetime
 import time
 import json
 from django.shortcuts import render, redirect
+from django.urls import reverse
+
 from airavata.model.security.ttypes import AuthzToken
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
@@ -28,7 +30,7 @@ def admin(request):
         allReviewersList = []
         loggedinUserGroups = getLoggedInRoles(request)
         if('admin' not in loggedinUserGroups):
-            return redirect('/resourceallocation')
+            return redirect(reverse('dashboard:index'))
 
         for reviewer in reviewerGroup.members:
             allReviewersList.append(reviewer.split('@')[0])
@@ -55,7 +57,7 @@ def admin(request):
 
     except Exception as e:
         logger.exception("Failed to load resource allocation details")
-        return redirect('/resourceallocation')
+        return redirect(reverse('dashboard:index'))
 
 @login_required
 def AdminRequestView(request):
@@ -85,20 +87,24 @@ def AdminRequestView(request):
         if (startDate is not None):
             request.allocation_manager_client.approveRequest(authz_token, projectId, loggedinUser, int(startDate),
                                                              int(endDate), int(serviceUnits), specificResource)
-            return redirect('/resourceallocation/admin')
+
+            return redirect(reverse('dashboard:admin'))
         if rejectionReason is not None:
             request.allocation_manager_client.rejectRequest(authz_token, projectId, loggedinUser, rejectionReason,
                                                             specificResource)
-            return redirect('/resourceallocation/admin')
+            return redirect(reverse('dashboard:admin'))
+
         selectedReviewer = request.POST.get('selectedReviewer')
         for review in projectReviewList:
             if (review.username == selectedReviewer):
                 reviewerReview = review
-        print(specificDetails)
         for review in specificDetails:
             if (review.username == selectedReviewer):
                 reviewerSpecificDetailsList.append(review)
+    print("App")
+    print(applications)
 
+    print(reviewerSpecificDetailsList)
     assignedReviewersList = request.allocation_manager_client.getAllAssignedReviewersForRequest(authz_token, projectId)
     return render(request, 'dashboard/admin-request-view.html',
                   {'userSubmittedDetails': userSubmittedDetails,
@@ -116,7 +122,7 @@ def ReviewerView(request):
 
         loggedinUserGroups = getLoggedInRoles(request)
         if ('reviewer' not in loggedinUserGroups):
-            return redirect('/resourceallocation')
+            return redirect(reverse('dashboard:index'))
 
         details = request.allocation_manager_client.getAllRequestsForReviewers(authz_token,loggedinUser)
         return render(request, 'dashboard/reviewer.html', {
@@ -124,7 +130,7 @@ def ReviewerView(request):
         })
     except Exception as e:
         logger.exception("Failed to load resource allocation details")
-        return redirect('/resourceallocation')
+        return redirect(reverse('dashboard:index'))
 
 @login_required
 def ReviewerRequestView(request):
@@ -165,18 +171,11 @@ def ReviewerRequestView(request):
             if request.POST['typicalSuPerJob'] is not '': reqObj.typicalSuPerJob = int(request.POST['typicalSuPerJob'])
             reqObj.username = reviewerId
             request.allocation_manager_client.updateRequestByReviewer(authz_token,reqObj)
-            print("len")
-            print(len(request.POST.getlist('allocation')))
             for i in range(0, len(request.POST.getlist('allocation'))):
-                print("hey1")
                 reviewerSpecObj = ReviewerSpecificResourceDetail()
                 reviewerSpecObj.projectId = int(projectId)
                 reviewerSpecObj.comments = request.POST.getlist('comments')[i]
                 reviewerSpecObj.applicationsToBeUsed = ",".join(request.POST.getlist('application' + str(i + 1)))
-                print(reviewerSpecObj.applicationsToBeUsed)
-                print("revsu")
-                print(request.POST.getlist('specificResources'))
-                print("wcdasd")
                 if request.POST.getlist('allocation')[i]!='':
                     reviewerSpecObj.reviewedServiceUnits = int(request.POST.getlist('allocation')[i])
                 reviewerSpecObj.resourceType = request.POST.getlist('resourceType')[i]
@@ -185,7 +184,7 @@ def ReviewerRequestView(request):
                 reviewerSpecificDetailsList.append(reviewerSpecObj)
             request.allocation_manager_client.updateReviewerSpecificResource(authz_token, int(projectId), reviewerSpecificDetailsList)
 
-            return redirect('/resourceallocation/reviewer')
+            return redirect(reverse('dashboard:reviewer'))
         return render(request, 'dashboard/reviewer-request-view.html',
                       {'userSubmittedDetails': userSubmittedDetails,
                        'reviewerReview': reviewerReview, 'userSpecificDetailsList': userSpecificDetailsList,
@@ -195,7 +194,7 @@ def ReviewerRequestView(request):
 
     except Exception as e:
         logger.exception("Failed to load resource allocation details")
-        return redirect('/resourceallocation')
+        return redirect(reverse('dashboard:index'))
 
 @login_required
 def index(request):
@@ -204,7 +203,7 @@ def index(request):
         loggedinUser = authz_token.claimsMap['userName']
         loggedinUserGroups = getLoggedInRoles(request)
         if len(loggedinUserGroups) == 0:
-            return redirect('/resourceallocation/unauthorized')
+            return redirect(reverse('dashboard:unauthorized'))
         if len(loggedinUserGroups) > 1:
             #change this later
             loggedinUserGroup = loggedinUserGroups[0]
@@ -219,13 +218,13 @@ def index(request):
             'all_requests': details,'all_requests_specific':details_specific
             })
         elif loggedinUserGroup == 'admin':
-            return redirect('/resourceallocation/admin')
+            return redirect(reverse('dashboard:admin'))
         elif loggedinUserGroup == 'reviewer':
-            return redirect('/resourceallocation/reviewer')
+            return redirect(reverse('dashboard:reviewer'))
 
     except Exception as e:
         logger.exception("Failed to load resource allocation details")
-        return redirect('/resourceallocation')
+        return redirect(reverse('dashboard:index'))
 
 @login_required
 def requestCreate(request):
@@ -247,7 +246,7 @@ def requestCreate(request):
             projectDetails = request.allocation_manager_client.getAllocationRequest(authz_token,int(projectId))
             userSpecificDetails = request.allocation_manager_client.getUserSpecificResource(authz_token, int(projectId))
             if(loggedinUser != projectDetails.username):
-                return redirect('/resourceallocation')
+                return redirect(reverse('dashboard:index'))
 
         if(request.method=='POST'):
             reqObj = UserAllocationDetail();
@@ -300,7 +299,7 @@ def requestCreate(request):
                     if(resourceExists):
                         request.allocation_manager_client.approveRequest(authz_token,reqSpecificList[i].projectId,"auto",0,0,
                                                                      reqSpecificList[i].requestedServiceUnits,reqSpecificList[i].specificResource)
-            return redirect('/resourceallocation')
+            return redirect(reverse('dashboard:index'))
         else:
             canSubmit = request.allocation_manager_client.canSubmitRequest(authz_token, loggedinUser)
             return render(request, 'dashboard/request_form.html',
@@ -309,7 +308,7 @@ def requestCreate(request):
                            'all_deployments':all_deployments, 'allDeploys':serializer.data})
     except Exception as e:
         logger.exception("Failed to load resource allocation details")
-        return redirect('/resourceallocation')
+        return redirect(reverse('dashboard:index'))
 
 def unauthorized(request):
     return render(request, 'dashboard/unauthorized.html')
