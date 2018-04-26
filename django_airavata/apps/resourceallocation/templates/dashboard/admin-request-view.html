@@ -1,7 +1,18 @@
 {% extends 'dashboard/base.html' %}
 {% block title %} Allocation Manager - Admin{% endblock %}
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
 {% block body %}
 
+<script>
+    $(document).on("click", ".openModal", function () {
+     var specResource = $(this).data('id');
+     $(".modal-body #approvedSpecResc").val(specResource);
+     $(".modal-body #rejectedSpecResc").val(specResource);
+});
+</script>
 
         <!-- All Requests-->
         <div class="container">
@@ -57,10 +68,10 @@
                         Specific Resource {{forloop.counter}}
                         <br/>
                         <br/>
-                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#approve">Assign Allocation</button>
+                         <button {% if projectSpecificDetail.subStatus == "APPROVED" or projectSpecificDetail.subStatus == "REJECTED" %} disabled {% endif %} type="button" data-id = "{{ projectSpecificDetail.specificResource }}" class="btn btn-success openModal" data-toggle="modal" data-target="#approve">Assign Allocation</button>
                         <br/>
                         <br/>
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#reject">Reject</button>
+                         <button {% if projectSpecificDetail.subStatus == "APPROVED" or projectSpecificDetail.subStatus == "REJECTED" %} disabled {% endif %} type="button" data-id = "{{ projectSpecificDetail.specificResource }}"class="btn btn-danger openModal" data-toggle="modal" data-target="#reject">Reject</button>
                     </td>
                     <td>
                         <div>
@@ -235,7 +246,7 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label class="control-label">Specific Resource:</label><br/>
-                                <input required type="text" name="specific-resource">
+                                <input readonly required type="text" id="approvedSpecResc" name="specific-resource">
                           </div>
                           <div class="form-group">
                                 <label class="control-label">Start Date:</label><br/>
@@ -273,7 +284,7 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label class="control-label">Specific Resource:</label></br>
-                                <input required type="text" name="specific-resource">
+                                <input readonly required type="text" id ="rejectedSpecResc" name="specific-resource">
                             </div>
                           <div class="form-group">
                                 <label class="control-label">Reason:</label></br>

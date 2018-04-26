@@ -85,6 +85,8 @@ def AdminRequestView(request):
             serviceUnits = request.POST.get('allocation-units')
 
         if (startDate is not None):
+            print("hey")
+            print(specificResource)
             request.allocation_manager_client.approveRequest(authz_token, projectId, loggedinUser, int(startDate),
                                                              int(endDate), int(serviceUnits), specificResource)
 
