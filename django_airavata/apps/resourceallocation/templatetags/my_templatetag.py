@@ -25,3 +25,7 @@ def getResourceType(Queryset):
 @register.filter
 def getComments(Queryset):
     return Queryset.comments
+
+@register.filter
+def split(value):
+    return value.split('_')[0]

@@ -3,6 +3,7 @@
 {% block body %}
     {% if all_requests %}
         <h3 style="margin-left: 7%">Requests to Review</h3>
+
         <!-- All Requests-->
         <div class="container">
           <table class="table table-hover table-bordered table-striped table-responsive">
@@ -24,6 +25,9 @@
         </div>
 
     {%  else %}
-        <h3 style="margin-left: 7%"><br/>Sorry, currently there are no requests to review!</h3>
+        <div class="container-fluid">
+             <h1 style="background-color: #337ab7;color:white;text-align: center;">No requests to review</h1>
+             <p style="font-size: 20px;text-align: center;">Sorry, currently there are no requests assigned to the logged in reviewer!</p>
+         </div>
     {% endif %}
 {%  endblock %}

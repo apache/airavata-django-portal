@@ -27,13 +27,13 @@
                             <div class="form-group">
                                 <div class="col-sm-12">
                                     <input type="hidden" value={{ request.projectId }} name="projectId" />
-                                    <select class="selectpicker" data-style="btn-primary" data-live-search="true" multiple name="selectedReviewers">
+                                    <select {% if request.allocationStatus == 'APPROVED' or request.allocationStatus == 'REJECTED' %} disabled {% endif %} class="selectpicker" data-style="btn-primary" data-live-search="true" multiple name="selectedReviewers">
                                         {% load my_templatetag %}
                                         {% for reviewer_detail_list in reviewerDetailsList|index:forloop.counter0 %}
                                             <option>{{reviewer_detail_list}}</option>
                                         {% endfor %}
                                     </select>
-                                    <button type="submit" class="btn btn-success">Assign</button>
+                                        <button {% if request.allocationStatus == 'APPROVED' or request.allocationStatus == 'REJECTED' %} disabled {% endif %} type="submit" class="btn btn-success">Assign</button>
                                 </div>
                             </div>
                         </form>

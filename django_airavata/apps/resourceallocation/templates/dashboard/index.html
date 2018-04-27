@@ -46,6 +46,15 @@
 
 
     {%  else %}
-        <h3>You don't have any requests</h3>
+        <div class="container-fluid">
+             <h1 style="background-color: #337ab7;color:white;text-align: center;"> No request found</h1>
+            <br/>
+             <p style="font-size: 20px;text-align: center;">The logged in user does not have any current requests.
+             </p>
+            <br/><br/>
+            <div style="text-align:center">
+              <a class="btn btn-primary btn-lg" href="{% url 'dashboard:request-add' %}"> Create Request</a>
+            </div>​
+         </div>
     {% endif %}
 {%  endblock %}
