@@ -3,16 +3,31 @@
 <html>
 <head>
   <title>SimCCS Map</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/holder/2.9.4/holder.min.js"></script>
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/holder/2.9.4/holder.min.js"></script>-->
+  <!--<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>-->
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"/>
 
-  <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
-    <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
-  <script src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster-src.js"></script>
-  <link rel = "stylesheet" href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.css"/>
+
+  <!--<link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />-->
+  <link rel="stylesheet" type="text/css" href="{% static 'css/MarkerCluster.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/MarkerCluster_Default.css' %}" />
+
+<script src="{% static 'js/leaflet.js' %}"></script>
+<script src="{% static 'js/leaflet.markercluster-src.js' %}"></script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/leaflet.css' %}" />
+
+
+  <!--<script src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.js"></script>-->
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster-src.js"></script>-->
+  <!--<link rel = "stylesheet" href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.css"/>-->
+
   <script src="{% static 'Data/Source_Chemicals.json' %}" ></script>
   <script src="{% static 'Data/Source_Coal-based_Liquid_Fuel_Supply.json' %}" ></script>
   <script src="{% static 'Data/Source_Import_and_Export_of_Equipment_Containing_Fluorintaed_GHGs.json' %}" ></script>
