@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_airavata.apps.api.apps.ApiConfig',
     'django_airavata.apps.groups.apps.GroupsConfig',
+    'django_airavata.apps.maptool.apps.MapToolConfig',
 
     # wagtail related apps
     'wagtail.contrib.forms',
