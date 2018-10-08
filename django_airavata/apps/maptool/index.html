@@ -1,0 +1,403 @@
+{% load static %}
+<!--<!DOCTYPE html>-->
+<html>
+<head>
+  <title>SimCCS Map</title>
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/holder/2.9.4/holder.min.js"></script>-->
+  <!--<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>-->
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"/>
+
+
+  <!--<link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />-->
+  <link rel="stylesheet" type="text/css" href="{% static 'css/MarkerCluster.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/MarkerCluster_Default.css' %}" />
+
+<script src="{% static 'js/leaflet.js' %}"></script>
+<script src="{% static 'js/leaflet.markercluster-src.js' %}"></script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/leaflet.css' %}" />
+
+
+
+  <!--<script src="{% static 'Data/Ordos_Basin_Source.json' %}"></script>-->
+
+
+
+
+  <script>
+    $(document).ready(function() {
+
+
+
+
+    document.getElementById("search").disabled = true;
+
+    $('input:radio').bind('click mousedown', (function() {
+        var isChecked;
+        return function(event) {
+            if (event.type == 'click') {
+                radio_button_id=this.id;
+                if (isChecked) {
+                    isChecked = this.checked = false;
+                    switch(radio_button_id){
+                        case "cost_surface":
+                                            break;
+                        case "source_sink_chemical":map.removeLayer(chemicalClusters)
+                              break;
+                        case "source_sink_coal":map.removeLayer(coalClusters)
+                              break;
+                        case "source_sink_flourinated":map.removeLayer(flourinatedClusters)
+                              break;
+                        case "source_sink_industrial_gas":map.removeLayer(industrialGasClusters)
+                              break;
+                        case "source_sink_co2_injecton":map.removeLayer(co2InjectionClusters)
+                              break;
+                        case "source_sink_metals":map.removeLayer(metalClusters)
+                              break;
+                        case "source_sink_minerals":map.removeLayer(mineralClusters)
+                              break;
+                        case "source_sink_natural_gas":map.removeLayer(naturalGasClusters)
+                              break;
+                        case "source_sink_others":map.removeLayer(otherClusters)
+                              break;
+                        case "source_sink_petroleum":map.removeLayer(petroleumClusters)
+                              break;
+                        case "source_sink_petro_natural":map.removeLayer(petroleumNaturalGasClusters)
+                              break;
+                        case "source_sink_power_plants":map.removeLayer(powerPlantClusters)
+                              break;
+                        case "source_sink_pulp_paper":map.removeLayer(pulpClusters)
+                              break;
+                        case "source_sink_refineries":map.removeLayer(refineriesClusters)
+                              break;
+                        case "source_sink_co2_suppliers":map.removeLayer(co2SupplyClusters)
+                              break;
+                        case "source_sink_waste":map.removeLayer(wasteClusters)
+                              break;
+                        case "source_sink_pulp_paper":map.removeLayer(chemicalClusters)
+                              break;
+
+                        case "source_sink_all_the_above":
+                        map.removeLayer(chemicalClusters);
+                            map.removeLayer(coalClusters);
+                            map.removeLayer(flourinatedClusters);
+                            map.removeLayer(co2InjectionClusters);
+                            map.removeLayer(metalClusters);
+                            map.removeLayer(mineralClusters);
+                            map.removeLayer(naturalGasClusters);
+                            map.removeLayer(otherClusters);
+                            map.removeLayer(petroleumClusters);
+                            map.removeLayer(petroleumNaturalGasClusters);
+                            map.removeLayer(powerPlantClusters);
+                            map.removeLayer(pulpClusters);
+                            map.removeLayer(refineriesClusters);
+                            map.removeLayer(co2SupplyClusters);
+                            map.removeLayer(wasteClusters);
+
+                              break;
+
+                        case "candidate_network":
+                                                map.removeLayer(ut_candidate_network);
+                                                map.removeLayer(albert_candidate_network);
+                                                map.removeLayer(illinios_candidate_network);
+                                                // map.removeLayer(ne_cadidate_network);
+                                                map.removeLayer(ordos_candidate_network);
+                                                map.removeLayer(se_candidate_network);
+
+                                                // map.remove(ne_cadidate_network);
+                        break;
+
+                        //
+                        case "sink_coal_reservoirs":map.removeLayer(sink_coal_layer);
+                        break;
+                        case "sink_saline_formation":map.removeLayer(sink_saline_layer);
+                        break;
+                        case "sink_oil_reservoir":map.removeLayer(sink_oil_layer);
+                        break;
+
+
+
+
+
+
+                    }
+
+
+
+                } else {
+                    isChecked = true;
+                    switch(radio_button_id){
+                        case "cost_surface":
+                                            break;
+                        case "source_sink_chemical":map.addLayer(chemicalClusters);
+                              break;
+                        case "source_sink_coal":map.addLayer(coalClusters);
+                              break;
+                        case "source_sink_flourinated":map.addLayer(flourinatedClusters);
+                              break;
+                        case "source_sink_industrial_gas":map.addLayer(industrialGasClusters);
+                              break;
+                        case "source_sink_co2_injecton":map.addLayer(co2InjectionClusters);
+                              break;
+                        case "source_sink_metals":map.addLayer(metalClusters);
+                              break;
+                        case "source_sink_minerals":map.addLayer(mineralClusters);
+                              break;
+                        case "source_sink_natural_gas":map.addLayer(naturalGasClusters);
+                              break;
+                        case "source_sink_others":map.addLayer(otherClusters);
+                              break;
+                        case "source_sink_petroleum":map.addLayer(petroleumClusters);
+                              break;
+                        case "source_sink_petro_natural":map.addLayer(petroleumNaturalGasClusters);
+                              break;
+                        case "source_sink_power_plants":map.addLayer(powerPlantClusters);
+                              break;
+                        case "source_sink_pulp_paper":map.addLayer(pulpClusters);
+                              break;
+                        case "source_sink_refineries":map.addLayer(refineriesClusters);
+                              break;
+                        case "source_sink_co2_suppliers":map.addLayer(co2SupplyClusters);
+                              break;
+
+                        case "source_sink_waste":map.addLayer(wasteClusters);
+                              break;
+                        case "source_sink_all_the_above":
+                        map.addLayer(chemicalClusters);
+                            map.addLayer(coalClusters);
+                            map.addLayer(flourinatedClusters);
+                            map.addLayer(co2InjectionClusters);
+                            map.addLayer(metalClusters);
+                            map.addLayer(mineralClusters);
+                            map.addLayer(naturalGasClusters);
+                            map.addLayer(otherClusters);
+                            map.addLayer(petroleumClusters);
+                            map.addLayer(petroleumNaturalGasClusters);
+                            map.addLayer(powerPlantClusters);
+                            map.addLayer(pulpClusters);
+                            map.addLayer(refineriesClusters);
+                            map.addLayer(co2SupplyClusters);
+                            map.addLayer(wasteClusters);
+
+
+                              break;
+
+
+                        case "candidate_network":
+                        //
+                        // map.addLayer(albert_candidate_network);
+                        // map.addLayer(illinios_candidate_network);
+                        // map.addLayer(ne_cadidate_network);
+                        // map.addLayer(ordos_candidate_network);
+                        //
+                            se_candidate_network.addTo(map);
+                            ut_candidate_network.addTo(map);
+                            albert_candidate_network.addTo(map);
+                            illinios_candidate_network.addTo(map);
+                            // // ne_cadidate_network.addTo(map);
+                            ordos_candidate_network.addTo(map);
+                            // ne_cadidate_network.addTo(map);
+                        break;
+
+                        case "sink_coal_reservoirs":map.addLayer(sink_coal_layer);
+                        break;
+
+                        case "sink_saline_formation":map.addLayer(sink_saline_layer);
+                        break;
+                        case "sink_oil_reservoir":map.addLayer(sink_oil_layer);
+                        break;
+
+
+
+
+
+
+
+                    }
+
+
+                }
+            } else {
+                isChecked = this.checked;
+            }
+        }
+    })());
+
+});
+
+  </script>
+  <!--<link rel="stylesheet" href="{% static 'css/mapTool.css' %}" type="text/css" />-->
+  <style type="text/css">
+    #map{
+      margin-left: 20px;
+      margin-top: 60px;
+      width: 800px;
+      height:500px ;
+    }
+
+  </style>
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="https://simccs.org/">SimCCS</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Help</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" id="search" placeholder="Search...">
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row" style="margin-left: 10px">
+        <div class="col-md-3  sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
+            <li>
+              <div class="panel panel-info" style="margin-top: 20px">
+                <div class="panel-heading">
+                  <h3 class="panel-title"><strong>Legend</strong></h3>
+                </div>
+                <div class="panel-body">
+                  <label style="font-size: 12px;">Source</label>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" id="source_sink_chemical">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_chemical">Chemical</label>
+                      <input class="form-check-input" type="radio" id="source_sink_coal">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_coal">Coal</label>
+
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" id="source_sink_flourinated">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_flourinated">Flourinated GHCs</label>
+                      <input class="form-check-input" type="radio" id="source_sink_industrial_gas">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_industrial_gas">Industrial Gas</label>
+
+                    </div>
+
+                  <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" id="source_sink_co2_injecton">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_co2_injecton">Co2 Injection</label>
+                      <input class="form-check-input" type="radio" id="source_sink_metals">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_metals">Metals</label>
+
+                  </div>
+                  <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" id="source_sink_minerals">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_minerals">Minerals</label>
+                      <input class="form-check-input" type="radio" id="source_sink_natural_gas">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_natural_gas">Natural Gas</label>
+
+                  </div>
+
+                  <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" id="source_sink_others">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_others">Others</label>
+                      <input class="form-check-input" type="radio" id="source_sink_petroleum">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_petroleum">Petroleum Products</label>
+
+                  </div>
+                  <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" id="source_sink_petro_natural">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_petro_natural">Petroleum & Natural Gas</label>
+                      <input class="form-check-input" type="radio" id="source_sink_power_plants">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_power_plants">Power Plants</label>
+
+                  </div>
+
+                  <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" id="source_sink_pulp_paper">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_pulp_paper">Pulp/Paper</label>
+                      <input class="form-check-input" type="radio" id="source_sink_refineries">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_refineries">Refineries</label>
+
+                  </div>
+                  <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" id="source_sink_co2_suppliers">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_co2_suppliers">Co2 Suppliers</label>
+                      <input class="form-check-input" type="radio" id="source_sink_waste">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_waste">Waste</label>
+
+                  </div>
+
+                  <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" id="source_sink_all_the_above">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_all_the_above">All the above</label>
+                  </div>
+
+
+
+
+
+                  <label style="font-size: 12px;">Sink</label>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" id="sink_saline_formation">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="sink_saline_formation">Saline Formation</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" id="sink_oil_reservoir">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="sink_oil_reservoir">Oil/Gas Reservoir</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" id="sink_coal_reservoirs">
+                      <label style="font-size: 9.5px;" class="form-check-label" for="sink_coal_reservoirs">Unconventional Coal reservoirs</label>
+                    </div>
+
+                  <label style="font-size: 12px;">Network</label>
+                  <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" id="cost_surface">
+                  <label style="font-size: 10px" class="form-check-label" for="cost_surface">Cost Surface</label>
+                  </div>
+
+                  <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" id="candidate_network">
+                  <label style="font-size: 10px" class="form-check-label" for="candidate_network">Candidate Networks</label>
+                  </div>
+
+
+                </div>
+
+
+                <!--</div>-->
+                <div class="panel-footer">
+
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="col-md-6">
+          <div id="map"></div>
+          <script src="{% static 'js/leafletMap.js' %}" ></script>
+        </div>
+      </div>
+
+    </div>
+
+
+
+</body>

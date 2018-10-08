@@ -53,27 +53,21 @@ map = L.map('map',{cursor:true}).setView([38.420836729,-87.762496593], 8);
 
 
     // L.geoJson(path).addTo(map);
-    var source_sink={
-        "type": "FeatureCollection",
-        "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
 
-        "features": [
-            { "type": "Feature", "properties": { "ID": 1, "costFix ($m)": 0.0, "fixO&M ($m\/y)": 0.0, "varO&M ($\/tCO2)": 65.0, "capMax (MtCO2\/y)": 15.0, "capFctr": 1.0, "LON": -87.7659, "LAT": 38.3689, "NAME": 1, "CREDIT": 0.0, "#GenUnts": 1, "ID_1": 1, "ID_2": 1 }, "geometry": { "type": "Point", "coordinates": [ -87.7659, 38.3689 ] } }
-        ]
-    };
-    var geojsonMarkerOptions = {
-        radius: 5,
-        fillColor: "#FF0000",
-        color: "#000",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8
-    };
-    // source_sink_layer=L.geoJson(source_sink,{
+    // console.log(source_sink.length);
+    // L.geoJson(source_sink).addTo(map);
+    // source_sink_layer=L.geoJson(source_sonk,{
     //     pointToLayer:function(feature,latlng){
     //         return L.circleMarker(latlng,geojsonMarkerOptions).bindPopup('Source Sink');;
     //     }
     // });
+
+
+
+
+
+
+
     var chemicalClusters=L.markerClusterGroup();
     $.getJSON('/static/Data/Source_Chemicals.json',function (data) {
 
@@ -377,6 +371,26 @@ map = L.map('map',{cursor:true}).setView([38.420836729,-87.762496593], 8);
 
     });
 
+    var ordos_source_cluster=L.markerClusterGroup();
+    $.getJSON('/static/Data/Ordos_Basin_Source.json',function (data) {
+
+
+        for(var i=0;i<data.length;i++){
+            var popup='Sink Nos# '+(i+1);
+
+
+
+            var m=L.marker([data[i].geometry.coordinates[1],data[i].geometry.coordinates[0]]).bindPopup(popup);
+            ordos_source_cluster.addLayer(m);
+
+        }
+
+    });
+    map.addLayer(ordos_source_cluster);
+
+
+
+
 //     var sink_saline_polygon;
 //     $.getJSON('/static/Data/Sinks_NATCARB_SALINE_For_Gateway.json',function (data) {
 //
@@ -394,7 +408,7 @@ map = L.map('map',{cursor:true}).setView([38.420836729,-87.762496593], 8);
 var geojsonLineOptions = {
 
                 color: 'black',
-                weight: 4,
+                weight: 2,
                 opacity: .7,
                 dashArray: '20,15',
                 lineJoin: 'round'
@@ -426,15 +440,7 @@ var geojsonLineOptions = {
 
 
     });
-        var ne_cadidate_network;
-        $.getJSON('/static/Data/NE_Network.json',function (data) {
 
-
-            ne_candidate_network=L.geoJson(data,geojsonLineOptions);
-
-
-
-    });
         var ordos_candidate_network;
         $.getJSON('/static/Data/Ordos_Basin_Network.json',function (data) {
 
@@ -444,6 +450,7 @@ var geojsonLineOptions = {
 
 
     });
+
         var se_candidate_network;
         $.getJSON('/static/Data/SoutheastUS_Network.json',function (data) {
 
@@ -453,15 +460,38 @@ var geojsonLineOptions = {
 
 
     });
-        var sink_unconventional_reservoir;
-        $.getJSON('/static/Data/Sinks_NATCARB_Coal_For_Gateway.json',function (data) {
+         var ne_cadidate_network;
+        $.getJSON('/static/Data/NE_Network.json',function (data) {
 
 
-            sink_unconventional_reservoir=L.geoJson(data,geojsonLineOptions);
-
-
+            ne_candidate_network=L.geoJson(data,geojsonLineOptions);
 
 
     });
+
+        var sink_coal_layer = L.tileLayer.wms("http://gf8.ucs.indiana.edu/geoserver/SimCCS/wms?", {
+                layers: 'SimCCS:NATCARB_Coal',
+                format: 'image/png',
+                transparent: true
+        });
+
+        var sink_oil_layer=L.tileLayer.wms("http://gf8.ucs.indiana.edu/geoserver/SimCCS/wms?", {
+                layers: 'SimCCS:NATCARB_OG',
+                format: 'image/png',
+                transparent: true
+        });
+
+        var sink_saline_layer=L.tileLayer.wms("http://gf8.ucs.indiana.edu/geoserver/SimCCS/wms?", {
+                layers: 'SimCCS:NATCARB_SALINE',
+                format: 'image/png',
+                transparent: true
+        });
+
+
+
+
+
+
+
 
 
