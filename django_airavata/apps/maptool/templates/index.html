@@ -24,36 +24,19 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/leaflet.css' %}" />
 
 
-  <!--<script src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.js"></script>-->
-  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster-src.js"></script>-->
-  <!--<link rel = "stylesheet" href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.css"/>-->
 
-  <script src="{% static 'Data/Source_Chemicals.json' %}" ></script>
-  <script src="{% static 'Data/Source_Coal-based_Liquid_Fuel_Supply.json' %}" ></script>
-  <script src="{% static 'Data/Source_Import_and_Export_of_Equipment_Containing_Fluorintaed_GHGs.json' %}" ></script>
-  <script src="{% static 'Data/Source_Industrial_Gas_Suppliers.json' %}" ></script>
-  <script src="{% static 'Data/Source_Injection_of_CO2.json' %}" ></script>
-  <script src="{% static 'Data/Source_Metals.json' %}" ></script>
-  <script src="{% static 'Data/Source_Minerals.json' %}" ></script>
-  <script src="{% static 'Data/Source_Natural_Gas_and_Natural_Gas_Liquids_Suppliers.json' %}" ></script>
-  <script src="{% static 'Data/Source_Other.json' %}" ></script>
-  <script src="{% static 'Data/Source_Petroleum_and_Natural_Gas_Systems.json' %}" ></script>
-  <script src="{% static 'Data/Source_Petroleum_Product_Suppliers.json' %}" ></script>
-  <script src="{% static 'Data/Source_Pulp_and_Paper.json' %}" ></script>
-  <script src="{% static 'Data/Source_Refineries.json' %}" ></script>
-  <script src="{% static 'Data/Source_Suppliers_of_CO2.json' %}" ></script>
-  <script src="{% static 'Data/Source_Waste.json' %}" ></script>
-  <script src="{% static 'Data/Source_Power_Plants.json' %}"></script>
-  <script src="{% static 'Data/Sinks_NATCARB_Coal_For_Gateway.json' %}" ></script>
-  <!--<script src="{% static 'Data/Sinks_NATCARB_OG_For_Gateway_OnePerGrid.json' %}" ></script>-->
-  <!--<script src="{% static 'Data/Sinks_NATCARB_SALINE_For_Gateway.json' %}"></script>-->
+  <!--<script src="{% static 'Data/Ordos_Basin_Source.json' %}"></script>-->
+
 
 
 
   <script>
     $(document).ready(function() {
-document.getElementById("search").disabled = true;
 
+
+
+
+    document.getElementById("search").disabled = true;
 
     $('input:radio').bind('click mousedown', (function() {
         var isChecked;
@@ -63,7 +46,7 @@ document.getElementById("search").disabled = true;
                 if (isChecked) {
                     isChecked = this.checked = false;
                     switch(radio_button_id){
-                        case "cost_surface":map.removeLayer(bound_layer);
+                        case "cost_surface":
                                             break;
                         case "source_sink_chemical":map.removeLayer(chemicalClusters)
                               break;
@@ -99,6 +82,7 @@ document.getElementById("search").disabled = true;
                               break;
                         case "source_sink_pulp_paper":map.removeLayer(chemicalClusters)
                               break;
+
                         case "source_sink_all_the_above":
                         map.removeLayer(chemicalClusters);
                             map.removeLayer(coalClusters);
@@ -115,19 +99,28 @@ document.getElementById("search").disabled = true;
                             map.removeLayer(refineriesClusters);
                             map.removeLayer(co2SupplyClusters);
                             map.removeLayer(wasteClusters);
-                              break;
-                        // case "sink_saline_formation":map.removeLayer(sink_saline_polygon);
-                        // break;
 
-                        case "candidate_network":map.removeLayer(ut_candidate_network);
-                        map.removeLayer(albert_candidate_network);
-                        map.removeLayer(illinios_candidate_network);
-                        map.removeLayer(ne_cadidate_network);
-                        map.removeLayer(ordos_candidate_network);
-                        map.removeLayer(se_candidate_network);
+                              break;
+
+                        case "candidate_network":
+                                                map.removeLayer(ut_candidate_network);
+                                                map.removeLayer(albert_candidate_network);
+                                                map.removeLayer(illinios_candidate_network);
+                                                // map.removeLayer(ne_cadidate_network);
+                                                map.removeLayer(ordos_candidate_network);
+                                                map.removeLayer(se_candidate_network);
+
+                                                // map.remove(ne_cadidate_network);
                         break;
-                        case "sink_coal_reservoirs":map.removeLayer(ut_candidate_network);
+
+                        //
+                        case "sink_coal_reservoirs":map.removeLayer(sink_coal_layer);
                         break;
+                        case "sink_saline_formation":map.removeLayer(sink_saline_layer);
+                        break;
+                        case "sink_oil_reservoir":map.removeLayer(sink_oil_layer);
+                        break;
+
 
 
 
@@ -140,7 +133,7 @@ document.getElementById("search").disabled = true;
                 } else {
                     isChecked = true;
                     switch(radio_button_id){
-                        case "cost_surface":map.addLayer(bound_layer);
+                        case "cost_surface":
                                             break;
                         case "source_sink_chemical":map.addLayer(chemicalClusters);
                               break;
@@ -172,6 +165,7 @@ document.getElementById("search").disabled = true;
                               break;
                         case "source_sink_co2_suppliers":map.addLayer(co2SupplyClusters);
                               break;
+
                         case "source_sink_waste":map.addLayer(wasteClusters);
                               break;
                         case "source_sink_all_the_above":
@@ -195,17 +189,31 @@ document.getElementById("search").disabled = true;
                               break;
 
 
-                        case "candidate_network":map.addLayer(ut_candidate_network);
-
-                        map.addLayer(albert_candidate_network);
-                        map.addLayer(illinios_candidate_network);
-                        map.addLayer(ne_cadidate_network);
-                        map.addLayer(ordos_candidate_network);
-                        map.addLayer(se_candidate_network);
+                        case "candidate_network":
+                        //
+                        // map.addLayer(albert_candidate_network);
+                        // map.addLayer(illinios_candidate_network);
+                        // map.addLayer(ne_cadidate_network);
+                        // map.addLayer(ordos_candidate_network);
+                        //
+                            se_candidate_network.addTo(map);
+                            ut_candidate_network.addTo(map);
+                            albert_candidate_network.addTo(map);
+                            illinios_candidate_network.addTo(map);
+                            // // ne_cadidate_network.addTo(map);
+                            ordos_candidate_network.addTo(map);
+                            // ne_cadidate_network.addTo(map);
                         break;
-                        case "sink_coal_reservoirs":map.addLayer(sink_unconventional_reservoir);
 
+                        case "sink_coal_reservoirs":map.addLayer(sink_coal_layer);
                         break;
+
+                        case "sink_saline_formation":map.addLayer(sink_saline_layer);
+                        break;
+                        case "sink_oil_reservoir":map.addLayer(sink_oil_layer);
+                        break;
+
+
 
 
 
@@ -332,6 +340,7 @@ document.getElementById("search").disabled = true;
                       <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_waste">Waste</label>
 
                   </div>
+
                   <div class="form-check form-check-inline">
                       <input class="form-check-input" type="radio" id="source_sink_all_the_above">
                       <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_all_the_above">All the above</label>
@@ -378,8 +387,9 @@ document.getElementById("search").disabled = true;
                 </div>
               </div>
             </li>
-
+          </ul>
         </div>
+
         <div class="col-md-6">
           <div id="map"></div>
           <script src="{% static 'js/leafletMap.js' %}" ></script>
