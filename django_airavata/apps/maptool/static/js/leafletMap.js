@@ -37,7 +37,7 @@ map = L.map('map',{cursor:true}).setView([38.420836729,-87.762496593], 8);
 //     cursor:true
 // });
 
-    osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    osmUrl='//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
     osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 15, attribution: osmAttrib});
     map.addLayer(osm);
@@ -486,6 +486,15 @@ var geojsonLineOptions = {
                 format: 'image/png',
                 transparent: true
         });
+
+        var sink_ordos_layer=L.tileLayer.wms("http://gf8.ucs.indiana.edu/geoserver/SimCCS/wms?", {
+                layers: 'SimCCS:China_OG',
+                format: 'image/png',
+                transparent: true
+        });
+
+
+
 
 
 

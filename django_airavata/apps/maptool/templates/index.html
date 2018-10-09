@@ -37,6 +37,7 @@
 
 
     document.getElementById("search").disabled = true;
+    map.addLayer(sink_ordos_layer);
 
     $('input:radio').bind('click mousedown', (function() {
         var isChecked;
@@ -120,6 +121,7 @@
                         break;
                         case "sink_oil_reservoir":map.removeLayer(sink_oil_layer);
                         break;
+
 
 
 
@@ -219,6 +221,8 @@
 
 
 
+
+
                     }
 
 
@@ -270,7 +274,7 @@
     </nav>
 
     <div class="container-fluid">
-      <div class="row" style="margin-left: 10px">
+      <div class="row" style="margin-left: 2%">
         <div class="col-md-3  sidebar">
           <ul class="nav nav-sidebar">
             <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
@@ -365,6 +369,7 @@
                       <input class="form-check-input" type="radio" id="sink_coal_reservoirs">
                       <label style="font-size: 9.5px;" class="form-check-label" for="sink_coal_reservoirs">Unconventional Coal reservoirs</label>
                     </div>
+
 
                   <label style="font-size: 12px;">Network</label>
                   <div class="form-check form-check-inline">
