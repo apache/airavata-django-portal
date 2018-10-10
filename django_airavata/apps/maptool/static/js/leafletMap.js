@@ -386,7 +386,13 @@ map = L.map('map',{cursor:true}).setView([38.420836729,-87.762496593], 8);
         }
 
     });
-    map.addLayer(ordos_source_cluster);
+    // map.addLayer(ordos_source_cluster);
+
+
+    // map.addLayer(france_source_cluster);
+
+
+
 
 
 

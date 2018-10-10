@@ -37,7 +37,8 @@
 
 
     document.getElementById("search").disabled = true;
-    map.addLayer(sink_ordos_layer);
+      map.addLayer(ordos_source_cluster);
+
 
     $('input:radio').bind('click mousedown', (function() {
         var isChecked;
@@ -84,6 +85,9 @@
                         case "source_sink_pulp_paper":map.removeLayer(chemicalClusters)
                               break;
 
+
+
+
                         case "source_sink_all_the_above":
                         map.removeLayer(chemicalClusters);
                             map.removeLayer(coalClusters);
@@ -100,6 +104,7 @@
                             map.removeLayer(refineriesClusters);
                             map.removeLayer(co2SupplyClusters);
                             map.removeLayer(wasteClusters);
+
 
                               break;
 
@@ -121,6 +126,9 @@
                         break;
                         case "sink_oil_reservoir":map.removeLayer(sink_oil_layer);
                         break;
+                        case "ordos_sink":map.removeLayer(sink_ordos_layer);
+                        break;
+
 
 
 
@@ -170,6 +178,9 @@
 
                         case "source_sink_waste":map.addLayer(wasteClusters);
                               break;
+
+
+
                         case "source_sink_all_the_above":
                         map.addLayer(chemicalClusters);
                             map.addLayer(coalClusters);
@@ -186,6 +197,8 @@
                             map.addLayer(refineriesClusters);
                             map.addLayer(co2SupplyClusters);
                             map.addLayer(wasteClusters);
+                            // map.addLayer(ordos_source_cluster);
+                            // map.addLayer(france_source_cluster);
 
 
                               break;
@@ -214,6 +227,9 @@
                         break;
                         case "sink_oil_reservoir":map.addLayer(sink_oil_layer);
                         break;
+                        case "ordos_sink":map.addLayer(sink_ordos_layer);
+                        break;
+
 
 
 
@@ -239,10 +255,14 @@
   <!--<link rel="stylesheet" href="{% static 'css/mapTool.css' %}" type="text/css" />-->
   <style type="text/css">
     #map{
-      margin-left: 20px;
-      margin-top: 60px;
-      width: 800px;
-      height:500px ;
+      /*margin-left: 20px;*/
+      /*margin-top: 60px;*/
+
+        /*margin-top: 60px;*/
+      width:100%;
+        height:85% ;
+
+
     }
 
   </style>
@@ -273,136 +293,165 @@
       </div>
     </nav>
 
+    <div class="row" style="margin-top: 5%;margin-left: 2%">
+    <div class="col-md-3">
+
     <div class="container-fluid">
-      <div class="row" style="margin-left: 2%">
-        <div class="col-md-3  sidebar">
+
+        <!--<div class="col-md-3  sidebar">-->
+          <div class="sidebar">
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-            <li>
-              <div class="panel panel-info" style="margin-top: 20px">
-                <div class="panel-heading">
-                  <h3 class="panel-title"><strong>Legend</strong></h3>
-                </div>
-                <div class="panel-body">
-                  <label style="font-size: 12px;">Source</label>
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="source_sink_chemical">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_chemical">Chemical</label>
-                      <input class="form-check-input" type="radio" id="source_sink_coal">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_coal">Coal</label>
+
+              <div class="panel-group">
+              <!--<div class="panel panel-info">-->
+
+                 <div class="panel panel-info">
+                     <div class="panel-heading">
+                         <h3 class="panel-title"><strong>Source</strong></h3>
+                     </div>
+                    <div class="panel-body">
+                      <!--<label style="font-size: 12px;">Source</label>-->
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="source_sink_chemical">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_chemical">Chemical</label>
+                          <input class="form-check-input" type="radio" id="source_sink_coal">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_coal">Coal</label>
+
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="source_sink_flourinated">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_flourinated">Flourinated GHCs</label>
+                          <input class="form-check-input" type="radio" id="source_sink_industrial_gas">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_industrial_gas">Industrial Gas</label>
+
+                        </div>
+
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="source_sink_co2_injecton">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_co2_injecton">Co2 Injection</label>
+                          <input class="form-check-input" type="radio" id="source_sink_metals">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_metals">Metals</label>
+
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="source_sink_minerals">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_minerals">Minerals</label>
+                          <input class="form-check-input" type="radio" id="source_sink_natural_gas">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_natural_gas">Natural Gas</label>
+
+                      </div>
+
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="source_sink_others">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_others">Others</label>
+                          <input class="form-check-input" type="radio" id="source_sink_petroleum">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_petroleum">Petroleum Products</label>
+
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="source_sink_petro_natural">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_petro_natural">Petroleum & Natural Gas</label>
+                          <input class="form-check-input" type="radio" id="source_sink_power_plants">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_power_plants">Power Plants</label>
+
+                      </div>
+
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="source_sink_pulp_paper">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_pulp_paper">Pulp/Paper</label>
+                          <input class="form-check-input" type="radio" id="source_sink_refineries">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_refineries">Refineries</label>
+
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="source_sink_co2_suppliers">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_co2_suppliers">Co2 Suppliers</label>
+                          <input class="form-check-input" type="radio" id="source_sink_waste">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_waste">Waste</label>
+
+                      </div>
+
+
+
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="source_sink_all_the_above">
+                          <label style="font-size: 100%;" class="form-check-label" for="source_sink_all_the_above">All the above</label>
+                      </div>
 
                     </div>
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="source_sink_flourinated">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_flourinated">Flourinated GHCs</label>
-                      <input class="form-check-input" type="radio" id="source_sink_industrial_gas">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_industrial_gas">Industrial Gas</label>
+                     <div class="panel-footer"/>
+                 </div>
+
+
+                  <div class="panel panel-info">
+                     <div class="panel-heading">
+                         <h3 class="panel-title"><strong>Sink</strong></h3>
+                     </div>
+
+
+                      <div class="panel-body">
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="sink_saline_formation">
+                          <label style="font-size: 100%;" class="form-check-label" for="sink_saline_formation">Saline Formation</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="sink_oil_reservoir">
+                          <label style="font-size: 100%;" class="form-check-label" for="sink_oil_reservoir">Oil/Gas Reservoir</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="sink_coal_reservoirs">
+                          <label style="font-size: 100%;" class="form-check-label" for="sink_coal_reservoirs">Unconventional Coal reservoirs</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="ordos_sink">
+                          <label style="font-size: 100%;" class="form-check-label" for="ordos_sink">Ordos Sink</label>
+                        </div>
+                      </div>
+                      <div class="panel-footer"/>
+
+                  </div>
+
+
+                  <div class="panel panel-info">
+                     <div class="panel-heading">
+                         <h3 class="panel-title"><strong>Network</strong></h3>
+                     </div>
+                      <div class="panel-body">
+                          <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="cost_surface">
+                          <label style="font-size: 100%" class="form-check-label" for="cost_surface">Cost Surface</label>
+                          </div>
+
+                          <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="candidate_network">
+                          <label style="font-size: 100%" class="form-check-label" for="candidate_network">Candidate Networks</label>
+                          </div>
+                      </div>
+                      <div class="panel-footer"/>
+
 
                     </div>
 
-                  <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="source_sink_co2_injecton">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_co2_injecton">Co2 Injection</label>
-                      <input class="form-check-input" type="radio" id="source_sink_metals">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_metals">Metals</label>
 
-                  </div>
-                  <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="source_sink_minerals">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_minerals">Minerals</label>
-                      <input class="form-check-input" type="radio" id="source_sink_natural_gas">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_natural_gas">Natural Gas</label>
+                    <!--</div>-->
 
-                  </div>
-
-                  <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="source_sink_others">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_others">Others</label>
-                      <input class="form-check-input" type="radio" id="source_sink_petroleum">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_petroleum">Petroleum Products</label>
-
-                  </div>
-                  <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="source_sink_petro_natural">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_petro_natural">Petroleum & Natural Gas</label>
-                      <input class="form-check-input" type="radio" id="source_sink_power_plants">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_power_plants">Power Plants</label>
-
-                  </div>
-
-                  <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="source_sink_pulp_paper">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_pulp_paper">Pulp/Paper</label>
-                      <input class="form-check-input" type="radio" id="source_sink_refineries">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_refineries">Refineries</label>
-
-                  </div>
-                  <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="source_sink_co2_suppliers">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_co2_suppliers">Co2 Suppliers</label>
-                      <input class="form-check-input" type="radio" id="source_sink_waste">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_waste">Waste</label>
-
-                  </div>
-
-                  <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="source_sink_all_the_above">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="source_sink_all_the_above">All the above</label>
-                  </div>
-
-
-
-
-
-                  <label style="font-size: 12px;">Sink</label>
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="sink_saline_formation">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="sink_saline_formation">Saline Formation</label>
-                    </div>
-
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="sink_oil_reservoir">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="sink_oil_reservoir">Oil/Gas Reservoir</label>
-                    </div>
-
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="sink_coal_reservoirs">
-                      <label style="font-size: 9.5px;" class="form-check-label" for="sink_coal_reservoirs">Unconventional Coal reservoirs</label>
-                    </div>
-
-
-                  <label style="font-size: 12px;">Network</label>
-                  <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" id="cost_surface">
-                  <label style="font-size: 10px" class="form-check-label" for="cost_surface">Cost Surface</label>
-                  </div>
-
-                  <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" id="candidate_network">
-                  <label style="font-size: 10px" class="form-check-label" for="candidate_network">Candidate Networks</label>
-                  </div>
-
-
-                </div>
-
-
-                <!--</div>-->
-                <div class="panel-footer">
-
-                </div>
               </div>
+
             </li>
           </ul>
         </div>
-
-        <div class="col-md-6">
+      </div>
+    </div>
+        <div class="col-md-8">
           <div id="map"></div>
           <script src="{% static 'js/leafletMap.js' %}" ></script>
         </div>
       </div>
 
     </div>
-
+</div>
 
 
 </body>
