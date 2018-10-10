@@ -14,8 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from .views import HomeView
 
+from .views import HomeView
 
 app_name = 'django_airavata_maptool'
 urlpatterns = [
