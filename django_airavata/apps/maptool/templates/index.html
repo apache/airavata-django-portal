@@ -1,5 +1,5 @@
 {% load static %}
-<!--<!DOCTYPE html>-->
+
 <html>
 <head>
   <title>SimCCS Map</title>
@@ -38,6 +38,7 @@
 
     document.getElementById("search").disabled = true;
       map.addLayer(ordos_source_cluster);
+      map.addLayer(france_source_cluster);
 
 
     $('input:radio').bind('click mousedown', (function() {
@@ -127,6 +128,8 @@
                         case "sink_oil_reservoir":map.removeLayer(sink_oil_layer);
                         break;
                         case "ordos_sink":map.removeLayer(sink_ordos_layer);
+                        break;
+                         case "france_sink":map.removeLayer(france_sink_cluster);
                         break;
 
 
@@ -229,6 +232,9 @@
                         break;
                         case "ordos_sink":map.addLayer(sink_ordos_layer);
                         break;
+                        case "france_sink":map.addLayer(france_sink_cluster);
+                        break;
+
 
 
 
@@ -259,7 +265,7 @@
       /*margin-top: 60px;*/
 
         /*margin-top: 60px;*/
-      width:100%;
+      width:99%;
         height:85% ;
 
 
@@ -277,7 +283,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="https://simccs.org/">SimCCS</a>
+          <a class="navbar-brand" href="//beta.simccs.org">SimCCS</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -293,7 +299,7 @@
       </div>
     </nav>
 
-    <div class="row" style="margin-top: 5%;margin-left: 2%">
+    <div class="row" style="margin-top: 5%;margin-left: 1%">
     <div class="col-md-3">
 
     <div class="container-fluid">
@@ -373,6 +379,7 @@
 
 
 
+
                       <div class="form-check form-check-inline">
                           <input class="form-check-input" type="radio" id="source_sink_all_the_above">
                           <label style="font-size: 100%;" class="form-check-label" for="source_sink_all_the_above">All the above</label>
@@ -408,6 +415,11 @@
                           <input class="form-check-input" type="radio" id="ordos_sink">
                           <label style="font-size: 100%;" class="form-check-label" for="ordos_sink">Ordos Sink</label>
                         </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" id="france_sink">
+                          <label style="font-size: 100%;" class="form-check-label" for="france_sink">France Sink</label>
+                        </div>
+
                       </div>
                       <div class="panel-footer"/>
 
@@ -444,7 +456,7 @@
         </div>
       </div>
     </div>
-        <div class="col-md-8">
+        <div class="col-md-9">
           <div id="map"></div>
           <script src="{% static 'js/leafletMap.js' %}" ></script>
         </div>
