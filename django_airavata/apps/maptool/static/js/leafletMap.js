@@ -24,7 +24,7 @@ L.CursorHandler = L.Handler.extend({
 
     _update: function (e) {
         this._popup.setLatLng(e.latlng);
-            // .setContent(e.latlng.toString());
+            .setContent(e.latlng.toString());
     }
 
 
