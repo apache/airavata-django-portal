@@ -23,13 +23,13 @@ L.CursorHandler = L.Handler.extend({
     },
 
     _update: function (e) {
-        this._popup.setLatLng(e.latlng)
+        this._popup.setLatLng(e.latlng);
             .setContent(e.latlng.toString());
     }
 
 
 });
-L.Map.addInitHook('addHandler', 'cursor', L.CursorHandler);
+// L.Map.addInitHook('addHandler', 'cursor', L.CursorHandler);
 map = L.map('map',{cursor:true}).setView([38.420836729,-87.762496593], 8);
 // map=L.map('leaflet',{
 //     center:[38.420836729,-87.762496593],
