@@ -18,11 +18,18 @@
               </b-form-input>
             </b-form-group>
             <b-form-group label="SSH Credential" label-for="credential-store-token">
-              <ssh-credential-selector v-model="data.resourceSpecificCredentialStoreToken">
-                <option v-if="localGroupResourceProfile && localGroupResourceProfile.defaultCredentialStoreToken"
-                  :value="null" slot="first">
-                  --- Use the default SSH credential for {{ localGroupResourceProfile.groupResourceProfileName }}
-                </option>
+              <ssh-credential-selector v-model="data.resourceSpecificCredentialStoreToken"
+                :null-option-default-credential-token="localGroupResourceProfile.defaultCredentialStoreToken"
+                :null-option-disabled="!localGroupResourceProfile.defaultCredentialStoreToken">
+                <template slot="null-option-label" slot-scope="nullOptionLabelScope">
+                  <span v-if="nullOptionLabelScope.defaultCredentialSummary">
+                    Use the default SSH credential for {{ localGroupResourceProfile.groupResourceProfileName }} ({{
+                    nullOptionLabelScope.defaultCredentialSummary.description }})
+                  </span>
+                  <span v-else>
+                    Select a SSH credential
+                  </span>
+                </template>
               </ssh-credential-selector>
             </b-form-group>
             <b-form-group label="Allocation Project Number" label-for="allocation-number">
@@ -69,11 +76,11 @@
 
 <script>
 import DjangoAiravataAPI from "django-airavata-api";
-import VModelMixin from "../../commons/vmodel_mixin";
 import BatchQueueResourcePolicy from "./BatchQueueResourcePolicy.vue";
 import SSHCredentialSelector from "../../credentials/SSHCredentialSelector.vue";
 
 import { models, services } from "django-airavata-api";
+import { mixins } from "django-airavata-common-ui";
 
 export default {
   name: "compute-preference",
@@ -151,7 +158,7 @@ export default {
     };
   },
   computed: {},
-  mixins: [VModelMixin],
+  mixins: [mixins.VModelMixin],
   methods: {
     batchQueueChecked: function(batchQueue, checked) {
       if (checked) {

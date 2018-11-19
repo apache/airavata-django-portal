@@ -26,6 +26,7 @@ import Project from "./models/Project";
 import ResourcePermissionType from "./models/ResourcePermissionType";
 import SetEnvPaths from "./models/SetEnvPaths";
 import SharedEntity from "./models/SharedEntity";
+import StoragePreference from "./models/StoragePreference";
 import SummaryType from "./models/SummaryType";
 import UserPermission from "./models/UserPermission";
 
@@ -33,7 +34,6 @@ import ExperimentService from "./services/ExperimentService";
 import ExperimentSearchService from "./services/ExperimentSearchService";
 import FullExperimentService from "./services/FullExperimentService";
 import ProjectService from "./services/ProjectService";
-import GroupService from "./services/GroupService";
 import UserProfileService from "./services/UserProfileService";
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
 import GlobusJobSubmissionService from "./services/GlobusJobSubmissionService";
@@ -80,6 +80,7 @@ exports.models = {
   ResourcePermissionType,
   SetEnvPaths,
   SharedEntity,
+  StoragePreference,
   SummaryType,
   UserPermission
 };
@@ -96,16 +97,19 @@ exports.services = {
   ExperimentSearchService,
   ExperimentService,
   FullExperimentService,
+  GatewayResourceProfileService: ServiceFactory.service("GatewayResourceProfiles"),
   GlobusJobSubmissionService,
   GridFTPDataMovementService,
   GroupResourceProfileService: ServiceFactory.service("GroupResourceProfiles"),
-  GroupService,
+  GroupService: ServiceFactory.service("Groups"),
   LocaJobSubmissionService,
   ProjectService,
   SCPDataMovementService,
   ServiceFactory,
   SharedEntityService: ServiceFactory.service("SharedEntities"),
   SshJobSubmissionService,
+  StoragePreferenceService: ServiceFactory.service("StoragePreferences"),
+  StorageResourceService: ServiceFactory.service("StorageResources"),
   UnicoreDataMovementService,
   UnicoreJobSubmissionService,
   UserProfileService

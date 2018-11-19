@@ -9,23 +9,42 @@ from django.conf import settings
 from django.urls import reverse
 from rest_framework import serializers
 
-from airavata.model.appcatalog.appdeployment.ttypes import (ApplicationDeploymentDescription,
-                                                            ApplicationModule,
-                                                            CommandObject,
-                                                            SetEnvPaths)
-from airavata.model.appcatalog.appinterface.ttypes import \
+from airavata.model.appcatalog.appdeployment.ttypes import (
+    ApplicationDeploymentDescription,
+    ApplicationModule,
+    CommandObject,
+    SetEnvPaths
+)
+from airavata.model.appcatalog.appinterface.ttypes import (
     ApplicationInterfaceDescription
-from airavata.model.appcatalog.computeresource.ttypes import (BatchQueue,
-                                                              ComputeResourceDescription)
-from airavata.model.appcatalog.groupresourceprofile.ttypes import \
+)
+from airavata.model.appcatalog.computeresource.ttypes import (
+    BatchQueue,
+    ComputeResourceDescription
+)
+from airavata.model.appcatalog.gatewayprofile.ttypes import (
+    GatewayResourceProfile,
+    StoragePreference
+)
+from airavata.model.appcatalog.groupresourceprofile.ttypes import (
     GroupResourceProfile
+)
+from airavata.model.appcatalog.storageresource.ttypes import (
+    StorageResourceDescription
+)
 from airavata.model.application.io.ttypes import InputDataObjectType
-from airavata.model.credential.store.ttypes import (CredentialSummary,
-                                                    SummaryType)
-from airavata.model.data.replica.ttypes import (DataProductModel,
-                                                DataReplicaLocationModel)
-from airavata.model.experiment.ttypes import (ExperimentModel,
-                                              ExperimentSummaryModel)
+from airavata.model.credential.store.ttypes import (
+    CredentialSummary,
+    SummaryType
+)
+from airavata.model.data.replica.ttypes import (
+    DataProductModel,
+    DataReplicaLocationModel
+)
+from airavata.model.experiment.ttypes import (
+    ExperimentModel,
+    ExperimentSummaryModel
+)
 from airavata.model.group.ttypes import GroupModel, ResourcePermissionType
 from airavata.model.job.ttypes import JobModel
 from airavata.model.status.ttypes import ExperimentStatus
@@ -52,9 +71,9 @@ class FullyEncodedHyperlinkedIdentityField(
                 "[{}] of object [{}]".format(
                     lookup_value, self.lookup_field, obj))
             raise
-        # Bit of a hack. Django's URL reversing does URL encoding but it doesn't
-        # encode all characters including some like '/' that are used in URL
-        # mappings.
+        # Bit of a hack. Django's URL reversing does URL encoding but it
+        # doesn't encode all characters including some like '/' that are used
+        # in URL mappings.
         kwargs = {self.lookup_url_kwarg: "__PLACEHOLDER__"}
         url = self.reverse(view_name, kwargs=kwargs,
                            request=request, format=format)
@@ -98,6 +117,12 @@ class StoredJSONField(serializers.JSONField):
         except Exception:
             return value
 
+    def to_internal_value(self, data):
+        try:
+            return json.dumps(data)
+        except (TypeError, ValueError):
+            self.fail('invalid')
+
 
 class OrderedListField(serializers.ListField):
 
@@ -120,17 +145,11 @@ class OrderedListField(serializers.ListField):
         return validated_data
 
 
-class GroupSerializer(serializers.Serializer):
+class GroupSerializer(thrift_utils.create_serializer_class(GroupModel)):
     url = FullyEncodedHyperlinkedIdentityField(
         view_name='django_airavata_api:group-detail',
         lookup_field='id',
         lookup_url_kwarg='group_id')
-    id = serializers.CharField(
-        default=GroupModel.thrift_spec[1][4], allow_null=True)
-    name = serializers.CharField(required=True)
-    description = serializers.CharField(allow_null=True, allow_blank=True)
-    ownerId = serializers.CharField(read_only=True)
-    members = serializers.ListSerializer(child=serializers.CharField())
     isAdmin = serializers.SerializerMethodField()
     isOwner = serializers.SerializerMethodField()
     isMember = serializers.SerializerMethodField()
@@ -138,10 +157,15 @@ class GroupSerializer(serializers.Serializer):
     isReadOnlyGatewayAdminsGroup = serializers.SerializerMethodField()
     isDefaultGatewayUsersGroup = serializers.SerializerMethodField()
 
+    class Meta:
+        required = ('name',)
+        read_only = ('ownerId',)
+
     def create(self, validated_data):
-        validated_data['ownerId'] = self.context['request'].user.username + \
+        group = super().create(validated_data)
+        group.ownerId = self.context['request'].user.username + \
             "@" + settings.GATEWAY_ID
-        return GroupModel(**validated_data)
+        return group
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
@@ -155,16 +179,31 @@ class GroupSerializer(serializers.Serializer):
         instance._removed_members = list(removed_members)
         instance._added_members = list(added_members)
         instance.members = validated_data.get('members', instance.members)
+        # Calculate added and removed admins
+        old_admins = set(instance.admins)
+        new_admins = set(validated_data.get('admins', instance.admins))
+        removed_admins = old_admins - new_admins
+        added_admins = new_admins - old_admins
+        instance._removed_admins = list(removed_admins)
+        instance._added_admins = list(added_admins)
+        instance.admins = validated_data.get('admins', instance.admins)
+        # Add new admins that aren't members to the added_members list
+        instance._added_members.extend(list(added_admins - new_members))
+        instance.members.extend(list(added_admins - new_members))
         return instance
 
     def get_isAdmin(self, group):
         request = self.context['request']
         return request.profile_service['group_manager'].hasAdminAccess(
-            request.authz_token, group.id, request.user.username + "@" + settings.GATEWAY_ID)
+            request.authz_token,
+            group.id,
+            request.user.username + "@" + settings.GATEWAY_ID)
 
     def get_isOwner(self, group):
         request = self.context['request']
-        return group.ownerId == request.user.username + "@" + settings.GATEWAY_ID
+        return group.ownerId == (request.user.username +
+                                 "@" +
+                                 settings.GATEWAY_ID)
 
     def get_isMember(self, group):
         request = self.context['request']
@@ -244,6 +283,8 @@ class ApplicationModuleSerializer(
 
 class InputDataObjectTypeSerializer(
         thrift_utils.create_serializer_class(InputDataObjectType)):
+
+    metaData = StoredJSONField(required=False, allow_null=True)
 
     class Meta:
         required = ('name',)
@@ -542,8 +583,9 @@ class SharedEntitySerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         # Compute lists of ids to grant/revoke READ/WRITE
-        existing_user_permissions = {user['user'].airavataInternalUserId: user['permissionType']
-                                     for user in instance['userPermissions']}
+        existing_user_permissions = {
+            user['user'].airavataInternalUserId: user['permissionType']
+            for user in instance['userPermissions']}
         new_user_permissions = {
             user['user']['airavataInternalUserId']:
             user['permissionType']
@@ -645,3 +687,37 @@ class CredentialSummarySerializer(
         return request.airavata_client.userHasAccess(
             request.authz_token, credential_summary.token,
             ResourcePermissionType.WRITE)
+
+
+class StoragePreferenceSerializer(
+        thrift_utils.create_serializer_class(StoragePreference)):
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:storage-preference-detail',
+        lookup_field='storageResourceId',
+        lookup_url_kwarg='storage_resource_id')
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        # Convert empty string to null
+        if ret['resourceSpecificCredentialStoreToken'] == '':
+            ret['resourceSpecificCredentialStoreToken'] = None
+        return ret
+
+
+class GatewayResourceProfileSerializer(
+        thrift_utils.create_serializer_class(GatewayResourceProfile)):
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:gateway-resource-profile-detail',
+        lookup_field='gatewayID',
+        lookup_url_kwarg='gateway_id')
+    storagePreferences = StoragePreferenceSerializer(many=True)
+
+
+class StorageResourceSerializer(
+        thrift_utils.create_serializer_class(StorageResourceDescription)):
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:storage-resource-detail',
+        lookup_field='storageResourceId',
+        lookup_url_kwarg='storage_resource_id')
+    creationTime = UTCPosixTimestampDateTimeField()
+    updateTime = UTCPosixTimestampDateTimeField()

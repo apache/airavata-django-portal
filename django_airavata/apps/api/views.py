@@ -13,22 +13,28 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from airavata.api.error.ttypes import ProjectNotFoundException
-from airavata.model.appcatalog.computeresource.ttypes import (CloudJobSubmission,
-                                                              GlobusJobSubmission,
-                                                              LOCALSubmission,
-                                                              SSHJobSubmission,
-                                                              UnicoreJobSubmission)
+from airavata.model.appcatalog.computeresource.ttypes import (
+    CloudJobSubmission,
+    GlobusJobSubmission,
+    LOCALSubmission,
+    SSHJobSubmission,
+    UnicoreJobSubmission
+)
 from airavata.model.application.io.ttypes import DataType
 from airavata.model.credential.store.ttypes import SummaryType
-from airavata.model.data.movement.ttypes import (GridFTPDataMovement,
-                                                 LOCALDataMovement,
-                                                 SCPDataMovement,
-                                                 UnicoreDataMovement)
+from airavata.model.data.movement.ttypes import (
+    GridFTPDataMovement,
+    LOCALDataMovement,
+    SCPDataMovement,
+    UnicoreDataMovement
+)
 from airavata.model.group.ttypes import ResourcePermissionType
-from django_airavata.apps.api.view_utils import (APIBackedViewSet,
-                                                 APIResultIterator,
-                                                 APIResultPagination,
-                                                 GenericAPIBackedViewSet)
+from django_airavata.apps.api.view_utils import (
+    APIBackedViewSet,
+    APIResultIterator,
+    APIResultPagination,
+    GenericAPIBackedViewSet
+)
 
 from . import datastore, serializers, thrift_utils
 
@@ -73,28 +79,18 @@ class GroupViewSet(APIBackedViewSet):
         if len(group._removed_members) > 0:
             group_manager_client.removeUsersFromGroup(
                 self.authz_token, group._removed_members, group.id)
+        if len(group._added_admins) > 0:
+            group_manager_client.addGroupAdmins(
+                self.authz_token, group.id, group._added_admins)
+        if len(group._removed_admins) > 0:
+            group_manager_client.removeGroupAdmins(
+                self.authz_token, group.id, group._removed_admins)
         group_manager_client.updateGroup(self.authz_token, group)
 
     def perform_destroy(self, group):
         group_manager_client = self.request.profile_service['group_manager']
         group_manager_client.deleteGroup(
             self.authz_token, group.id, group.ownerId)
-
-    @detail_route(methods=['post'])
-    def add_admins(self, request, group_id=None):
-        admin_ids = request.data
-        group_manager_client = self.request.profile_service['group_manager']
-        result = group_manager_client.addGroupAdmins(
-            self.authz_token, group_id, admin_ids)
-        return Response({'success': result})
-
-    @detail_route(methods=['post'])
-    def remove_admins(self, request, group_id=None):
-        admin_ids = request.data
-        group_manager_client = self.request.profile_service['group_manager']
-        result = group_manager_client.removeGroupAdmins(
-            self.authz_token, group_id, admin_ids)
-        return Response({'success': result})
 
 
 class ProjectViewSet(APIBackedViewSet):
@@ -918,3 +914,96 @@ class CredentialSummaryViewSet(APIBackedViewSet):
         elif instance.type == SummaryType.PASSWD:
             self.request.airavata_client.deletePWDCredential(
                 self.authz_token, instance.token)
+
+
+class GatewayResourceProfileViewSet(APIBackedViewSet):
+    serializer_class = serializers.GatewayResourceProfileSerializer
+    lookup_field = 'gateway_id'
+    lookup_value_regex = '[^/]+'
+
+    def get_list(self):
+        return self.request.airavata_client.getAllGatewayResourceProfiles(
+            self.authz_token)
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getGatewayResourceProfile(
+            self.authz_token, lookup_value)
+
+    def perform_create(self, serializer):
+        gateway_resource_profile = serializer.save()
+        self.request.airavata_client.registerGatewayResourceProfile(
+            self.authz_token, gateway_resource_profile)
+
+    def perform_update(self, serializer):
+        gateway_resource_profile = serializer.save()
+        self.request.airavata_client.updateGatewayResourceProfile(
+            self.authz_token,
+            gateway_resource_profile.gatewayID,
+            gateway_resource_profile)
+
+    def perform_destroy(self, instance):
+        self.request.airavata_client.deleteGatewayResourceProfile(
+            self.authz_token, instance.gatewayID)
+
+
+class GetCurrentGatewayResourceProfile(APIView):
+
+    def get(self, request, format=None):
+        gateway_resource_profile = \
+            request.airavata_client.getGatewayResourceProfile(
+                request.authz_token, settings.GATEWAY_ID)
+        serializer = serializers.GatewayResourceProfileSerializer(
+            gateway_resource_profile, context={'request': request})
+        return Response(serializer.data)
+
+
+class StorageResourceViewSet(mixins.RetrieveModelMixin,
+                             GenericAPIBackedViewSet):
+    serializer_class = serializers.StorageResourceSerializer
+    lookup_field = 'storage_resource_id'
+    lookup_value_regex = '[^/]+'
+
+    def get_instance(self, lookup_value, format=None):
+        return self.request.airavata_client.getStorageResource(
+            self.authz_token, lookup_value)
+
+    @list_route()
+    def all_names(self, request, format=None):
+        """Return a map of compute resource names keyed by resource id."""
+        return Response(
+            request.airavata_client.getAllStorageResourceNames(
+                request.authz_token))
+
+
+class StoragePreferenceViewSet(APIBackedViewSet):
+    serializer_class = serializers.StoragePreferenceSerializer
+    lookup_field = 'storage_resource_id'
+    lookup_value_regex = '[^/]+'
+
+    def get_list(self):
+        return self.request.airavata_client.getAllGatewayStoragePreferences(
+            self.authz_token, settings.GATEWAY_ID)
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getGatewayStoragePreference(
+            self.authz_token, settings.GATEWAY_ID, lookup_value)
+
+    def perform_create(self, serializer):
+        storage_preference = serializer.save()
+        self.request.airavata_client.addGatewayStoragePreference(
+            self.authz_token,
+            settings.GATEWAY_ID,
+            storage_preference.storageResourceId,
+            storage_preference)
+
+    def perform_update(self, serializer):
+        storage_preference = serializer.save()
+        self.request.airavata_client.updateGatewayStoragePreference(
+            self.authz_token,
+            settings.GATEWAY_ID,
+            storage_preference.storageResourceId,
+            storage_preference)
+
+    def perform_destroy(self, instance):
+        self.request.airavata_client.deleteGatewayStoragePreference(
+            self.authz_token, settings.GATEWAY_ID, instance.storageResourceId)

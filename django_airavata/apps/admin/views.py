@@ -5,7 +5,10 @@ from django.urls import reverse
 
 @login_required
 def home(request):
-    return redirect(reverse('django_airavata_admin:app_catalog'))
+    if request.is_gateway_admin or request.is_read_only_gateway_admin:
+        return redirect(reverse('django_airavata_admin:app_catalog'))
+    else:
+        return redirect(reverse('django_airavata_admin:group_resource_profile'))
 
 
 @login_required
@@ -28,4 +31,10 @@ def compute_resource(request):
 @login_required
 def group_resource_profile(request):
     request.active_nav_item = 'group_resource_profile'
+    return render(request, 'admin/admin_base.html')
+
+
+@login_required
+def gateway_resource_profile(request):
+    request.active_nav_item = 'gateway_resource_profile'
     return render(request, 'admin/admin_base.html')

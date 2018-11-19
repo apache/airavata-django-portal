@@ -30,8 +30,16 @@ router.register(r'shared-entities', views.SharedEntityViewSet,
                 base_name='shared-entity')
 router.register(r'compute-resources', views.ComputeResourceViewSet,
                 base_name='compute-resource')
+router.register(r'storage-resources', views.StorageResourceViewSet,
+                base_name='storage-resource')
 router.register(r'credential-summaries', views.CredentialSummaryViewSet,
                 base_name='credential-summary')
+router.register(r'gateway-resource-profiles',
+                views.GatewayResourceProfileViewSet,
+                base_name='gateway-resource-profile')
+router.register(r'storage-preferences',
+                views.StoragePreferenceViewSet,
+                base_name='storage-preference')
 
 app_name = 'django_airavata_api'
 urlpatterns = [
@@ -56,6 +64,9 @@ urlpatterns = [
         name="unicore_ftp_data_movement"),
     url(r'^data/movement/scp', views.ScpDataMovementView.as_view(),
         name="scp_ftp_data_movement"),
+    url(r'^gateway-resource-profile',
+        views.GetCurrentGatewayResourceProfile.as_view(),
+        name="current_gateway_resource_profile"),
 ]
 
 if logger.isEnabledFor(logging.DEBUG):

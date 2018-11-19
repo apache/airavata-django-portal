@@ -2,16 +2,19 @@
   <div>
     <b-input-group>
       <b-form-select v-model="data" :options="credentialStoreTokenOptions">
-        <template v-if="$slots.first" slot="first">
-          <slot name="first">
-            <option :value="null">
-              Use the default SSH credential
-            </option>
+        <option v-if="nullOption" slot="first" :value="null" :disabled="nullOptionDisabled">
+          <slot name="null-option-label" :defaultCredentialSummary="defaultCredentialSummary">
+            <span v-if="defaultCredentialSummary">
+              Use the default SSH credential ({{ defaultCredentialSummary.description }})
+            </span>
+            <span v-else>
+              Unset the default SSH credential
+            </span>
           </slot>
-        </template>
+        </option>
       </b-form-select>
       <b-input-group-append>
-        <clipboard-copy-button variant="secondary" :disabled="!selectedCredential" :text="selectedCredential ? selectedCredential.publicKey : null">
+        <clipboard-copy-button variant="secondary" :disabled="!copySSHPublicKeyText" :text="copySSHPublicKeyText">
         </clipboard-copy-button>
         <b-button variant="secondary" @click="showNewSSHCredentialModal">
           <font-awesome-icon icon="plus" />
@@ -23,15 +26,31 @@
 </template>
 
 <script>
-import vmodel_mixin from "../commons/vmodel_mixin";
 import { services } from "django-airavata-api";
+import { mixins } from "django-airavata-common-ui";
 import ClipboardCopyButton from "../commons/ClipboardCopyButton.vue";
 import NewSSHCredentialModal from "../credentials/NewSSHCredentialModal.vue";
 
 export default {
+  // TODO: disable if the 'value' is not in the list of loaded credentials?
+  // Because it would mean that the user doesn't have access to this credential.
+  // Maybe display 'You don't have access to this credential'.
   name: "ssh-credential-selector",
-  props: {},
-  mixins: [vmodel_mixin],
+  props: {
+    nullOption: {
+      type: Boolean,
+      default: true
+    },
+    // This is the default credential token that will be used if the null option is selected
+    nullOptionDefaultCredentialToken: {
+      type: String
+    },
+    nullOptionDisabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+  mixins: [mixins.VModelMixin],
   components: {
     ClipboardCopyButton,
     "new-ssh-credential-modal": NewSSHCredentialModal
@@ -60,6 +79,20 @@ export default {
       return this.credentials
         ? this.credentials.find(cred => cred.token === this.data)
         : null;
+    },
+    defaultCredentialSummary() {
+      return this.nullOptionDefaultCredentialToken && this.credentials
+        ? this.credentials.find(
+            cred => cred.token === this.nullOptionDefaultCredentialToken
+          )
+        : null;
+    },
+    copySSHPublicKeyText() {
+      return this.selectedCredential
+        ? this.selectedCredential.publicKey
+        : this.defaultCredentialSummary
+          ? this.defaultCredentialSummary.publicKey
+          : null;
     }
   },
   methods: {

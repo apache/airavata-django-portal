@@ -2,9 +2,12 @@ import ApplicationDeploymentDescription from "./models/ApplicationDeploymentDesc
 import ApplicationModule from "./models/ApplicationModule";
 import ComputeResourceDescription from "./models/ComputeResourceDescription";
 import CredentialSummary from "./models/CredentialSummary";
+import GatewayResourceProfile from "./models/GatewayResourceProfile";
 import Group from "./models/Group";
 import GroupResourceProfile from "./models/GroupResourceProfile";
 import SharedEntity from "./models/SharedEntity";
+import StoragePreference from "./models/StoragePreference";
+import StorageResourceDescription from "./models/StorageResourceDescription";
 import UserProfile from "./models/UserProfile";
 import ApplicationInterfaceDefinition from "./models/ApplicationInterfaceDefinition";
 import BatchQueue from "./models/BatchQueue";
@@ -178,6 +181,33 @@ export default {
     ],
     modelClass: CredentialSummary
   },
+  GatewayResourceProfiles: {
+    url: "/api/gateway-resource-profiles/",
+    viewSet: [
+      {
+        name: "list"
+      },
+      {
+        name: "create"
+      },
+      {
+        name: "retrieve"
+      },
+      {
+        name: "update"
+      },
+      {
+        name: "delete"
+      },
+      {
+        name: "current",
+        url: "/api/gateway-resource-profile/",
+        requestType: "get",
+        modelClass: GatewayResourceProfile
+      }
+    ],
+    modelClass: GatewayResourceProfile
+  },
   GroupResourceProfiles: {
     url: "/api/group-resource-profiles/",
     viewSet: true,
@@ -210,6 +240,25 @@ export default {
       }
     ],
     modelClass: SharedEntity
+  },
+  StoragePreferences: {
+    url: "/api/storage-preferences/",
+    viewSet: true,
+    modelClass: StoragePreference
+  },
+  StorageResources: {
+    url: "/api/storage-resources",
+    viewSet: [
+      {
+        name: "retrieve"
+      },
+      {
+        name: "names",
+        url: "/api/storage-resources/all_names/",
+        requestType: "get"
+      }
+    ],
+    modelClass: StorageResourceDescription
   },
   UserProfiles: {
     url: "/api/user-profiles",

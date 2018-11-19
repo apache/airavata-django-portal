@@ -9,14 +9,17 @@ from thrift.transport import TSocket, TSSLSocket, TTransport
 from airavata.api import Airavata
 from airavata.api.sharing import SharingRegistryService
 from airavata.service.profile.groupmanager.cpi import GroupManagerService
-from airavata.service.profile.groupmanager.cpi.constants import \
+from airavata.service.profile.groupmanager.cpi.constants import (
     GROUP_MANAGER_CPI_NAME
+)
 from airavata.service.profile.iam.admin.services.cpi import IamAdminServices
-from airavata.service.profile.iam.admin.services.cpi.constants import \
+from airavata.service.profile.iam.admin.services.cpi.constants import (
     IAM_ADMIN_SERVICES_CPI_NAME
+)
 from airavata.service.profile.tenant.cpi import TenantProfileService
-from airavata.service.profile.tenant.cpi.constants import \
+from airavata.service.profile.tenant.cpi.constants import (
     TENANT_PROFILE_CPI_NAME
+)
 from airavata.service.profile.user.cpi import UserProfileService
 from airavata.service.profile.user.cpi.constants import USER_PROFILE_CPI_NAME
 
@@ -24,6 +27,10 @@ log = logging.getLogger(__name__)
 
 
 class ThriftConnectionException(Exception):
+    pass
+
+
+class ThriftClientException(Exception):
     pass
 
 
@@ -162,12 +169,16 @@ def get_thrift_client(host, port, is_secure, client_generator):
             yield client
         except Exception as e:
             log.exception("Thrift client error occurred")
-            raise e
+            raise ThriftClientException(
+                "Thrift client error occurred: " + str(e)) from e
         finally:
             if transport.isOpen():
                 transport.close()
                 log.debug("Thrift connection closed to {}:{}, "
                           "secure={}".format(host, port, is_secure))
+    except ThriftClientException as tce:
+        # Allow thrift client errors to bubble up
+        raise tce
     except Exception as e:
         msg = "Failed to open thrift connection to {}:{}, secure={}".format(
             host, port, is_secure)

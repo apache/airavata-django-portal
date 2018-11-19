@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django_airavata.apps.admin.apps.AdminConfig',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -182,6 +183,9 @@ REST_FRAMEWORK = {
 AUTHENTICATION_BACKENDS = [
     'django_airavata.apps.auth.backends.KeycloakBackend'
 ]
+
+# Default email backend (for local development)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Wagtail related stuff
 WAGTAIL_SITE_NAME = 'Django Airavata Portal'

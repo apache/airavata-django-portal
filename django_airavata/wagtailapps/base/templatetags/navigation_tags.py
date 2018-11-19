@@ -1,11 +1,17 @@
 from django import template
+from django.conf import settings
 from wagtail.core.models import Page
 
-from django_airavata.wagtailapps.base.models import (Announcements, CustomCss,
-                                                     CustomHeaderLinks,
-                                                     FooterText, GatewayIcon,
-                                                     GatewayTitle, Navbar,
-                                                     NavExtra)
+from django_airavata.wagtailapps.base.models import (
+    Announcements,
+    CustomCss,
+    CustomHeaderLinks,
+    FooterText,
+    GatewayIcon,
+    GatewayTitle,
+    Navbar,
+    NavExtra
+)
 
 register = template.Library()
 # https://docs.djangoproject.com/en/1.9/howto/custom-template-tags/
@@ -175,5 +181,6 @@ def gateway_title(context):
     gateway_title = GatewayTitle.objects.first()
 
     return {
-        'gateway_title': gateway_title
+        'gateway_title': gateway_title,
+        'default_title': settings.PORTAL_TITLE,
     }

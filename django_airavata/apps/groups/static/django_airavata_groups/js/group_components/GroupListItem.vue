@@ -5,7 +5,7 @@
             <b-badge v-if="group.isReadOnlyGatewayAdminsGroup">Read Only Admins</b-badge>
             <b-badge v-if="group.isDefaultGatewayUsersGroup">Default</b-badge>
         </td>
-        <td>{{ group.ownerId }}</td>
+        <td>{{ ownerUsername }}</td>
         <td>{{ group.description }}</td>
         <td>
             <a v-if="group.isOwner || group.isAdmin"
@@ -53,12 +53,19 @@ export default {
                 && this.group.isGatewayAdminsGroup === false
                 && this.group.isReadOnlyGatewayAdminsGroup === false
                 && this.group.isDefaultGatewayUsersGroup === false;
+        },
+        ownerUsername() {
+          const lastAtIndex = this.group.ownerId.lastIndexOf("@");
+          if (lastAtIndex > 0) {
+            return this.group.ownerId.substring(0, lastAtIndex);
+          }
+          return this.group.ownerId;
         }
     },
     methods: {
       deleteGroup(id) {
           this.deleting = true;
-          services.GroupService.delete(id)
+          services.GroupService.delete({lookup: id})
               .then(result => {
                   this.$emit('deleteSuccess','Group Deleted Successfully!');
                   this.show = false;
