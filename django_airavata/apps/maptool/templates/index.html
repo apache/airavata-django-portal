@@ -52,7 +52,7 @@
                 if (isChecked) {
                     isChecked = this.checked = false;
                     switch(radio_button_id){
-                        case "cost_surface":
+                        case "cost_surface":map.removeLayer(cost_surface_layer);
                                             break;
                         case "source_sink_chemical":map.removeLayer(chemicalClusters)
                               break;
@@ -149,7 +149,7 @@
                 } else {
                     isChecked = true;
                     switch(radio_button_id){
-                        case "cost_surface":
+                        case "cost_surface":cost_surface_layer.addTo(map);
                                             break;
                         case "source_sink_chemical":map.addLayer(chemicalClusters);
                               break;
