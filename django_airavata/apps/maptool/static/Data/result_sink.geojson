@@ -1,0 +1,14 @@
+{
+"type": "FeatureCollection",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+                                                                                
+"features": [
+{ "type": "Feature", "properties": { "Id": "1", "X": -91.295833, "Y": 28.995837, "CO2Strd": null, "MxStrg": 37.9, "PieWdge": 37.9, "WllsUsed": null, "MxWlls": null, "ActCst": null, "TtlCst": null, "Name": null, "Cell#": null }, "geometry": { "type": "Point", "coordinates": [ -91.295829772949219, 28.99583625793457 ] } },
+{ "type": "Feature", "properties": { "Id": "2", "X": -91.179167, "Y": 31.55417, "CO2Strd": null, "MxStrg": 37.9, "PieWdge": 37.9, "WllsUsed": null, "MxWlls": null, "ActCst": null, "TtlCst": null, "Name": null, "Cell#": null }, "geometry": { "type": "Point", "coordinates": [ -91.179168701171875, 31.554170608520508 ] } },
+{ "type": "Feature", "properties": { "Id": "3", "X": -88.504166, "Y": 30.50417, "CO2Strd": null, "MxStrg": 36.0, "PieWdge": 36.0, "WllsUsed": null, "MxWlls": null, "ActCst": null, "TtlCst": null, "Name": null, "Cell#": null }, "geometry": { "type": "Point", "coordinates": [ -88.504165649414062, 30.504169464111328 ] } },
+{ "type": "Feature", "properties": { "Id": "4", "X": -88.2375, "Y": 31.095837, "CO2Strd": null, "MxStrg": 49.8, "PieWdge": 49.8, "WllsUsed": null, "MxWlls": null, "ActCst": null, "TtlCst": null, "Name": null, "Cell#": null }, "geometry": { "type": "Point", "coordinates": [ -88.237503051757812, 31.095836639404297 ] } },
+{ "type": "Feature", "properties": { "Id": "5", "X": -86.795833, "Y": 30.712504, "CO2Strd": null, "MxStrg": 48.0, "PieWdge": 48.0, "WllsUsed": null, "MxWlls": null, "ActCst": null, "TtlCst": null, "Name": null, "Cell#": null }, "geometry": { "type": "Point", "coordinates": [ -86.795829772949219, 30.712503433227539 ] } },
+{ "type": "Feature", "properties": { "Id": "6", "X": -84.845833, "Y": 30.612504, "CO2Strd": 5.0, "MxStrg": 54.9, "PieWdge": 49.9, "WllsUsed": null, "MxWlls": null, "ActCst": null, "TtlCst": null, "Name": null, "Cell#": null }, "geometry": { "type": "Point", "coordinates": [ -84.845832824707031, 30.612503051757812 ] } },
+{ "type": "Feature", "properties": { "Id": "7", "X": -81.679166, "Y": 31.72917, "CO2Strd": null, "MxStrg": 84.5, "PieWdge": 84.5, "WllsUsed": null, "MxWlls": null, "ActCst": null, "TtlCst": null, "Name": null, "Cell#": null }, "geometry": { "type": "Point", "coordinates": [ -81.679168701171875, 31.729169845581055 ] } }
+]
+}

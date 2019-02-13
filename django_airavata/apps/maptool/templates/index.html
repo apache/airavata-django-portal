@@ -22,6 +22,9 @@
 <script src="{% static 'js/leaflet.markercluster-src.js' %}"></script>
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/leaflet.css' %}" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css">
+
 
 
 
@@ -234,20 +237,7 @@
                         break;
                         case "france_sink":map.addLayer(france_sink_cluster);
                         break;
-
-
-
-
-
-
-
-
-
-
-
                     }
-
-
                 }
             } else {
                 isChecked = this.checked;
@@ -257,6 +247,153 @@
 
 });
 
+var geojsonMarkerOptions = {
+  radius: 8,
+  fillColor: "blue",
+  color: "#000",
+  weight: 1,
+  opacity: 1,
+  fillOpacity: 0.7,
+  pane: "pointsPane"
+};
+
+var selection=[];
+var sinkselection=[];
+function sourceOnEachFeature(feature, layer) {
+    //bind click
+    layer.on('click', function (e) {
+      var target_id = selection.indexOf(e.target)
+      if (target_id >=0 ) {e.target.setStyle(geojsonMarkerOptions);selection.splice(target_id,1);}
+      else {e.target.setStyle({weight:2,color:"white",fillColor:"purple",radius:12});
+            selection.push(e.target);}
+    })};
+
+function sinkOnEachFeature(feature, layer) {
+    //bind click
+    layer.bindTooltip("<strong>CO2_Low(t):"+feature.properties.CO2_Low__t.toString()+"<strong>");
+    layer.on('click', function (e) {
+      var target_id = sinkselection.indexOf(e.target)
+      if (target_id >=0 ) {e.target.setStyle({weight:1,color:'grey',fillOpacity:0.4});sinkselection.splice(target_id,1);}
+      else {e.target.setStyle({weight:2,color:"white",fillOpacity:0.7});
+            sinkselection.push(e.target);}
+    })};
+
+var sourceLayer = new L.geoJSON('', {
+  pointToLayer: function (feature, latlng) {
+      var content_str="<strong>"+feature.id+"<br>"+feature.properties.Facility_N +'<br>CO2 emission:'+feature.properties.CO2_Emissi+"</strong>";
+      //var mypopup = L.popup().setContent(content_str);
+      var mymarker = L.circleMarker(latlng, geojsonMarkerOptions);
+      //mymarker.bindPopup(mypopup);
+      mymarker.bindTooltip(content_str);
+      return mymarker;       
+  },
+  //pane: "pointsPane",
+  onEachFeature: sourceOnEachFeature
+});
+var sinkLayer = new L.geoJSON('',{style: function(feature){
+      var co2 = feature.properties.CO2_Low__t;
+      var fillcolor = ''; 
+      if (co2 >= 1 && co2 < 5e+06) {fillcolor = '#f50000';} 
+      else if (co2 >=5e+06 && co2 < 5e+07) {fillcolor ='#fdff00'}
+      else {fillcolor = '#00f905'}
+      return {'color':'grey','weight':1,'fillColor':fillcolor,'fillOpacity': 0.3,pane: "polygonsPane"};
+    },
+
+    onEachFeature: sinkOnEachFeature
+    })
+
+      function loadjson(data) {
+            sourceLayer.addData(data);
+            sourceLayer.addTo(map);
+      }
+
+      function loadsinklayer(data) {
+            sinkLayer.addData(data);
+            sinkLayer.addTo(map);
+            //sinkLayer.bringToBack();
+      }
+
+      function show_drawingtool(){
+            // Initialise the FeatureGroup to store editable layers
+            var editableLayers = new L.FeatureGroup();
+            map.addLayer(editableLayers);
+
+            var drawPluginOptions = {
+            position: 'topright',
+            draw: {
+            polygon: {
+                  allowIntersection: false, // Restricts shapes to simple polygons
+                  drawError: {
+                  color: '#e1e100', // Color the shape will turn when intersects
+                  message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+                  },
+                  shapeOptions: {
+                  color: '#97009c'
+                  }
+            },
+            // disable toolbar item by setting it to false
+            polyline: false,
+            circle: true, // Turns off this drawing tool
+            rectangle: true,
+            marker: false,
+            },
+            edit: {
+            featureGroup: editableLayers, //REQUIRED!!
+            remove: false
+            }};
+            // Initialise the draw control and pass it the FeatureGroup of editable layers
+            var drawControl = new L.Control.Draw(drawPluginOptions);
+            map.addControl(drawControl);
+            //alert("Use drawing tool to setup a working area!");
+
+
+            var editableLayers = new L.FeatureGroup();
+            map.addLayer(editableLayers);
+
+            map.on('draw:created', function(e) {
+            var type = e.layerType,
+            layer = e.layer;
+            editableLayers.addLayer(layer);
+            var geom = layer.toGeoJSON()['geometry']['coordinates'];
+            //alert(JSON.stringify(geom));
+            var coordstr=[];
+            for (i = 0, len = geom[0].length; i < len; i++) {
+            coordstr[i]= (geom[0][i].toString()).replace(',',' ');} 
+            //alert(coordstr.join(','));
+            var geourl='http://172.16.104.137:8080/geoserver/SimCCS/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=SimCCS:Source_Power_Plants,SimCSS:Source_Petroleum_and_Natural_Gas_Systems,SimCSS:Source_Other,SimCSS:Source_Pulp_and_Paper,SimCSS:Source_Metals&maxFeatures=500&outputFormat=text%2Fjavascript&format_options=callback:loadjson';
+            var cqlfilter = '&cql_filter=Intersects(the_geom,Polygon((';
+            cqlfilter += coordstr.join(',');
+            cqlfilter += ')))';
+            if (type == 'circle'){
+                  cqlfilter = '&cql_filter=DWithin(the_geom,Point(';
+                  cqlfilter += geom[0].toString() + ' '+geom[1].toString()+'),';
+                  var latitude = geom[1];
+                  var radius = 0.90 * layer.getRadius()/(111.32 * 1000 * Math.cos(latitude * (3.1415926 / 180)));
+                  cqlfilter += radius.toString() + ',kilometers)';
+            }
+            geourl += cqlfilter;
+            //alert(geourl);
+            //get source layer
+            $.ajax({
+                  url: geourl,
+                  jsonp: "callback",
+                  dataType: "jsonp"
+            });
+            //get sink layer
+            var sinkurl='http://gf8.ucs.indiana.edu/geoserver/SimCCS/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=SimCCS:NATCARB_SALINE&maxFeatures=1000&outputFormat=text%2Fjavascript&format_options=callback:loadsinklayer';
+            sinkurl += cqlfilter;
+            $.ajax({
+                  url: sinkurl,
+                  jsonp: "callback",
+                  dataType: "jsonp"
+            });
+            layer.remove();
+            //layer.setStyle({'color':'grey','fillOpacity': 0.0});
+            map.removeControl(drawControl);
+            });
+
+
+      };
   </script>
   <!--<link rel="stylesheet" href="{% static 'css/mapTool.css' %}" type="text/css" />-->
   <style type="text/css">
@@ -421,6 +558,8 @@
                         </div>
 
                       </div>
+                      <button type="button" class="btn btn-primary btn-sm btn-block" onclick="show_drawingtool()">Set up working area</button>
+
                       <div class="panel-footer"/>
 
                   </div>

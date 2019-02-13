@@ -29,6 +29,47 @@ L.CursorHandler = L.Handler.extend({
 
 
 });
+
+function display_result_sample(){
+    $.getJSON('/static/Data/result_source.geojson',function (data) {
+        var result_sourceLayer = new L.geoJSON(data, {
+            pointToLayer: function (feature, latlng) {
+                //var mypopup = L.popup().setContent(content_str);
+                var mymarker = L.circleMarker(latlng,{radius: 6,fillColor: "red",
+                color: "#000",weight: 1,opacity: 1,fillOpacity: 0.7});
+                //mymarker.bindPopup(mypopup);
+                return mymarker;       
+            }
+        });
+        map.addLayer(result_sourceLayer);
+    });
+    $.getJSON('/static/Data/result_sink.geojson',function (data) {
+        var result_sinkLayer = new L.geoJSON(data, {
+            pointToLayer: function (feature, latlng) {
+                //var mypopup = L.popup().setContent(content_str);
+                var mymarker = L.circleMarker(latlng,{radius: 6,fillColor: "green",
+                    color: "#000",weight: 1,opacity: 1,fillOpacity: 0.7});
+                //mymarker.bindPopup(mypopup);
+                return mymarker;       
+            }
+        });
+        map.addLayer(result_sinkLayer);
+    });
+    $.getJSON('/static/Data/result_network_110MTyr.geojson',function (data) {
+        var result_110networkLayer = new L.geoJSON(data);
+        map.addLayer(result_110networkLayer);
+    });
+    $.getJSON('/static/Data/result_network_50MTyr.geojson',function (data) {
+        var result_50networkLayer = new L.geoJSON(data,{style:{color:"Green"}});
+        map.addLayer(result_50networkLayer);
+    });
+    $.getJSON('/static/Data/result_network_5MTyr.geojson',function (data) {
+        result_5networkLayer = new L.geoJSON(data,{style:{color:"red"}});
+        map.addLayer(result_5networkLayer);
+    });
+
+}
+
 // L.Map.addInitHook('addHandler', 'cursor', L.CursorHandler);
 map = L.map('map',{cursor:true}).setView([38.420836729,-87.762496593], 8);
 // map=L.map('leaflet',{
@@ -41,6 +82,13 @@ map = L.map('map',{cursor:true}).setView([38.420836729,-87.762496593], 8);
     osmAttrib='Map data © <a href="//openstreetmap.org">OpenStreetMap</a> contributors';
     osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 15, attribution: osmAttrib});
     map.addLayer(osm);
+
+    map.createPane("polygonsPane");
+    map.createPane("linesPane");
+    map.createPane("pointsPane");
+
+    display_result_sample();
+
     //Draw the cost area of 80km
     var boundry_circle_options={
 
