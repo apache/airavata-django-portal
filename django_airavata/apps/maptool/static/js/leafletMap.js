@@ -31,7 +31,7 @@ L.CursorHandler = L.Handler.extend({
 });
 
 function display_result_sample(){
-    var layercontrol = new L.control.layers();
+    //var layercontrol = new L.control.layers();
     $.getJSON('/static/Data/result_source.geojson',function (data) {
         var result_sourceLayer = new L.geoJSON(data, {
             pointToLayer: function (feature, latlng) {
@@ -59,7 +59,7 @@ function display_result_sample(){
         layercontrol.addOverlay(result_sinkLayer,"Sinks");
     });
     $.getJSON('/static/Data/SoutheastUS_Network.json',function (data) {
-        var result_candidnetworkLayer = new L.geoJSON(data,{style:{color:"grey",weight:2}});
+        var result_candidnetworkLayer = new L.geoJSON(data,{style:{color:"black",opacity:0.5,weight:2}});
         map.addLayer(result_candidnetworkLayer);
         layercontrol.addOverlay(result_candidnetworkLayer,"Candidate");
 
@@ -84,6 +84,8 @@ function display_result_sample(){
 }
 
 // L.Map.addInitHook('addHandler', 'cursor', L.CursorHandler);
+var layercontrol = new L.control.layers();
+
 map = L.map('map',{cursor:true}).setView([38.420836729,-87.762496593], 8);
 // map=L.map('leaflet',{
 //     center:[38.420836729,-87.762496593],
@@ -124,8 +126,7 @@ map = L.map('map',{cursor:true}).setView([38.420836729,-87.762496593], 8);
     //     }
     // });
 
-
-
+//define a layercontrol layer;
 
 var chemicalIcon = L.icon({
     // iconUrl: 'http://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/map-marker-icon.png',
@@ -683,7 +684,7 @@ var geojsonLineOptions = {
                 transparent: true
         });
 
-        var cost_surface_layer = L.tileLayer.wms("http://172.16.104.137:8080/geoserver/SimCCS/wms?", {
+        var cost_surface_layer = L.tileLayer.wms("http://172.16.104.138:8080/geoserver/SimCCS/wms?", {
             layers: 'SimCCS:cost',
             format: 'image/png',
             transparent: true,

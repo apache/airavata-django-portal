@@ -259,6 +259,7 @@ var geojsonMarkerOptions = {
 
 var selection=[];
 var sinkselection=[];
+var sinkselection2=[];
 function sourceOnEachFeature(feature, layer) {
     //bind click
     layer.on('click', function (e) {
@@ -278,6 +279,16 @@ function sinkOnEachFeature(feature, layer) {
             sinkselection.push(e.target);}
     })};
 
+function sinkOnEachFeature2(feature, layer) {
+    //bind click
+    layer.bindTooltip("<strong>CO2_Low(t):"+feature.properties.VOL_LOW.toString()+"<strong>");
+    layer.on('click', function (e) {
+      var target_id = sinkselection2.indexOf(e.target)
+      if (target_id >=0 ) {e.target.setStyle({weight:1,color:'grey',fillOpacity:0.4});sinkselection2.splice(target_id,1);}
+      else {e.target.setStyle({weight:2,color:"white",fillOpacity:0.7});
+            sinkselection2.push(e.target);}
+    })};
+
 var sourceLayer = new L.geoJSON('', {
   pointToLayer: function (feature, latlng) {
       var content_str="<strong>"+feature.id+"<br>"+feature.properties.Facility_N +'<br>CO2 emission:'+feature.properties.CO2_Emissi+"</strong>";
@@ -290,6 +301,7 @@ var sourceLayer = new L.geoJSON('', {
   //pane: "pointsPane",
   onEachFeature: sourceOnEachFeature
 });
+
 var sinkLayer = new L.geoJSON('',{style: function(feature){
       var co2 = feature.properties.CO2_Low__t;
       var fillcolor = ''; 
@@ -302,18 +314,45 @@ var sinkLayer = new L.geoJSON('',{style: function(feature){
     onEachFeature: sinkOnEachFeature
     })
 
+var sinkLayer2 = new L.geoJSON('',{style: function(feature){
+      var co2 = feature.properties.VOL_LOW;
+      var fillcolor = ''; 
+      if (co2 >= 1 && co2 < 5e+06) {fillcolor = '#f50000';} 
+      else if (co2 >=5e+06 && co2 < 5e+07) {fillcolor ='#fdff00'}
+      else {fillcolor = '#00f905'}
+      return {'color':'grey','weight':1,'fillColor':fillcolor,'fillOpacity': 0.3,pane: "polygonsPane"};
+    },
+
+    onEachFeature: sinkOnEachFeature2
+    })
       function loadjson(data) {
             sourceLayer.addData(data);
             sourceLayer.addTo(map);
+            layercontrol.addOverlay(sourceLayer,"Sources");
       }
 
       function loadsinklayer(data) {
             sinkLayer.addData(data);
             sinkLayer.addTo(map);
+            layercontrol.addOverlay(sinkLayer,"SALINES");
+            //sinkLayer.bringToBack();
+      }
+      
+      function loadsinklayer2(data) {
+            sinkLayer2.addData(data);
+            sinkLayer2.addTo(map);
+            layercontrol.addOverlay(sinkLayer2,"Oil/Gas");
             //sinkLayer.bringToBack();
       }
 
       function show_drawingtool(){
+            //remove layer control
+            map.eachLayer(function (layer) {
+                  layercontrol.removeLayer(layer);
+            });
+
+            map.removeControl(layercontrol);
+
             // Initialise the FeatureGroup to store editable layers
             var editableLayers = new L.FeatureGroup();
             map.addLayer(editableLayers);
@@ -360,7 +399,7 @@ var sinkLayer = new L.geoJSON('',{style: function(feature){
             for (i = 0, len = geom[0].length; i < len; i++) {
             coordstr[i]= (geom[0][i].toString()).replace(',',' ');} 
             //alert(coordstr.join(','));
-            var geourl='http://172.16.104.137:8080/geoserver/SimCCS/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=SimCCS:Source_Power_Plants,SimCSS:Source_Petroleum_and_Natural_Gas_Systems,SimCSS:Source_Other,SimCSS:Source_Pulp_and_Paper,SimCSS:Source_Metals&maxFeatures=500&outputFormat=text%2Fjavascript&format_options=callback:loadjson';
+            var geourl='http://172.16.104.138:8080/geoserver/SimCCS/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=SimCCS:Source_Power_Plants,SimCSS:Source_Petroleum_and_Natural_Gas_Systems,SimCSS:Source_Other,SimCSS:Source_Pulp_and_Paper,SimCSS:Source_Metals&maxFeatures=500&outputFormat=text%2Fjavascript&format_options=callback:loadjson';
             var cqlfilter = '&cql_filter=Intersects(the_geom,Polygon((';
             cqlfilter += coordstr.join(',');
             cqlfilter += ')))';
@@ -387,9 +426,18 @@ var sinkLayer = new L.geoJSON('',{style: function(feature){
                   jsonp: "callback",
                   dataType: "jsonp"
             });
+            var sinkurl2='http://gf8.ucs.indiana.edu/geoserver/SimCCS/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=SimCCS:NATCARB_OG&maxFeatures=1000&outputFormat=text%2Fjavascript&format_options=callback:loadsinklayer2';
+            sinkurl2 += cqlfilter;
+            $.ajax({
+                  url: sinkurl2,
+                  jsonp: "callback",
+                  dataType: "jsonp"
+            });
             layer.remove();
             //layer.setStyle({'color':'grey','fillOpacity': 0.0});
             map.removeControl(drawControl);
+            layercontrol.addTo(map);
+
             });
 
 
