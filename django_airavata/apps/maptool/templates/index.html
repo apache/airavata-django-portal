@@ -334,14 +334,14 @@ var sinkLayer2 = new L.geoJSON('',{style: function(feature){
       function loadsinklayer(data) {
             sinkLayer.addData(data);
             sinkLayer.addTo(map);
-            layercontrol.addOverlay(sinkLayer,"SALINES");
+            layercontrol.addOverlay(sinkLayer,"Sinks:Salines");
             //sinkLayer.bringToBack();
       }
       
       function loadsinklayer2(data) {
             sinkLayer2.addData(data);
             sinkLayer2.addTo(map);
-            layercontrol.addOverlay(sinkLayer2,"Oil/Gas");
+            layercontrol.addOverlay(sinkLayer2,"Sinks:Oil/Gas");
             //sinkLayer.bringToBack();
       }
 
