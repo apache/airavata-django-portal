@@ -399,7 +399,7 @@ var sinkLayer2 = new L.geoJSON('',{style: function(feature){
             for (i = 0, len = geom[0].length; i < len; i++) {
             coordstr[i]= (geom[0][i].toString()).replace(',',' ');} 
             //alert(coordstr.join(','));
-            var geourl='http://172.16.104.138:8080/geoserver/SimCCS/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=SimCCS:Source_Power_Plants,SimCSS:Source_Petroleum_and_Natural_Gas_Systems,SimCSS:Source_Other,SimCSS:Source_Pulp_and_Paper,SimCSS:Source_Metals&maxFeatures=500&outputFormat=text%2Fjavascript&format_options=callback:loadjson';
+            var geourl='http://gf8.ucs.indiana.edu/geoserver/SimCCS/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=SimCCS:Source_Power_Plants,SimCSS:Source_Petroleum_and_Natural_Gas_Systems,SimCSS:Source_Other,SimCSS:Source_Pulp_and_Paper,SimCSS:Source_Metals&maxFeatures=500&outputFormat=text%2Fjavascript&format_options=callback:loadjson';
             var cqlfilter = '&cql_filter=Intersects(the_geom,Polygon((';
             cqlfilter += coordstr.join(',');
             cqlfilter += ')))';

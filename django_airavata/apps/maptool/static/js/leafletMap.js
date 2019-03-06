@@ -684,7 +684,7 @@ var geojsonLineOptions = {
                 transparent: true
         });
 
-        var cost_surface_layer = L.tileLayer.wms("http://172.16.104.138:8080/geoserver/SimCCS/wms?", {
+        var cost_surface_layer = L.tileLayer.wms("http://gf8.ucs.indiana.edu/geoserver/SimCCS/wms?", {
             layers: 'SimCCS:cost',
             format: 'image/png',
             transparent: true,
