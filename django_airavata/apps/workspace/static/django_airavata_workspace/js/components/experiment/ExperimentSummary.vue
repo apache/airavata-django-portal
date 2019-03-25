@@ -149,12 +149,13 @@
                   <th scope="row">Errors</th>
                   <td>
                     {{experiment.errors[0].userFriendlyMessage}}
-                    <a href="#" id="show-modal" v-if="!this.showPopUp" v-on:click=this.showMore>Advanced</a>
-                    <br/><br/>
-                    <p v-if="this.showPopUp">
+                    <br/>
+                    <a href="#" id="show-modal" v-if="!this.showMore" v-on:click=this.showErrorLog>Show Advanced</a>
+                    <br/>
+                    <p v-if="this.showMore">
                       {{experiment.errors[0].actualErrorMessage}}
                       <br/>
-                      <a href="#" id="show-modal" v-on:click=this.showMore>Close</a>
+                      <a href="#" id="show-modal" v-on:click=this.showErrorLog>Close</a>
                     </p>
                   </td>
                 </tr>
@@ -190,7 +191,7 @@ export default {
   data() {
     return {
       localFullExperiment: this.fullExperiment.clone(),
-      showPopUp: false
+      showMore: false
     };
   },
   components: {
@@ -220,8 +221,8 @@ export default {
     }
   },
   methods: {
-    showMore: function(){
-      this.showPopUp=!this.showPopUp;
+    showErrorLog: function(){
+      this.showMore=!this.showMore;
     },
     loadExperiment: function() {
       return services.FullExperimentService.get(
