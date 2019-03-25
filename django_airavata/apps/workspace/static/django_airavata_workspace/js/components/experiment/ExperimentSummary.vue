@@ -153,6 +153,8 @@
                     <br/><br/>
                     <p v-if="this.showPopUp">
                       {{experiment.errors[0].actualErrorMessage}}
+                      <br/>
+                      <a href="#" id="show-modal" v-on:click=this.showMore>Close</a>
                     </p>
                   </td>
                 </tr>
