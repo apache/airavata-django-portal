@@ -146,7 +146,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <th scope="row">Error</th>
+                  <th scope="row">Errors</th>
                   <td>
                     {{experiment.errors[0].userFriendlyMessage}}
                     <a href="#" id="show-modal" v-if="!this.showPopUp" v-on:click=this.showMore>Advanced</a>
