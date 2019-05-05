@@ -14,6 +14,7 @@ import ComputeResourcePolicy from "./models/ComputeResourcePolicy";
 import DataProduct from "./models/DataProduct";
 import DataType from "./models/DataType";
 import Experiment from "./models/Experiment";
+import ExperimentSearchFields from "./models/ExperimentSearchFields";
 import ExperimentState from "./models/ExperimentState";
 import FullExperiment from "./models/FullExperiment";
 import Group from "./models/Group";
@@ -31,7 +32,6 @@ import StoragePreference from "./models/StoragePreference";
 import SummaryType from "./models/SummaryType";
 import UserPermission from "./models/UserPermission";
 
-import ProjectService from "./services/ProjectService";
 import UserProfileService from "./services/UserProfileService";
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
 import GlobusJobSubmissionService from "./services/GlobusJobSubmissionService";
@@ -66,6 +66,7 @@ const models = {
   DataProduct,
   DataType,
   Experiment,
+  ExperimentSearchFields,
   ExperimentState,
   FullExperiment,
   Group,
@@ -106,7 +107,7 @@ const services = {
   GroupService: ServiceFactory.service("Groups"),
   LocaJobSubmissionService,
   ParserService: ServiceFactory.service("Parsers"),
-  ProjectService,
+  ProjectService: ServiceFactory.service("Projects"),
   SCPDataMovementService,
   ServiceFactory,
   SharedEntityService: ServiceFactory.service("SharedEntities"),

@@ -4,23 +4,27 @@ import CreateExperimentContainer from "./containers/CreateExperimentContainer.vu
 entry(Vue => {
   new Vue({
     render(h) {
-      return h("div", [
-        h(components.NotificationsDisplay),
+      return h(components.MainLayout, [
         h(CreateExperimentContainer, {
           props: {
-            appModuleId: this.appModuleId
+            appModuleId: this.appModuleId,
+            userInputFiles: this.userInputFiles
           }
         })
       ]);
     },
     data() {
       return {
-        appModuleId: null
+        appModuleId: null,
+        userInputFiles: null
       };
     },
     beforeMount() {
       if (this.$el.dataset.appModuleId) {
         this.appModuleId = this.$el.dataset.appModuleId;
+      }
+      if (this.$el.dataset.userInputFiles) {
+        this.userInputFiles = JSON.parse(this.$el.dataset.userInputFiles);
       }
     }
   }).$mount("#create-experiment");

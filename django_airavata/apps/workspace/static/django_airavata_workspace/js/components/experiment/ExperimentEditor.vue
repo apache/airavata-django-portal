@@ -1,5 +1,6 @@
 <template>
   <div>
+    <unsaved-changes-guard :dirty="dirty" />
     <div class="row">
       <div class="col-auto mr-auto">
         <h1 class="h4 mb-4">
@@ -39,6 +40,7 @@
               :state="getValidationState('experimentName')"
             ></b-form-input>
           </b-form-group>
+          <experiment-description-editor v-model="localExperiment.description" />
         </div>
       </div>
       <div class="row">
@@ -84,12 +86,15 @@
                 <input-editor-container
                   v-for="experimentInput in localExperiment.experimentInputs"
                   :experiment-input="experimentInput"
+                  :experiment="localExperiment"
                   v-model="experimentInput.value"
                   v-show="experimentInput.show"
                   :key="experimentInput.name"
                   @invalid="recordInvalidInputEditorValue(experimentInput.name)"
                   @valid="recordValidInputEditorValue(experimentInput.name)"
                   @input="inputValueChanged"
+                  @uploadstart="uploadStart(experimentInput.name)"
+                  @uploadend="uploadEnd(experimentInput.name)"
                 />
               </transition-group>
             </div>
@@ -103,7 +108,9 @@
           </h2>
         </div>
       </div>
-      <group-resource-profile-selector v-model="localExperiment.userConfigurationData.groupResourceProfileId">
+      <group-resource-profile-selector
+        v-model="localExperiment.userConfigurationData.groupResourceProfileId"
+      >
       </group-resource-profile-selector>
       <div class="row">
         <div class="col">
@@ -112,6 +119,8 @@
             v-if="localExperiment.userConfigurationData.groupResourceProfileId"
             :app-module-id="appModule.appModuleId"
             :group-resource-profile-id="localExperiment.userConfigurationData.groupResourceProfileId"
+            @invalid="invalidComputationalResourceSchedulingEditor = true"
+            @valid="invalidComputationalResourceSchedulingEditor = false"
           >
           </computational-resource-scheduling-editor>
         </div>
@@ -143,9 +152,10 @@
 
 <script>
 import ComputationalResourceSchedulingEditor from "./ComputationalResourceSchedulingEditor.vue";
+import ExperimentDescriptionEditor from "./ExperimentDescriptionEditor.vue";
 import GroupResourceProfileSelector from "./GroupResourceProfileSelector.vue";
 import InputEditorContainer from "./input-editors/InputEditorContainer.vue";
-import { models, services, utils as apiUtils } from "django-airavata-api";
+import { models, services } from "django-airavata-api";
 import { components, utils } from "django-airavata-common-ui";
 
 export default {
@@ -164,14 +174,20 @@ export default {
     return {
       projects: [],
       localExperiment: this.experiment.clone(),
-      invalidInputs: []
+      invalidInputs: [],
+      invalidComputationalResourceSchedulingEditor: false,
+      edited: false,
+      saved: false,
+      uploadingInputs: [],
     };
   },
   components: {
     ComputationalResourceSchedulingEditor,
+    ExperimentDescriptionEditor,
     GroupResourceProfileSelector,
     InputEditorContainer,
-    "share-button": components.ShareButton
+    "share-button": components.ShareButton,
+    "unsaved-changes-guard": components.UnsavedChangesGuard
   },
   mounted: function() {
     services.ProjectService.listAll().then(projects => {
@@ -198,25 +214,31 @@ export default {
     valid: function() {
       const validation = this.localExperiment.validate();
       return (
-        Object.keys(validation).length === 0 && this.invalidInputs.length === 0
+        Object.keys(validation).length === 0 &&
+        this.invalidInputs.length === 0 &&
+        !this.invalidComputationalResourceSchedulingEditor
       );
     },
     isSaveDisabled: function() {
-      return !this.valid;
+      return !this.valid && this.hasUploadingInputs;
+    },
+    dirty() {
+      return this.edited && !this.saved;
+    },
+    hasUploadingInputs() {
+      return this.uploadingInputs.length > 0;
     }
   },
   methods: {
     saveExperiment: function() {
-      return this.uploadInputFiles()
-        .then(this.saveOrUpdateExperiment)
+      return this.saveOrUpdateExperiment()
         .then(experiment => {
           this.localExperiment = experiment;
           this.$emit("saved", experiment);
         });
     },
     saveAndLaunchExperiment: function() {
-      return this.uploadInputFiles()
-        .then(this.saveOrUpdateExperiment)
+      return this.saveOrUpdateExperiment()
         .then(experiment => {
           this.localExperiment = experiment;
           return services.ExperimentService.launch({
@@ -231,6 +253,9 @@ export default {
         return services.ExperimentService.update({
           lookup: this.localExperiment.experimentId,
           data: this.localExperiment
+        }).then(experiment => {
+          this.saved = true;
+          return experiment;
         });
       } else {
         return services.ExperimentService.create({
@@ -238,32 +263,12 @@ export default {
         }).then(experiment => {
           // Can't save sharing settings for a new experiment until it has been
           // created
+          this.saved = true;
           return this.$refs.shareButton
             .mergeAndSave(experiment.experimentId)
             .then(() => experiment);
         });
       }
-    },
-    uploadInputFiles: function() {
-      let uploads = [];
-      this.localExperiment.experimentInputs.forEach(input => {
-        if (
-          input.type === models.DataType.URI &&
-          input.value &&
-          input.value instanceof File
-        ) {
-          let data = new FormData();
-          data.append("file", input.value);
-          data.append("project-id", this.localExperiment.projectId);
-          data.append("experiment-name", this.localExperiment.experimentName);
-          let uploadRequest = apiUtils.FetchUtils.post(
-            "/api/upload",
-            data
-          ).then(result => (input.value = result["data-product-uri"]));
-          uploads.push(uploadRequest);
-        }
-      });
-      return Promise.all(uploads);
     },
     getValidationFeedback: function(properties) {
       return utils.getProperty(this.localExperiment.validate(), properties);
@@ -282,6 +287,17 @@ export default {
         this.invalidInputs.splice(index, 1);
       }
     },
+    uploadStart(experimentInputName) {
+      if (!this.uploadingInputs.includes(experimentInputName)) {
+        this.uploadingInputs.push(experimentInputName);
+      }
+    },
+    uploadEnd(experimentInputName) {
+      if (this.uploadingInputs.includes(experimentInputName)) {
+        const index = this.uploadingInputs.indexOf(experimentInputName);
+        this.uploadingInputs.splice(index, 1);
+      }
+    },
     inputValueChanged: function() {
       this.localExperiment.evaluateInputDependencies();
     }
@@ -289,6 +305,12 @@ export default {
   watch: {
     experiment: function(newValue) {
       this.localExperiment = newValue.clone();
+    },
+    localExperiment: {
+      handler() {
+        this.edited = true;
+      },
+      deep: true
     }
   }
 };

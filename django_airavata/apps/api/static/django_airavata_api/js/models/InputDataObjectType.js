@@ -44,6 +44,9 @@ const FIELDS = [
   }
 ];
 
+const IS_REQUIRED_DEFAULT = "This field is required.";
+const IS_REQUIRED_URI_COLLECTION = "At least one file must be selected.";
+
 export default class InputDataObjectType extends BaseModel {
   constructor(data = {}) {
     super(FIELDS, data);
@@ -162,6 +165,13 @@ export default class InputDataObjectType extends BaseModel {
    *           ... additional boolean expressions ("AND", "OR", "NOT")
    *           ... additional application input comparisons
    *         ]
+   *       },
+   *       "showOptions": {        // Optional
+   *         "toggle": [
+   *           "requiredToAddedToCommandLine", // Names of properties on this application
+   *                                           // input to toggle when show changes
+   *           ...
+   *         ]
    *       }
    *     }
    *   }
@@ -199,7 +209,11 @@ export default class InputDataObjectType extends BaseModel {
     }
     let valueErrorMessages = [];
     if (this.isRequired && this.isEmpty(inputValue)) {
-      valueErrorMessages.push("This field is required.");
+      if (this.type === DataType.URI_COLLECTION) {
+        valueErrorMessages.push(IS_REQUIRED_URI_COLLECTION);
+      } else {
+        valueErrorMessages.push(IS_REQUIRED_DEFAULT);
+      }
     }
     // Run through any validations if configured
     if (this.editorValidations.length > 0) {
@@ -226,9 +240,22 @@ export default class InputDataObjectType extends BaseModel {
         this.show = booleanExpressionEvaluator.evaluate(
           this.editorDependencies.show
         );
+        if ("showOptions" in this.editorDependencies) {
+          if ("toggle" in this.editorDependencies.showOptions) {
+            this.editorDependencies.showOptions.toggle.forEach(prop => {
+              this[prop] = this.show;
+            });
+          }
+        }
       }
     }
   }
 }
 
-InputDataObjectType.VALID_DATA_TYPES = [DataType.STRING, DataType.INTEGER, DataType.FLOAT, DataType.URI];
+InputDataObjectType.VALID_DATA_TYPES = [
+  DataType.STRING,
+  DataType.INTEGER,
+  DataType.FLOAT,
+  DataType.URI,
+  DataType.URI_COLLECTION
+];

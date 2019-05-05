@@ -5,9 +5,12 @@ import ClipboardCopyLink from "./components/ClipboardCopyLink.vue";
 import ConfirmationDialog from "./components/ConfirmationDialog.vue";
 import DeleteButton from "./components/DeleteButton.vue";
 import DeleteLink from "./components/DeleteLink.vue";
-import NotificationsDisplay from "./components/NotificationsDisplay.vue";
+import MainLayout from "./components/MainLayout.vue";
 import Pager from "./components/Pager.vue";
 import ShareButton from "./components/ShareButton.vue";
+import Sidebar from "./components/Sidebar.vue";
+import SidebarFeed from "./components/SidebarFeed.vue";
+import SidebarHeader from "./components/SidebarHeader.vue";
 import UnsavedChangesGuard from "./components/UnsavedChangesGuard.vue";
 
 import GlobalErrorHandler from "./errors/GlobalErrorHandler";
@@ -33,8 +36,11 @@ const components = {
   ConfirmationDialog,
   DeleteButton,
   DeleteLink,
-  NotificationsDisplay,
+  MainLayout,
   ShareButton,
+  Sidebar,
+  SidebarFeed,
+  SidebarHeader,
   UnsavedChangesGuard
 };
 

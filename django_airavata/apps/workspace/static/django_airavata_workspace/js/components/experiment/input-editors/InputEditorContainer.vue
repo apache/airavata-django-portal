@@ -4,10 +4,13 @@
         <component :is="inputEditorComponentName"
             :id="inputEditorComponentId"
             :experiment-input="experimentInput"
+            :experiment="experiment"
             v-model="data"
             @invalid="recordInvalidInputEditorValue"
             @valid="recordValidInputEditorValue"
-            @input="valueChanged"/>
+            @input="valueChanged"
+            @uploadstart="uploadStart"
+            @uploadend="uploadEnd"/>
     </input-editor-form-group>
 </template>
 
@@ -15,7 +18,9 @@
 import CheckboxInputEditor from "./CheckboxInputEditor.vue";
 import FileInputEditor from './FileInputEditor.vue'
 import InputEditorFormGroup from './InputEditorFormGroup.vue'
+import MultiFileInputEditor from "./MultiFileInputEditor.vue";
 import RadioButtonInputEditor from './RadioButtonInputEditor.vue'
+import SelectInputEditor from "./SelectInputEditor.vue";
 import StringInputEditor from './StringInputEditor.vue'
 import TextareaInputEditor from './TextareaInputEditor.vue'
 
@@ -30,12 +35,18 @@ export default {
             type: models.InputDataObjectType,
             required: true,
         },
+        experiment: {
+          type: models.Experiment,
+          required: true
+        }
     },
     components: {
         CheckboxInputEditor,
         FileInputEditor,
         InputEditorFormGroup,
+        MultiFileInputEditor,
         RadioButtonInputEditor,
+        SelectInputEditor,
         StringInputEditor,
         TextareaInputEditor,
     },
@@ -65,6 +76,8 @@ export default {
                 return 'string-input-editor';
             } else if (this.experimentInput.type === models.DataType.URI) {
                 return 'file-input-editor';
+            } else if (this.experimentInput.type === models.DataType.URI_COLLECTION) {
+                return 'multi-file-input-editor';
             }
             // Default
             return 'string-input-editor';
@@ -103,6 +116,12 @@ export default {
           if (this.oldValue !== null) {
             this.data = this.oldValue;
           }
+        },
+        uploadStart() {
+          this.$emit('uploadstart');
+        },
+        uploadEnd() {
+          this.$emit('uploadend');
         }
     },
     watch: {

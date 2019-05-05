@@ -6,12 +6,14 @@ import ComputeResourceDescription from "./models/ComputeResourceDescription";
 import CredentialSummary from "./models/CredentialSummary";
 import DataProduct from "./models/DataProduct";
 import Experiment from "./models/Experiment";
+import ExperimentSearchFields from "./models/ExperimentSearchFields";
 import ExperimentSummary from "./models/ExperimentSummary";
 import FullExperiment from "./models/FullExperiment";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
 import Group from "./models/Group";
 import GroupResourceProfile from "./models/GroupResourceProfile";
 import Parser from "./models/Parser";
+import Project from "./models/Project";
 import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import StorageResourceDescription from "./models/StorageResourceDescription";
@@ -179,7 +181,7 @@ export default {
     ],
     modelClass: ExperimentSummary,
     pagination: true,
-    queryParams: ["limit", "offset"]
+    queryParams: ["limit", "offset"].concat(ExperimentSearchFields.values.map(f => f.name))
   },
   FullExperiments: {
     url: "/api/full-experiments",
@@ -220,6 +222,20 @@ export default {
     viewSet: true,
     queryParams: ["limit", "offset"],
     modelClass: Parser
+  },
+  Projects: {
+    url: "/api/projects",
+    viewSet: true,
+    pagination: true,
+    methods: {
+      listAll: {
+        url: "/api/projects/list_all/",
+        requestType: "get",
+        modelClass: Project
+      }
+    },
+    queryParams: ["limit", "offset"],
+    modelClass: Project
   },
   SharedEntities: {
     url: "/api/shared-entities",
