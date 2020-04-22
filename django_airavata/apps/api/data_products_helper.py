@@ -1,6 +1,7 @@
 import logging
 import os
 from urllib.parse import urlparse
+from pathlib import Path
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -105,6 +106,10 @@ def exists(request, data_product):
 
 def dir_exists(request, path):
     return datastore.dir_exists(request.user.username, path)
+
+
+def directory_size(path):
+    return sum(f.stat().st_size for f in Path(path).glob("**/*") if f.is_file())
 
 
 def user_file_exists(request, path):
