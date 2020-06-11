@@ -186,9 +186,7 @@ def _generate_data(request,
                                'test_output_file',
                                None)
     if (experiment_output.value and
-        experiment_output.type in (DataType.URI,
-                                   DataType.STDOUT,
-                                   DataType.STDERR) and
+        experiment_output.type == DataType.URI and
             experiment_output.value.startswith("airavata-dp")):
         data_product = request.airavata_client.getDataProduct(
             request.authz_token, experiment_output.value)

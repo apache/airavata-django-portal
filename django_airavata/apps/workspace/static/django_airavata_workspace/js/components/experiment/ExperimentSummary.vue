@@ -58,7 +58,7 @@
 
       <div
         class="row"
-        v-if="experiment.isFinished && outputDataProducts[output.name].length > 0"
+        v-if="outputDataProducts[output.name].length > 0"
         :key="output.name"
       >
         <div class="col">
@@ -73,7 +73,7 @@
     </template>
     <div
       class="row"
-      v-if="experiment.isFinished && storageDirLink"
+      v-if="storageDirLink"
     >
       <div class="col">
         <b-card header="Other Files">
@@ -411,7 +411,7 @@ export default {
         return [];
       }
       let dataProducts = null;
-      if (io.type === models.DataType.URI_COLLECTION) {
+      if (io.type === models.DataType.URI_COLLECTION || io.type === models.DataType.STDOUT || io.type === models.DataType.STDERR) {
         const dataProductURIs = io.value.split(",");
         dataProducts = dataProductURIs.map(uri =>
           collection.find(dp => dp.productUri === uri)

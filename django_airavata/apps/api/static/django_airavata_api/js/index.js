@@ -108,7 +108,7 @@ const services = {
   CredentialSummaryService: ServiceFactory.service("CredentialSummaries"),
   DataProductService: ServiceFactory.service("DataProducts"),
   ExperimentSearchService: ServiceFactory.service("ExperimentSearch"),
-  ExperimentService: ServiceFactory.service("Experiments"),
+  ExperimentService: ServiceFactory.service("Experiments"),    // Here
   ExperimentStatisticsService: ServiceFactory.service("ExperimentStatistics"),
   FullExperimentService: ServiceFactory.service("FullExperiments"),
   GatewayResourceProfileService: ServiceFactory.service(

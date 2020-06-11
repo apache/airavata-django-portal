@@ -156,7 +156,7 @@ export default {
     },
     modelClass: CredentialSummary
   },
-  DataProducts: {
+  DataProducts: {   // Here
     url: "/api/data-products/",
     methods: {
       retrieve: {

@@ -459,14 +459,12 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
             for output in experimentModel.experimentOutputs
             if (output.value and
                 output.value.startswith('airavata-dp') and
-                output.type in (DataType.URI,
-                                DataType.STDOUT,
-                                DataType.STDERR))]
+                output.type == DataType.URI)]
         outputDataProducts += [
             self.request.airavata_client.getDataProduct(self.authz_token, dp)
             for output in experimentModel.experimentOutputs
             if (output.value and
-                output.type == DataType.URI_COLLECTION)
+                (output.type == DataType.URI_COLLECTION or output.type == DataType.STDERR or output.type == DataType.STDOUT))
             for dp in output.value.split(',')
             if output.value.startswith('airavata-dp')]
         appInterfaceId = experimentModel.executionId
@@ -1491,7 +1489,17 @@ class ParserViewSet(mixins.CreateModelMixin,
     def perform_update(self, serializer):
         parser = serializer.save()
         self.request.airavata_client.saveParser(self.authz_token, parser)
+        
+class ApplicationParserViewset(APIView):
+    serializer_class = serializers.ParsingTemplateSerializer
 
+    def get(self, request, format=None):
+        
+        appId = request.query_params["appId"]
+        templates = request.airavata_client.getParsingTemplatesForApplication(request.authz_token, appId, settings.GATEWAY_ID)
+
+        serializer = self.serializer_class(templates, context={'request': request})
+        return Response(serializer.data)
 
 class UserStoragePathView(APIView):
     serializer_class = serializers.UserStoragePathSerializer

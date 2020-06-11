@@ -32,6 +32,7 @@ from airavata.model.appcatalog.groupresourceprofile.ttypes import (
     GroupResourceProfile
 )
 from airavata.model.appcatalog.parser.ttypes import Parser
+from airavata.model.appcatalog.parser.ttypes import ParsingTemplate
 from airavata.model.appcatalog.storageresource.ttypes import (
     StorageResourceDescription
 )
@@ -845,6 +846,10 @@ class ParserSerializer(thrift_utils.create_serializer_class(Parser)):
         lookup_field='id',
         lookup_url_kwarg='parser_id')
 
+class ParsingTemplateSerializer(thrift_utils.create_serializer_class(ParsingTemplate)):
+    class Meta:
+        model = models.ParsingTemplates
+        exclude = ('initialInputs', 'parserConnections')
 
 class UserStorageFileSerializer(serializers.Serializer):
     name = serializers.CharField()

@@ -88,6 +88,7 @@ urlpatterns = [
     url(r'^experiment-statistics',
         views.ExperimentStatisticsView.as_view(),
         name="experiment-statistics"),
+    url(r'^app-parser', views.ApplicationParserViewset.as_view(), name="app-parser"),  # router.register(r'app-parser', views.ApplicationParserViewset, base_name='app-parser')
     url(r'ack-notifications/<slug:id>/', views.AckNotificationViewSet.as_view(), name="ack-notifications"),
     url(r'ack-notifications/', views.AckNotificationViewSet.as_view(), name="ack-notifications"),
     url(r'^log', views.LogRecordConsumer.as_view(), name='log'),

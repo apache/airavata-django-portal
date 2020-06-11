@@ -46,6 +46,44 @@
           <experiment-description-editor v-model="localExperiment.description" />
         </div>
       </div>
+
+      <div class="row">
+        <div class="col">
+          <b-form-group
+            label="Execution Type"
+            label-for="execution-type"
+          >
+            <b-row>
+              <b-col>
+                <b-form-select
+                  id="execution-type" 
+                  v-model="localExperiment.executionType"
+                  required
+                  :options="[{value: 'one_pass', text: 'One Pass'}, {value: 'param_sweep', text: 'Parameter Sweep'}]"
+                />
+              </b-col>
+              <b-col v-if="localExperiment.executionType == 'param_sweep'">
+                <b-row>
+                  <b-col>
+                    <label class="mr-sm-2" for="sweep-count">Number of Sweep Jobs</label>
+                  </b-col>
+                  <b-col>
+                    <b-form-input
+                      id="sweep-range"
+                      type="text"
+                      v-model="localExperiment.sweepRange"
+                      required
+                      placeholder="Range of Sweep Jobs"
+                    ></b-form-input>
+                  </b-col>
+                </b-row>
+              </b-col>
+
+            </b-row>
+          </b-form-group>
+        </div>
+      </div>
+
       <div class="row">
         <div class="col">
           <b-form-group
@@ -111,6 +149,20 @@
           </div>
         </div>
       </div>
+      <div class="row">
+        <div class="col">
+          <div class="card border-default">
+            <div class="card-body">
+              <h2 class="h6 mb-3">
+                Parsing Templates
+              </h2>
+
+                <parser-selector/>
+
+            </div>
+          </div>
+        </div>
+      </div>
       <group-resource-profile-selector
         v-model="localExperiment.userConfigurationData.groupResourceProfileId"
       >
@@ -158,6 +210,7 @@ import ComputationalResourceSchedulingEditor from "./ComputationalResourceSchedu
 import ExperimentDescriptionEditor from "./ExperimentDescriptionEditor.vue";
 import GroupResourceProfileSelector from "./GroupResourceProfileSelector.vue";
 import InputEditorContainer from "./input-editors/InputEditorContainer.vue";
+import ParserSelector from "./parsing-editors/ParserSelector.vue";
 import { models, services } from "django-airavata-api";
 import { components, utils } from "django-airavata-common-ui";
 
@@ -189,6 +242,7 @@ export default {
     ExperimentDescriptionEditor,
     GroupResourceProfileSelector,
     InputEditorContainer,
+    ParserSelector,
     "share-button": components.ShareButton,
     "unsaved-changes-guard": components.UnsavedChangesGuard
   },
@@ -271,7 +325,7 @@ export default {
           data: this.localExperiment
         }).then(experiment => {
           // Can't save sharing settings for a new experiment until it has been
-          // created
+          // created     // TODO call to save parsing templated
           this.saved = true;
           return this.$refs.shareButton
             .mergeAndSave(experiment.experimentId)

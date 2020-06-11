@@ -71,7 +71,17 @@ const FIELDS = [
     type: "boolean",
     default: true
   },
-  "relativeExperimentDataDir"
+  "relativeExperimentDataDir",
+  {
+    name: "executionType",
+    type: "string",
+    default: "one_pass"
+  }, 
+  {
+    name: "sweepRange",
+    type: "string",
+    default: ""
+  }
 ];
 
 export default class Experiment extends BaseModel {
