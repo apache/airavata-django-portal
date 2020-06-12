@@ -31,8 +31,10 @@ from airavata.model.appcatalog.groupresourceprofile.ttypes import (
     GroupComputeResourcePreference,
     GroupResourceProfile
 )
-from airavata.model.appcatalog.parser.ttypes import Parser
-from airavata.model.appcatalog.parser.ttypes import ParsingTemplate
+from airavata.model.appcatalog.parser.ttypes import (
+    Parser, 
+    ParsingTemplate
+)
 from airavata.model.appcatalog.storageresource.ttypes import (
     StorageResourceDescription
 )
@@ -846,10 +848,13 @@ class ParserSerializer(thrift_utils.create_serializer_class(Parser)):
         lookup_field='id',
         lookup_url_kwarg='parser_id')
 
-class ParsingTemplateSerializer(thrift_utils.create_serializer_class(ParsingTemplate)):
-    class Meta:
-        model = models.ParsingTemplates
-        exclude = ('initialInputs', 'parserConnections')
+class ParsingTemplateSerializer(
+    thrift_utils.create_serializer_class(ParsingTemplate)):
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:parsing-template',
+        lookup_field='id',
+        lookup_url_kwarg='parsing_template_id')
+
 
 class UserStorageFileSerializer(serializers.Serializer):
     name = serializers.CharField()

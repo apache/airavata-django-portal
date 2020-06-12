@@ -47,8 +47,3 @@ class User_Files(models.Model):
             # TEXT column which is required to create an index
             models.Index(fields=['username'], name='username_idx')
         ]
-
-class ParsingTemplates(models.Model):
-    id = models.CharField(max_length=2048, primary_key=True)
-    application_interface = models.CharField(max_length=2048)
-    gatewayId = models.CharField(max_length=2048)
