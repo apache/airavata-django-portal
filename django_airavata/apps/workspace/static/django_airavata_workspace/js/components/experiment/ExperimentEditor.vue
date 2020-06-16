@@ -157,7 +157,7 @@
                 Parsing Templates
               </h2>
 
-                <parser-selector/>
+                <parser-selector :appId="appModule.appModuleId"/>
 
             </div>
           </div>

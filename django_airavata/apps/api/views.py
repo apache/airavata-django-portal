@@ -56,6 +56,11 @@ from . import (
     view_utils
 )
 
+from airavata.model.appcatalog.parser.ttypes import (
+    Parser, 
+    ParsingTemplate
+)
+
 READ_PERMISSION_TYPE = '{}:READ'
 
 log = logging.getLogger(__name__)
@@ -1491,15 +1496,15 @@ class ParserViewSet(mixins.CreateModelMixin,
         self.request.airavata_client.saveParser(self.authz_token, parser)
         
 class ApplicationParserViewset(APIView):
-    serializer_class = serializers.ParsingTemplateSerializer
-
     def get(self, request, format=None):
-        
         appId = request.query_params["appId"]
         templates = request.airavata_client.getParsingTemplatesForApplication(request.authz_token, appId, settings.GATEWAY_ID)
-
-        serializer = self.serializer_class(templates, context={'request': request})
-        return Response(serializer.data)
+        responses = []
+        for temp in templates:
+            responses.append(thrift_utils.create_serializer(
+                                ParsingTemplate,
+                                instance=temp).data)
+        return Response(responses)
 
 class UserStoragePathView(APIView):
     serializer_class = serializers.UserStoragePathSerializer

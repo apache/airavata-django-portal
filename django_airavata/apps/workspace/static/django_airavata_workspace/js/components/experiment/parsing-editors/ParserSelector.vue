@@ -3,7 +3,7 @@
     <b-form-group>
       <b-form-checkbox-group
         v-model="selected"
-        :options="options"
+        :options="templateOptions"
         name="flavour-2a"
         stacked
       ></b-form-checkbox-group>
@@ -14,18 +14,33 @@
 
 <script>
 
+import { services } from "django-airavata-api";
+
 export default {
   name: "parser-selector",
+  props: {
+    appId: {
+      type: String,
+      required: true
+    }
+  },
+
+  mounted() {
+    services.ParsingTemplateService.getTemplatesForApplication(
+      { lookup: this.appId }
+    ).then(templates => {
+      for (var temp in templates) {
+        this.templateOptions.push({ text: templates[temp].id , value: temp.id });
+      }
+    });
+  },
+
   data() {
     return {
       selected: [], // Must be an array reference!
-      options: [
-        { text: 'Gamess RNA Parser', value: 'orange' },
-        { text: 'Gamess Lig Parser', value: 'apple' },
-        { text: 'Gamess Cmplx Parser', value: 'pineapple' }
-      ]
+      templateOptions: []
     }
-  }
+  },
 }
 
 </script>

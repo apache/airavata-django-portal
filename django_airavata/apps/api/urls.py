@@ -102,6 +102,7 @@ urlpatterns = [
         views.html_output_view, name="html-output"),
     url(r'^image-output',
         views.image_output_view, name="image-output"),
+    url(r'^app-parsers', views.ApplicationParserViewset.as_view(), name='app-parser'),
 ]
 
 if logger.isEnabledFor(logging.DEBUG):

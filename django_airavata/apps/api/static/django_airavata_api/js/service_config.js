@@ -26,6 +26,8 @@ import UnverifiedEmailUserProfile from "./models/UnverifiedEmailUserProfile";
 import UserProfile from "./models/UserProfile";
 import UserStoragePath from "./models/UserStoragePath";
 import WorkspacePreferences from "./models/WorkspacePreferences";
+import ParsingTemplate from "./models/ParsingTemplate";
+
 /*
 examples:
 
@@ -60,6 +62,17 @@ Normal service configuration:
  */
 
 export default {
+  ParsingTemplates: {
+    url: "/api/app-parsers?appId=Sample",
+    viewSet: false,
+    methods: {
+      getTemplatesForApplication: {
+        url: "/api/app-parsers?appId=<lookup>",
+        requestType: "get",
+        modelClass: ParsingTemplate
+      }
+    }
+  },
   ApplicationDeployments: {
     url: "/api/application-deployments",
     viewSet: true,

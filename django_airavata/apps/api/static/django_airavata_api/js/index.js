@@ -124,6 +124,7 @@ const services = {
   ManageNotificationService: ServiceFactory.service("ManageNotifications"),
 
   ParserService: ServiceFactory.service("Parsers"),
+  ParsingTemplateService: ServiceFactory.service("ParsingTemplates"),
   ProjectService: ServiceFactory.service("Projects"),
   SCPDataMovementService,
   ServiceFactory,
