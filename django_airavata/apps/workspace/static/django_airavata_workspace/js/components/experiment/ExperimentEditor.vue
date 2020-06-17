@@ -157,7 +157,8 @@
                 Parsing Templates
               </h2>
 
-                <parser-selector :appId="appModule.appModuleId"/>
+                <parser-selector :appId="appModule.appModuleId" 
+                :parsingTemplateRegistration="parsingTemplateRegistration"/>
 
             </div>
           </div>
@@ -235,6 +236,10 @@ export default {
       edited: false,
       saved: false,
       uploadingInputs: [],
+      parsingTemplateRegistration: new models.ExperimentParsingTemplateRegistration({
+                experimentId: "",
+                templateIds: []
+            }),
     };
   },
   components: {
@@ -317,6 +322,12 @@ export default {
           lookup: this.localExperiment.experimentId,
           data: this.localExperiment
         }).then(experiment => {
+
+          this.parsingTemplateRegistration.experimentId = experiment.experimentId
+          services.ParsingTemplateService.registerParsingTemplateForExperiment({
+            data: this.parsingTemplateRegistration
+          }).then(output => console.log("Saved parsing template registration"))
+
           this.saved = true;
           return experiment;
         });
@@ -326,6 +337,11 @@ export default {
         }).then(experiment => {
           // Can't save sharing settings for a new experiment until it has been
           // created     // TODO call to save parsing templated
+          this.parsingTemplateRegistration.experimentId = experiment.experimentId
+          services.ParsingTemplateService.registerParsingTemplateForExperiment({
+            data: this.parsingTemplateRegistration
+          }).then(output => console.log("Saved parsing template registration"))
+
           this.saved = true;
           return this.$refs.shareButton
             .mergeAndSave(experiment.experimentId)

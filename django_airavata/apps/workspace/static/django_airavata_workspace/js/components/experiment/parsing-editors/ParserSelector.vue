@@ -2,7 +2,7 @@
   <div>
     <b-form-group>
       <b-form-checkbox-group
-        v-model="selected"
+        v-model="parsingTemplateRegistration.templateIds"
         :options="templateOptions"
         name="flavour-2a"
         stacked
@@ -14,13 +14,17 @@
 
 <script>
 
-import { services } from "django-airavata-api";
+import { models, services } from "django-airavata-api";
 
 export default {
   name: "parser-selector",
   props: {
     appId: {
       type: String,
+      required: true
+    },
+    parsingTemplateRegistration: {
+      type: models.ParsingTemplateRegistration,
       required: true
     }
   },
@@ -37,7 +41,6 @@ export default {
 
   data() {
     return {
-      selected: [], // Must be an array reference!
       templateOptions: []
     }
   },

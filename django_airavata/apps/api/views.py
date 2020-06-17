@@ -58,7 +58,8 @@ from . import (
 
 from airavata.model.appcatalog.parser.ttypes import (
     Parser, 
-    ParsingTemplate
+    ParsingTemplate,
+    ExperimentParsingTemplateRegistration
 )
 
 READ_PERMISSION_TYPE = '{}:READ'
@@ -1495,7 +1496,7 @@ class ParserViewSet(mixins.CreateModelMixin,
         parser = serializer.save()
         self.request.airavata_client.saveParser(self.authz_token, parser)
         
-class ApplicationParserViewset(APIView):
+class ParsingTemplateView(APIView):
     def get(self, request, format=None):
         appId = request.query_params["appId"]
         templates = request.airavata_client.getParsingTemplatesForApplication(request.authz_token, appId, settings.GATEWAY_ID)
@@ -1505,6 +1506,14 @@ class ApplicationParserViewset(APIView):
                                 ParsingTemplate,
                                 instance=temp).data)
         return Response(responses)
+
+    def post(self, request, path="/register/", format=None):    
+        serializer = thrift_utils.create_serializer(ExperimentParsingTemplateRegistration, instance=request.data)
+        req = ExperimentParsingTemplateRegistration()
+        req.experimentId = request.data['experimentId']
+        req.templateIds = request.data['templateIds']
+        request.airavata_client.addParsingTemplatesForExperiment(request.authz_token,  req)
+        return Response(serializer.data)
 
 class UserStoragePathView(APIView):
     serializer_class = serializers.UserStoragePathSerializer

@@ -27,6 +27,7 @@ import UserProfile from "./models/UserProfile";
 import UserStoragePath from "./models/UserStoragePath";
 import WorkspacePreferences from "./models/WorkspacePreferences";
 import ParsingTemplate from "./models/ParsingTemplate";
+import ExperimentParsingTemplateRegistration from "./models/ExperimentParsingTemplateRegistration"
 
 /*
 examples:
@@ -63,13 +64,21 @@ Normal service configuration:
 
 export default {
   ParsingTemplates: {
-    url: "/api/app-parsers?appId=Sample",
+    url: "/api/parsing-template?appId=Sample",
     viewSet: false,
     methods: {
       getTemplatesForApplication: {
-        url: "/api/app-parsers?appId=<lookup>",
+        url: "/api/parsing-template?appId=<lookup>",
         requestType: "get",
         modelClass: ParsingTemplate
+      },
+      registerParsingTemplateForExperiment: {
+        url: "/api/parsing-template/register/",
+        requestType: "post",
+        bodyParams: {
+          name: "data"
+        },
+        modelClass: ExperimentParsingTemplateRegistration
       }
     }
   },

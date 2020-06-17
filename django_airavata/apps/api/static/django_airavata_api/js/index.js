@@ -36,6 +36,7 @@ import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import SummaryType from "./models/SummaryType";
 import UserPermission from "./models/UserPermission";
+import ExperimentParsingTemplateRegistration from "./models/ExperimentParsingTemplateRegistration"
 
 import CloudJobSubmissionService from "./services/CloudJobSubmissionService";
 import GlobusJobSubmissionService from "./services/GlobusJobSubmissionService";
@@ -93,7 +94,8 @@ const models = {
   SharedEntity,
   StoragePreference,
   SummaryType,
-  UserPermission
+  UserPermission,
+  ExperimentParsingTemplateRegistration,
 };
 
 const services = {

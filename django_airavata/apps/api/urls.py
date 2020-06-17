@@ -88,7 +88,7 @@ urlpatterns = [
     url(r'^experiment-statistics',
         views.ExperimentStatisticsView.as_view(),
         name="experiment-statistics"),
-    url(r'^app-parser', views.ApplicationParserViewset.as_view(), name="app-parser"),  # router.register(r'app-parser', views.ApplicationParserViewset, base_name='app-parser')
+    url(r'^parsing-template', views.ParsingTemplateView.as_view(), name="parsing-template"),
     url(r'ack-notifications/<slug:id>/', views.AckNotificationViewSet.as_view(), name="ack-notifications"),
     url(r'ack-notifications/', views.AckNotificationViewSet.as_view(), name="ack-notifications"),
     url(r'^log', views.LogRecordConsumer.as_view(), name='log'),
@@ -102,7 +102,6 @@ urlpatterns = [
         views.html_output_view, name="html-output"),
     url(r'^image-output',
         views.image_output_view, name="image-output"),
-    url(r'^app-parsers', views.ApplicationParserViewset.as_view(), name='app-parser'),
 ]
 
 if logger.isEnabledFor(logging.DEBUG):
