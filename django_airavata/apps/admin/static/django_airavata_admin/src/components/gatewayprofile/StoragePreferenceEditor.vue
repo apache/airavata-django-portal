@@ -42,19 +42,17 @@ export default {
     }
   },
   methods: {
-    handleTypedInput() {
-      const evt = window.event;
-      var charCode = evt.which || evt.keyCode;
+    handleTypedInput(event) {
+      const charCode = event.which || event.keyCode;
       if ((charCode >= 48 && charCode <= 57) || charCode === 46)
         return true;
-      evt.preventDefault();
+      event.preventDefault();
     },
-    handlePastedInput() {
-      const evt = window.event;
-      var num = Number(evt.clipboardData.getData('text/plain'));
+    handlePastedInput(event) {
+      const num = Number(event.clipboardData.getData('text/plain'));
       if (num >= 0)
         return true;
-      evt.preventDefault();
+      event.preventDefault();
     },
   }
 };

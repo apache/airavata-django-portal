@@ -183,12 +183,11 @@ export default {
       }
       return "...";
     },
-    getUserStorageQuota(token) {
-      if(token === null || token === 0) {
+    getUserStorageQuota(value) {
+      if(value === null || value === 0)
         return this.defaultUserStorageQuota;
-      } else {
-        return token;
-      }
+      else
+        return value;
     },
     updatedStoragePreference(newValue) {
       this.$emit("updated", newValue);
