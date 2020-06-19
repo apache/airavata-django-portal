@@ -15,4 +15,5 @@ urlpatterns = [
         name='gateway_resource_profile'),
     url(r'^notices/', views.notices, name='notices'),
     url(r'^users/', views.users, name='users'),
+    url(r'^emails/', views.emails, name='emails'),
 ]
