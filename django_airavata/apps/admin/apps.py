@@ -65,4 +65,12 @@ class AdminConfig(AiravataAppConfig):
             'enabled': lambda req: (req.is_gateway_admin or
                                     req.is_read_only_gateway_admin)
         },
+        {
+            'label': 'Send Emails',
+            'icon': 'fa fa-envelope',
+            'url': 'django_airavata_admin:emails',
+            'active_prefixes': ['emails'],
+            'enabled': lambda req: (req.is_gateway_admin or
+                                    req.is_read_only_gateway_admin)
+        },
     ]
