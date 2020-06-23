@@ -239,6 +239,21 @@
                 </b-card>
               </td>
             </tr>
+            <tr v-for="job in failedJobs" :key="job.jobId">
+              <th scope="row">Job Submission Response</th>
+              <td>
+                <b-card
+                  v-if="job.stdOut"
+                  :header="job.jobName + ' STDOUT'">
+                  <pre class="pre-scrollable">{{job.stdOut}}</pre>
+                </b-card>
+                <b-card
+                  v-if="job.stdErr"
+                  :header="job.jobName + ' STDERR'">
+                  <pre class="pre-scrollable">{{job.stdErr}}</pre>
+                </b-card>
+              </td>
+            </tr>
             </tbody>
             </table>
           </div>
@@ -350,6 +365,18 @@ export default {
         return urls.storageDirectory(this.experiment.relativeExperimentDataDir);
       } else {
         return null;
+      }
+    },
+    failedJobs() {
+      if (this.localFullExperiment && this.localFullExperiment.jobDetails) {
+        return this.localFullExperiment.jobDetails.filter(
+          job =>
+            this.experiment.latestStatus.state ===
+              models.ExperimentState.FAILED ||
+            job.latestJobStatus.jobState === models.JobState.FAILED
+        );
+      } else {
+        return [];
       }
     }
   },
