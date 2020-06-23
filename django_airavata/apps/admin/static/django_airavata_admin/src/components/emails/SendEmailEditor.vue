@@ -33,7 +33,7 @@
         <b-form-textarea
           id="email-body"
           type="text"
-          v-model="data.notificationMessage"
+          v-model="data.emailBody"
           required
           placeholder="Email Body"
           :state="getValidationState('emailBody')"
@@ -105,7 +105,7 @@
           >
             <b-button
               variant="success"
-              @click="saveNewNotice"
+              @click="saveNewEmail"
               :disabled="isSaveDisabled"
             >
               Save
