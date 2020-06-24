@@ -20,6 +20,7 @@ setup(
     long_description=read('README.md'),
     license='Apache License 2.0',
     packages=find_packages(),
+    # TODO: add dependency on airavata-django-portal-sdk
     install_requires=[
             'Django',
             'djangorestframework',

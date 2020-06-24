@@ -1,5 +1,7 @@
 from django.db import models
 
+from airavata_django_portal_sdk import base
+
 
 # Create your models here.
 class WorkspacePreferences(models.Model):
@@ -35,10 +37,7 @@ class User_Notifications(models.Model):
     is_read = models.BooleanField(default=False)
 
 
-class User_Files(models.Model):
-    username = models.CharField(max_length=64)
-    file_path = models.TextField()
-    file_dpu = models.CharField(max_length=255, primary_key=True)
+class User_Files(base.UserFiles):
 
     class Meta:
         indexes = [
