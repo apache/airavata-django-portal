@@ -170,6 +170,13 @@ export default {
               { text: "NORMAL", value: "NORMAL" },
               { text: "HIGH", value: "HIGH" }
             ]
+      },
+      type : {
+        options: [
+          {text: "OUTAGE", value: "OUTAGE"},
+          {text: "RESOURCE MAINTENANCE", value: "RESOURCE MAINTENANCE"},
+          {text: "NEW APPLICATION RELEASE", value: "NEW APPLICATION RELEASE"}
+        ]
       }
     };
   },
