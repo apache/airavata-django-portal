@@ -142,20 +142,11 @@ export default {
     }
   },
   methods: {
-    saveNewEmail() {
-
-    },
     cancelNewEmail() {
       this.showNewItemEditor = false;
     },
     addNewEmail() {
-
-    },
-    updateEmail(){
-
-    },
-    deleteEmail() {
-
+      this.showNewItemEditor = true;
     },
   }
 };
