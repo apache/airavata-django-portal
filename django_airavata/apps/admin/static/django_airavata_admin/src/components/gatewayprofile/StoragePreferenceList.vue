@@ -80,7 +80,8 @@ export default {
       showNewItemEditor: false,
       newStoragePreference: null,
       storageResourceNames: null,
-      credentials: null
+      credentials: null,
+      defaultUserStorageQuota: "N/A"
     };
   },
   computed: {
@@ -100,6 +101,11 @@ export default {
           label: "SSH Credential",
           key: "resourceSpecificCredentialStoreToken",
           formatter: value => this.getCredentialName(value)
+        },
+        {
+          label: "User Storage Quota (In KB)",
+          key: "userStorageQuota",
+          formatter: value => this.getUserStorageQuota(value)
         },
         {
           label: "File System Location",
@@ -176,6 +182,12 @@ export default {
         }
       }
       return "...";
+    },
+    getUserStorageQuota(value) {
+      if(value === null || value === 0)
+        return this.defaultUserStorageQuota;
+      else
+        return value;
     },
     updatedStoragePreference(newValue) {
       this.$emit("updated", newValue);

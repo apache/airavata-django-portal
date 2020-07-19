@@ -3,6 +3,7 @@ import BaseModel from "./BaseModel";
 const FIELDS = [
   "storageResourceId",
   "loginUserName",
+  "userStorageQuota",
   "fileSystemRootLocation",
   "resourceSpecificCredentialStoreToken"
 ];
