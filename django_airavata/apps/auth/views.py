@@ -1,5 +1,7 @@
 import logging
 import time
+import json
+import requests
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote, urlencode
 
@@ -14,6 +16,8 @@ from django.template import Context
 from django.urls import reverse
 from django.views.decorators.debug import sensitive_variables
 from requests_oauthlib import OAuth2Session
+
+from base64 import b64encode
 
 from . import forms, iam_admin_client, models, utils
 
@@ -49,10 +53,11 @@ def start_username_password_login(request):
 
 def redirect_login(request, idp_alias):
     _validate_idp_alias(idp_alias)
-    client_id = settings.KEYCLOAK_CLIENT_ID
-    base_authorize_url = settings.KEYCLOAK_AUTHORIZE_URL
+    base_authorize_url = utils.get_custos_authorization_endpoint()
+    client_id = settings.CUSTOS_CLIENT_ID
     redirect_uri = request.build_absolute_uri(
         reverse('django_airavata_auth:callback'))
+    logger.info("Redirect URI" + redirect_uri)
     redirect_uri += '?idp_alias=' + quote(idp_alias)
     if 'next' in request.GET:
         redirect_uri += "&next=" + quote(request.GET['next'])
@@ -126,9 +131,11 @@ def callback(request):
         user = authenticate(request=request)
         if user is not None:
             login(request, user)
+            logger.info("Successfully  logged".next_url)
             if login_desktop:
                 return _create_login_desktop_success_response(request)
             next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
+            logger.info("Redirecting to #################".next_url)
             return redirect(next_url)
         else:
             raise Exception("Failed to authenticate user")
@@ -203,7 +210,6 @@ def create_account(request):
 
 
 def verify_email(request, code):
-
     try:
         email_verification = models.EmailVerification.objects.get(
             verification_code=code)
@@ -260,7 +266,6 @@ def verify_email(request, code):
 
 
 def resend_email_link(request):
-
     if request.method == 'POST':
         form = forms.ResendEmailVerificationLinkForm(request.POST)
         if form.is_valid():
@@ -300,8 +305,7 @@ def resend_email_link(request):
 
 
 def _create_and_send_email_verification_link(
-        request, username, email, first_name, last_name, next):
-
+    request, username, email, first_name, last_name, next):
     email_verification = models.EmailVerification(
         username=username, next=next)
     email_verification.save()

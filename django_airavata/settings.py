@@ -381,7 +381,7 @@ LOGGING = {
     },
     'loggers': {
         'django_airavata': {
-            'handlers': ['console', 'mail_admins'],
+            'handlers': ['console', 'console_debug', 'mail_admins'],
             'level': 'DEBUG'
         },
         'root': {
