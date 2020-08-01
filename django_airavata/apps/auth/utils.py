@@ -157,3 +157,8 @@ def get_custos_portal_token():
 
 def get_custos_identity_client():
     return identity_client
+
+
+def get_custos_logout_endpoint():
+    body = get_custos_openid_config()
+    return body['end_session_endpoint']

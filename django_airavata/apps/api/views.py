@@ -96,6 +96,7 @@ class GroupViewSet(APIBackedViewSet):
         group = serializer.save()
         group_manager_client = self.request.profile_service['group_manager']
         if len(group._added_members) > 0:
+            log.info(group._added_members)
             group_manager_client.addUsersToGroup(
                 self.authz_token, group._added_members, group.id)
             self._send_users_added_to_group(group._added_members, group)
@@ -257,14 +258,14 @@ class ExperimentViewSet(APIBackedViewSet):
                 experiment_input.value = ",".join(moved_data_product_uris)
 
     def _move_if_tmp_input_file_upload(
-            self, data_product_uri, experiment_data_dir):
+        self, data_product_uri, experiment_data_dir):
         """
         Conditionally moves tmp input file to data dir and returns new dp URI.
         """
         data_product = self.request.airavata_client.getDataProduct(
             self.authz_token, data_product_uri)
         if data_products_helper.is_input_file_upload(
-                self.request, data_product):
+            self.request, data_product):
             moved_data_product = \
                 data_products_helper.move_input_file_upload(
                     self.request,
@@ -346,7 +347,7 @@ class ExperimentViewSet(APIBackedViewSet):
         workspace_preferences = models.WorkspacePreferences.objects.filter(
             username=self.username).first()
         if (workspace_preferences and self._can_write(
-                workspace_preferences.most_recent_project_id)):
+            workspace_preferences.most_recent_project_id)):
             return workspace_preferences.most_recent_project_id
         user_projects = self.request.airavata_client.getUserProjects(
             self.authz_token, self.gateway_id, self.username, -1, 0)
@@ -394,8 +395,8 @@ class ExperimentViewSet(APIBackedViewSet):
                 experiment_input.value = ",".join(cloned_data_product_uris)
 
     def _copy_experiment_input_uri(
-            self,
-            data_product_uri):
+        self,
+        data_product_uri):
         source_data_product = self.request.airavata_client.getDataProduct(
             self.authz_token, data_product_uri)
         if data_products_helper.exists(self.request, source_data_product):
@@ -521,9 +522,9 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 compute_resource_id))
             compute_resource = None
         if self.request.airavata_client.userHasAccess(
-                self.authz_token,
-                experimentModel.projectId,
-                ResourcePermissionType.READ):
+            self.authz_token,
+            experimentModel.projectId,
+            ResourcePermissionType.READ):
             project = self.request.airavata_client.getProject(
                 self.authz_token, experimentModel.projectId)
         else:
@@ -587,10 +588,10 @@ class ApplicationModuleViewSet(APIBackedViewSet):
         elif len(app_interfaces) > 1:
             log.error(
                 "More than one application interface found for module {}: {}"
-                .format(app_module_id, app_interfaces))
+                    .format(app_module_id, app_interfaces))
             raise Exception(
                 'More than one application interface found for module {}'
-                .format(app_module_id)
+                    .format(app_module_id)
             )
         else:
             raise Http404("No application interface found for module id {}"
@@ -691,7 +692,7 @@ class ApplicationInterfaceViewSet(APIBackedViewSet):
                 # toggle isRequired on hidden/shown inputs
                 if ("editor" in metadata and
                     "dependencies" in metadata["editor"] and
-                        "show" in metadata["editor"]["dependencies"]):
+                    "show" in metadata["editor"]["dependencies"]):
                     if "showOptions" not in metadata["editor"]["dependencies"]:
                         metadata["editor"]["dependencies"]["showOptions"] = {}
                     o = metadata["editor"]["dependencies"]["showOptions"]
@@ -713,8 +714,8 @@ class ApplicationDeploymentViewSet(APIBackedViewSet):
         app_module_id = self.request.query_params.get('appModuleId', None)
         group_resource_profile_id = self.request.query_params.get(
             'groupResourceProfileId', None)
-        if (app_module_id and not group_resource_profile_id)\
-                or (not app_module_id and group_resource_profile_id):
+        if (app_module_id and not group_resource_profile_id) \
+            or (not app_module_id and group_resource_profile_id):
             raise ParseError("Query params appModuleId and "
                              "groupResourceProfileId are required together.")
         if app_module_id and group_resource_profile_id:
@@ -927,7 +928,6 @@ class LocalDataMovementView(APIView):
 
 
 class DataProductView(APIView):
-
     serializer_class = serializers.DataProductSerializer
 
     def get(self, request, format=None):
@@ -963,6 +963,7 @@ def tus_upload_finish(request):
     def move_input_file(file_path, file_name, file_type):
         return data_products_helper.move_input_file_upload_from_filepath(
             request, file_path, name=file_name, content_type=file_type)
+
     try:
         data_product = tus.move_tus_upload(uploadURL, move_input_file)
         serializer = serializers.DataProductSerializer(
@@ -984,7 +985,7 @@ def download_file(request):
             request.authz_token, data_product_uri)
         mime_type = "application/octet-stream"  # default mime-type
         if (data_product.productMetadata and
-                'mime-type' in data_product.productMetadata):
+            'mime-type' in data_product.productMetadata):
             mime_type = data_product.productMetadata['mime-type']
         # 'mime-type' url parameter overrides
         mime_type = request.GET.get('mime-type', mime_type)
@@ -1020,7 +1021,7 @@ def delete_file(request):
         raise Http404("data product does not exist") from e
     try:
         if (data_product.gatewayId != settings.GATEWAY_ID or
-                data_product.ownerName != request.user.username):
+            data_product.ownerName != request.user.username):
             raise PermissionDenied()
         data_products_helper.delete(request, data_product)
         return HttpResponse(status=204)
@@ -1070,18 +1071,18 @@ class GroupResourceProfileViewSet(APIBackedViewSet):
     def perform_update(self, serializer):
         grp = serializer.save()
         for removed_compute_resource_preference \
-                in grp._removed_compute_resource_preferences:
+            in grp._removed_compute_resource_preferences:
             self.request.airavata_client.removeGroupComputePrefs(
                 self.authz_token,
                 removed_compute_resource_preference.computeResourceId,
                 removed_compute_resource_preference.groupResourceProfileId)
         for removed_compute_resource_policy \
-                in grp._removed_compute_resource_policies:
+            in grp._removed_compute_resource_policies:
             self.request.airavata_client.removeGroupComputeResourcePolicy(
                 self.authz_token,
                 removed_compute_resource_policy.resourcePolicyId)
         for removed_batch_queue_resource_policy \
-                in grp._removed_batch_queue_resource_policies:
+            in grp._removed_batch_queue_resource_policies:
             self.request.airavata_client.removeGroupBatchQueueResourcePolicy(
                 self.authz_token,
                 removed_batch_queue_resource_policy.resourcePolicyId)
@@ -1253,9 +1254,9 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
         existing = self.get_serializer(instance=existing_instance)
         merged_data = existing.data
         merged_data['userPermissions'] = existing.data['userPermissions'] + \
-            updated.initial_data['userPermissions']
+                                         updated.initial_data['userPermissions']
         merged_data['groupPermissions'] = existing.data['groupPermissions'] + \
-            updated.initial_data['groupPermissions']
+                                          updated.initial_data['groupPermissions']
         # Create a merged_serializer from the existing sharing settings and the
         # merged settings. This will calculate all permissions that need to be
         # granted and revoked to go from the exisitng settings to the merged
@@ -1357,7 +1358,7 @@ class CredentialSummaryViewSet(APIBackedViewSet):
     def create_password(self, request):
         if ('username' not in request.data or
             'password' not in request.data or
-                'description' not in request.data):
+            'description' not in request.data):
             raise ParseError("'username', 'password' and 'description' "
                              "are all required in request")
         username = request.data.get('username')
@@ -1518,6 +1519,7 @@ class UserStoragePathView(APIView):
                 return data_products_helper.move_from_filepath(
                     request, file_path, path, name=file_name,
                     content_type=file_type)
+
             data_product = tus.move_tus_upload(uploadURL, move_file)
         return self._create_response(request, path, uploaded=data_product)
 
@@ -1623,6 +1625,7 @@ class IAMUserViewSet(mixins.RetrieveModelMixin,
             def get_results(self, limit=-1, offset=0):
                 return map(convert_user_profile,
                            iam_admin_client.get_users(offset, limit, search))
+
         return IAMUsersResultIterator()
 
     def get_instance(self, lookup_value):
@@ -1733,6 +1736,7 @@ class UnverifiedEmailUserViewSet(mixins.ListModelMixin,
         class UnverifiedEmailUsersResultIterator(APIResultIterator):
             def get_results(self, limit=-1, offset=0):
                 return get_users(limit, offset)
+
         return UnverifiedEmailUsersResultIterator()
 
     def get_instance(self, lookup_value):
@@ -1745,7 +1749,7 @@ class UnverifiedEmailUserViewSet(mixins.ListModelMixin,
             return users[0]
 
     def _get_unverified_email_user_profiles(
-            self, limit=-1, offset=0, username=None):
+        self, limit=-1, offset=0, username=None):
         unverified_emails = EmailVerification.objects.filter(
             verified=False).order_by('username').values('username').distinct()
         if username is not None:
@@ -1758,7 +1762,7 @@ class UnverifiedEmailUserViewSet(mixins.ListModelMixin,
             if iam_admin_client.is_user_exist(unverified_username):
                 user_profile = iam_admin_client.get_user(unverified_username)
                 if (user_profile.State == Status.CONFIRMED or
-                        user_profile.State == Status.ACTIVE):
+                    user_profile.State == Status.ACTIVE):
                     # TODO: test this
                     EmailVerification.objects.filter(
                         username=unverified_username).update(

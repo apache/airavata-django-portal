@@ -79,7 +79,6 @@ class KeycloakBackend(object):
                                              grant_type='password')
             token = MessageToDict(response)
 
-            logger.info(token)
             # refresh_token doesn't take client_secret kwarg, so create auth
             # explicitly
             userinfo = self._get_userinfo_from_token(token["access_token"])

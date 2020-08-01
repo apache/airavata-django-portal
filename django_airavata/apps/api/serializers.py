@@ -174,8 +174,7 @@ class GroupSerializer(thrift_utils.create_serializer_class(GroupModel)):
 
     def create(self, validated_data):
         group = super().create(validated_data)
-        group.ownerId = self.context['request'].user.username + \
-            "@" + settings.GATEWAY_ID
+        group.ownerId = self.context['request'].user.username
         return group
 
     def update(self, instance, validated_data):
@@ -208,17 +207,15 @@ class GroupSerializer(thrift_utils.create_serializer_class(GroupModel)):
         return request.profile_service['group_manager'].hasAdminAccess(
             request.authz_token,
             group.id,
-            request.user.username + "@" + settings.GATEWAY_ID)
+            request.user.username)
 
     def get_isOwner(self, group):
         request = self.context['request']
-        return group.ownerId == (request.user.username +
-                                 "@" +
-                                 settings.GATEWAY_ID)
+        return group.ownerId == (request.user.username)
 
     def get_isMember(self, group):
         request = self.context['request']
-        username = request.user.username + "@" + settings.GATEWAY_ID
+        username = request.user.username
         return group.members and username in group.members
 
     def get_isGatewayAdminsGroup(self, group):

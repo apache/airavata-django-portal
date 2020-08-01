@@ -121,7 +121,8 @@ def start_logout(request):
     logout(request)
     redirect_url = request.build_absolute_uri(
         resolve_url(settings.LOGOUT_REDIRECT_URL))
-    return redirect(settings.KEYCLOAK_LOGOUT_URL +
+    end_session = utils.get_custos_logout_endpoint()
+    return redirect(end_session +
                     "?redirect_uri=" + quote(redirect_url))
 
 
@@ -131,11 +132,9 @@ def callback(request):
         user = authenticate(request=request)
         if user is not None:
             login(request, user)
-            logger.info("Successfully  logged".next_url)
             if login_desktop:
                 return _create_login_desktop_success_response(request)
             next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
-            logger.info("Redirecting to #################".next_url)
             return redirect(next_url)
         else:
             raise Exception("Failed to authenticate user")
