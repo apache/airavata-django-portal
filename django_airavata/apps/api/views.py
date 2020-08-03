@@ -118,9 +118,8 @@ class GroupViewSet(APIBackedViewSet):
 
     def _send_users_added_to_group(self, internal_user_ids, group):
         for internal_user_id in internal_user_ids:
-            user_id, gateway_id = internal_user_id.rsplit("@", maxsplit=1)
             user_profile = self.request.profile_service['user_profile'].getUserProfileById(
-                self.authz_token, user_id, gateway_id)
+                self.authz_token, internal_user_id, self.authz_token.claimsMap['gatewayID'])
             signals.user_added_to_group.send(
                 sender=self.__class__,
                 user=user_profile,
@@ -1153,7 +1152,6 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
 
     def _load_user_profile(self, user_id):
         user_profile_client = self.request.profile_service['user_profile']
-        username = user_id[0:user_id.rindex('@')]
         return user_profile_client.getUserProfileById(self.authz_token,
                                                       username,
                                                       settings.GATEWAY_ID)

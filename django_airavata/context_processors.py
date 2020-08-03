@@ -67,9 +67,7 @@ def user_session_data(request):
     data = {}
     if request.user.is_authenticated:
         data["username"] = request.user.username
-        data["airavataInternalUserId"] = (request.user.username +
-                                          "@" +
-                                          settings.GATEWAY_ID)
+        data["airavataInternalUserId"] = (request.user.username)
         # is_gateway_admin may not be set if a failure occurs during login
         data["isGatewayAdmin"] = getattr(request, "is_gateway_admin", False)
     return {

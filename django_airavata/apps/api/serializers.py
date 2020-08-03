@@ -182,6 +182,7 @@ class GroupSerializer(thrift_utils.create_serializer_class(GroupModel)):
         instance.description = validated_data.get(
             'description', instance.description)
         # Calculate added and removed members
+        log.info(instance.members)
         old_members = set(instance.members)
         new_members = set(validated_data.get('members', instance.members))
         removed_members = old_members - new_members
