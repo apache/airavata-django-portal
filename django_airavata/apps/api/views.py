@@ -262,10 +262,10 @@ class ExperimentViewSet(APIBackedViewSet):
         """
         data_product = self.request.airavata_client.getDataProduct(
             self.authz_token, data_product_uri)
-        if user_storage.is_input_file_upload(
+        if user_storage.is_input_file(
                 self.request, data_product):
             moved_data_product = \
-                user_storage.move_input_file_upload(
+                user_storage.move_input_file(
                     self.request,
                     data_product,
                     experiment_data_dir)
@@ -398,7 +398,7 @@ class ExperimentViewSet(APIBackedViewSet):
         source_data_product = self.request.airavata_client.getDataProduct(
             self.authz_token, data_product_uri)
         if user_storage.exists(self.request, source_data_product):
-            return user_storage.copy_input_file_upload(
+            return user_storage.copy_input_file(
                 self.request, source_data_product)
         else:
             log.warning("Could not find file for source data "
@@ -942,7 +942,7 @@ class DataProductView(APIView):
 def upload_input_file(request):
     try:
         input_file = request.FILES['file']
-        data_product = user_storage.save_input_file_upload(
+        data_product = user_storage.save_input_file(
             request, input_file, content_type=input_file.content_type)
         serializer = serializers.DataProductSerializer(
             data_product, context={'request': request})
@@ -960,7 +960,7 @@ def tus_upload_finish(request):
     uploadURL = request.POST['uploadURL']
 
     def move_input_file(file_path, file_name, file_type):
-        return user_storage.move_input_file_upload_from_filepath(
+        return user_storage.move_input_file_from_filepath(
             request, file_path, name=file_name, content_type=file_type)
     try:
         data_product = tus.move_tus_upload(uploadURL, move_input_file)

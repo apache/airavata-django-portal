@@ -1,7 +1,5 @@
 from django.db import models
 
-from airavata_django_portal_sdk import base
-
 
 # Create your models here.
 class WorkspacePreferences(models.Model):
@@ -35,14 +33,3 @@ class User_Notifications(models.Model):
     username = models.CharField(max_length=64)
     notification_id = models.CharField(max_length=255)
     is_read = models.BooleanField(default=False)
-
-
-class User_Files(base.UserFiles):
-
-    class Meta:
-        indexes = [
-            # FIXME: ideally we would include file_path in the index to make
-            # lookups faster, but Django/MariaDB don't support key length on a
-            # TEXT column which is required to create an index
-            models.Index(fields=['username'], name='username_idx')
-        ]

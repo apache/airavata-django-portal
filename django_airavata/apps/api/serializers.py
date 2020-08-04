@@ -496,7 +496,7 @@ class DataProductSerializer(
     def get_isInputFileUpload(self, data_product):
         """Return True if this is an uploaded input file."""
         request = self.context['request']
-        return user_storage.is_input_file_upload(request, data_product)
+        return user_storage.is_input_file(request, data_product)
 
 
 # TODO move this into airavata_sdk?
