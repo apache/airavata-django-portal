@@ -1105,6 +1105,7 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
         # ones that can be edited
         # Load accessible users in order of permission precedence: users that
         # have WRITE permission should also have READ
+        log.info(lookup_value)
         users.update(self._load_directly_accessible_users(
             lookup_value, ResourcePermissionType.READ))
         users.update(self._load_directly_accessible_users(
@@ -1117,6 +1118,7 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
         # or more INDIRECT cascading owners, which would the owners of the
         # ancestor entities, but getAllDirectlyAccessibleUsers does not return
         # indirectly cascading owners)
+        log.info(owner_ids)
         owner_id = list(owner_ids.keys())[0]
         # Remove owner from the users list
         del users[owner_id]
@@ -1153,7 +1155,7 @@ class SharedEntityViewSet(mixins.RetrieveModelMixin,
     def _load_user_profile(self, user_id):
         user_profile_client = self.request.profile_service['user_profile']
         return user_profile_client.getUserProfileById(self.authz_token,
-                                                      username,
+                                                      user_id,
                                                       settings.GATEWAY_ID)
 
     def _load_accessible_groups(self, entity_id, permission_type):
