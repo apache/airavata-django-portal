@@ -31,7 +31,7 @@ setup(
             'wagtailfontawesome',
             'jupyter',
             'papermill',
-            "airavata-django-portal-sdk @ git+https://github.com/machristie/airavata-django-portal-sdk.git@master#egg=airavata-django-portal-sdk",
+            "airavata-django-portal-sdk @ git+https://github.com/apache/airavata-django-portal-sdk.git@master#egg=airavata-django-portal-sdk",
     ],
     extras_require={
         'dev': [
