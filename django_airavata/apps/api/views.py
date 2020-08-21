@@ -45,7 +45,6 @@ from django_airavata.apps.auth.models import EmailVerification
 
 from . import (
     data_products_helper,
-    datastore,
     exceptions,
     helpers,
     models,
