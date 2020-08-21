@@ -103,7 +103,7 @@ export default {
           formatter: value => this.getCredentialName(value)
         },
         {
-          label: "User Storage Quota (In KB)",
+          label: "User Storage Quota (In GB)",
           key: "userStorageQuota",
           formatter: value => this.getUserStorageQuota(value)
         },
