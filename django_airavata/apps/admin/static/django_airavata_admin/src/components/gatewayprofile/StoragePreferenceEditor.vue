@@ -3,7 +3,7 @@
     <b-form-group label="Login username" label-for="login-username">
       <b-form-input id="login-username" v-model="data.loginUserName" type="text" />
     </b-form-group>
-    <b-form-group label="User Storage Quota (in KB)" label-for="user-storage-quota">
+    <b-form-group label="User Storage Quota (in GB)" label-for="user-storage-quota">
       <b-form-input id="user-storage-quota" v-model="data.userStorageQuota" type="number" v-on:keypress = "handleTypedInput" v-on:paste= "handlePastedInput" />
     </b-form-group>
     <b-form-group label="File System Root Location" label-for="filesystem-root-location">

@@ -200,6 +200,12 @@ class ExperimentViewSet(APIBackedViewSet):
         experiment = serializer.save(
             gatewayId=self.gateway_id,
             userName=self.username)
+        #FIXME: Moving the setting experimentDataDirectory on experiment step during experiment creation. Check with the team
+        self._set_storage_id_and_data_dir(experiment)
+        try:
+            self.request.airavata_client.validateStorageLimit(self.authz_token, experiment, settings.GATEWAY_DATA_STORE_RESOURCE_ID)
+        except Exception as ex:
+            raise Exception(ex.message)
         experiment_id = self.request.airavata_client.createExperiment(
             self.authz_token, self.gateway_id, experiment)
         self._update_workspace_preferences(
