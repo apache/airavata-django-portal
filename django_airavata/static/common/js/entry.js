@@ -18,6 +18,11 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 export default function entry(entryPointFunction) {
   // Common Vue configuration
   Vue.use(BootstrapVue);
+  Vue.config.ignoredElements = [
+    // Custom input editors that have a tag name starting with "adpf-plugin-"
+    // Vue will ignore and not warn about
+    /^adpf-plugin-/,
+  ]
 
   entryPointFunction(Vue);
 }

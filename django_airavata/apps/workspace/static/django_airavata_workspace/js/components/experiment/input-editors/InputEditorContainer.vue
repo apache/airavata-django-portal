@@ -1,7 +1,7 @@
 <template>
     <input-editor-form-group :label="experimentInput.name" :label-for="inputEditorComponentId"
         :state="validationState" :feedback-messages="validationFeedback" :description="experimentInput.userFriendlyDescription">
-        <component :is="inputEditorComponentName"
+        <component v-if="!isWebComponent" :is="inputEditorComponentName"
             :id="inputEditorComponentId"
             :experiment-input="experimentInput"
             :experiment="experiment"
@@ -10,6 +10,17 @@
             @invalid="recordInvalidInputEditorValue"
             @valid="recordValidInputEditorValue"
             @input="valueChanged"
+            @uploadstart="uploadStart"
+            @uploadend="uploadEnd"/>
+        <component v-else :is="experimentInput.editorWebComponentTagName"
+            :id="inputEditorComponentId"
+            :experiment-input="experimentInput"
+            :experiment="experiment"
+            :read-only="experimentInput.isReadOnly"
+            :value="data"
+            @invalid="recordInvalidInputEditorValue"
+            @valid="recordValidInputEditorValue"
+            @input="webComponentValueChanged"
             @uploadstart="uploadStart"
             @uploadend="uploadEnd"/>
     </input-editor-form-group>
@@ -30,6 +41,8 @@ import TextareaInputEditor from './TextareaInputEditor.vue'
 
 import {models} from 'django-airavata-api'
 import { mixins, utils } from 'django-airavata-common-ui';
+
+import Vue from "vue";
 
 export default {
     name: 'input-editor-container',
@@ -60,6 +73,14 @@ export default {
       if (!this.show) {
         this.handleHidingInput();
       }
+      if (this.isWebComponent) {
+        // The web component is packaged assuming that Vue will be accessible in
+        // the global (window) scope
+        if (!window.Vue) {
+          window.Vue = Vue;
+        }
+        import(/* webpackIgnore: true */ this.experimentInput.editorWebComponentURL);
+      }
     },
     data: function() {
         return {
@@ -74,6 +95,9 @@ export default {
     computed: {
         inputEditorComponentName: function() {
 
+            if (this.isWebComponent) {
+              return this.experimentInput.editorWebComponentTagName;
+            }
             // If input specifices an editor UI component, use that
             if (this.experimentInput.editorUIComponentId) {
                 return this.experimentInput.editorUIComponentId;
@@ -88,6 +112,9 @@ export default {
             }
             // Default
             return 'string-input-editor';
+        },
+        isWebComponent() {
+          return this.experimentInput.editorWebComponentURL !== null;
         },
         inputEditorComponentId: function() {
             return utils.sanitizeHTMLId(this.experimentInput.name);
@@ -114,6 +141,11 @@ export default {
         },
         valueChanged: function() {
             this.inputHasBegun = true;
+        },
+        webComponentValueChanged: function(e) {
+          if (e.detail && e.detail.length && e.detail.length > 0) {
+            this.data = e.detail[0];
+          }
         },
         handleHidingInput: function() {
           this.oldValue = this.data;

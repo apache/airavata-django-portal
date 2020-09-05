@@ -84,6 +84,32 @@ export default class InputDataObjectType extends BaseModel {
     }
   }
 
+  get editorWebComponentURL() {
+    const metadata = this._getMetadata();
+    if (
+      metadata &&
+      "editor" in metadata &&
+      "web-component" in metadata["editor"]
+    ) {
+      return metadata["editor"]["web-component"]["url"];
+    } else {
+      return null;
+    }
+  }
+
+  get editorWebComponentTagName() {
+    const metadata = this._getMetadata();
+    if (
+      metadata &&
+      "editor" in metadata &&
+      "web-component" in metadata["editor"]
+    ) {
+      return metadata["editor"]["web-component"]["tag-name"];
+    } else {
+      return null;
+    }
+  }
+
   /**
    * Get the configuration for the editor component, which will be available
    * to the editor component for customizing its look and functionality.
