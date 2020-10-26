@@ -50,7 +50,7 @@ def gateway_groups_middleware(get_response):
             group_manager_client = request.profile_service[
                 'group_manager']
             group_memberships = group_manager_client.getAllGroupsUserBelongs(
-                request.authz_token, request.user.username + "@" + settings.GATEWAY_ID)
+                request.authz_token, request.user.username)
             group_ids = [group.id for group in group_memberships]
             request.is_gateway_admin = admins_group_id in group_ids
             request.is_read_only_gateway_admin = \

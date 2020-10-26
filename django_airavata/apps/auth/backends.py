@@ -9,7 +9,11 @@ from django.views.decorators.debug import sensitive_variables
 from oauthlib.oauth2 import InvalidGrantError, LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
+from google.protobuf.json_format import MessageToDict
+
 from . import utils
+
+from google.auth import jwt
 
 logger = logging.getLogger(__name__)
 
@@ -67,22 +71,18 @@ class KeycloakBackend(object):
 
     def _get_token_and_userinfo_password_flow(self, username, password):
         try:
-            client_id = settings.KEYCLOAK_CLIENT_ID
-            client_secret = settings.KEYCLOAK_CLIENT_SECRET
-            token_url = settings.KEYCLOAK_TOKEN_URL
-            userinfo_url = settings.KEYCLOAK_USERINFO_URL
-            verify_ssl = settings.KEYCLOAK_VERIFY_SSL
-            oauth2_session = OAuth2Session(client=LegacyApplicationClient(
-                client_id=client_id))
-            if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
-                oauth2_session.verify = settings.KEYCLOAK_CA_CERTFILE
-            token = oauth2_session.fetch_token(token_url=token_url,
-                                               username=username,
-                                               password=password,
-                                               client_id=client_id,
-                                               client_secret=client_secret,
-                                               verify=verify_ssl)
-            userinfo = oauth2_session.get(userinfo_url).json()
+            identity_client = utils.get_custos_identity_client()
+            portal_token = utils.get_custos_portal_token()
+
+            response = identity_client.token(token=portal_token, username=username,
+                                             password=password,
+                                             grant_type='password')
+            token = MessageToDict(response)
+
+            # refresh_token doesn't take client_secret kwarg, so create auth
+            # explicitly
+            userinfo = self._get_userinfo_from_token(token["access_token"])
+
             return token, userinfo
         except InvalidGrantError as e:
             # password wasn't valid, just log as a warning
@@ -91,54 +91,49 @@ class KeycloakBackend(object):
             return None, None
 
     def _get_token_and_userinfo_redirect_flow(self, request):
-        authorization_code_url = request.build_absolute_uri()
-        client_id = settings.KEYCLOAK_CLIENT_ID
-        client_secret = settings.KEYCLOAK_CLIENT_SECRET
-        token_url = settings.KEYCLOAK_TOKEN_URL
-        userinfo_url = settings.KEYCLOAK_USERINFO_URL
-        verify_ssl = settings.KEYCLOAK_VERIFY_SSL
-        state = request.session['OAUTH2_STATE']
+        identity_client = utils.get_custos_identity_client()
+        portal_token = utils.get_custos_portal_token()
+
+        code = request.GET.get('code')
+        state = request.GET.get('state')
+        session_state = request.GET.get('session_state')
+
+        saved_state = request.session['OAUTH2_STATE']
         redirect_uri = request.session['OAUTH2_REDIRECT_URI']
-        logger.debug("state={}".format(state))
-        oauth2_session = OAuth2Session(client_id,
-                                       scope='openid',
-                                       redirect_uri=redirect_uri,
-                                       state=state)
-        if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
-            oauth2_session.verify = settings.KEYCLOAK_CA_CERTFILE
-        token = oauth2_session.fetch_token(
-            token_url, client_secret=client_secret,
-            authorization_response=authorization_code_url, verify=verify_ssl)
-        userinfo = oauth2_session.get(userinfo_url).json()
-        return token, userinfo
+
+        logger.debug("Code: {}, State: {}, Saved_state: {}, session_state: {}".format(code, state, saved_state,
+                                                                                      session_state))
+        if state == saved_state:
+            response = identity_client.token(token=portal_token, redirect_uri=redirect_uri, code=code)
+            token = MessageToDict(response)
+
+            userinfo = self._get_userinfo_from_token(token["access_token"])
+
+            return token, userinfo
+        else:
+            logger.exception("Token mismatch error")
+            return None
 
     def _get_token_and_userinfo_from_refresh_token(self,
                                                    request,
                                                    refresh_token=None):
-        client_id = settings.KEYCLOAK_CLIENT_ID
-        client_secret = settings.KEYCLOAK_CLIENT_SECRET
-        token_url = settings.KEYCLOAK_TOKEN_URL
-        userinfo_url = settings.KEYCLOAK_USERINFO_URL
-        verify_ssl = settings.KEYCLOAK_VERIFY_SSL
-        oauth2_session = OAuth2Session(client_id, scope='openid')
-        if hasattr(settings, 'KEYCLOAK_CA_CERTFILE'):
-            oauth2_session.verify = settings.KEYCLOAK_CA_CERTFILE
         refresh_token_ = (refresh_token
                           if refresh_token is not None
                           else request.session['REFRESH_TOKEN'])
+        identity_client = utils.get_custos_identity_client()
+        portal_token = utils.get_custos_portal_token()
+
+        response = identity_client.token(token=portal_token, refresh_token=refresh_token_, grant_type='refresh_token')
+        token = MessageToDict(response)
+
         # refresh_token doesn't take client_secret kwarg, so create auth
         # explicitly
-        auth = requests.auth.HTTPBasicAuth(client_id, client_secret)
-        token = oauth2_session.refresh_token(token_url=token_url,
-                                             refresh_token=refresh_token_,
-                                             auth=auth,
-                                             verify=verify_ssl)
-        userinfo = oauth2_session.get(userinfo_url).json()
+        userinfo = self._get_userinfo_from_token(token["access_token"])
+
         return token, userinfo
 
     def _process_token(self, request, token):
         # TODO validate the JWS signature
-        logger.debug("token: {}".format(token))
         now = time.time()
         # Put access_token into session to be used for authenticating with API
         # server
@@ -172,3 +167,12 @@ class KeycloakBackend(object):
             utils.send_new_user_email(
                 request, username, email, first_name, last_name)
             return user
+
+    def _get_userinfo_from_token(self, token):
+        userinfo = {}
+        decoded_id_token = jwt.decode(token, verify=False)
+        userinfo["preferred_username"] = decoded_id_token["preferred_username"]
+        userinfo["given_name"] = decoded_id_token["given_name"]
+        userinfo["family_name"] = decoded_id_token["family_name"]
+        userinfo["email"] = decoded_id_token["email"]
+        return userinfo

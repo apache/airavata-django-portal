@@ -174,8 +174,7 @@ class GroupSerializer(thrift_utils.create_serializer_class(GroupModel)):
 
     def create(self, validated_data):
         group = super().create(validated_data)
-        group.ownerId = self.context['request'].user.username + \
-            "@" + settings.GATEWAY_ID
+        group.ownerId = self.context['request'].user.username
         return group
 
     def update(self, instance, validated_data):
@@ -183,6 +182,7 @@ class GroupSerializer(thrift_utils.create_serializer_class(GroupModel)):
         instance.description = validated_data.get(
             'description', instance.description)
         # Calculate added and removed members
+        log.info(instance.members)
         old_members = set(instance.members)
         new_members = set(validated_data.get('members', instance.members))
         removed_members = old_members - new_members
@@ -208,17 +208,15 @@ class GroupSerializer(thrift_utils.create_serializer_class(GroupModel)):
         return request.profile_service['group_manager'].hasAdminAccess(
             request.authz_token,
             group.id,
-            request.user.username + "@" + settings.GATEWAY_ID)
+            request.user.username)
 
     def get_isOwner(self, group):
         request = self.context['request']
-        return group.ownerId == (request.user.username +
-                                 "@" +
-                                 settings.GATEWAY_ID)
+        return group.ownerId == (request.user.username)
 
     def get_isMember(self, group):
         request = self.context['request']
-        username = request.user.username + "@" + settings.GATEWAY_ID
+        username = request.user.username
         return group.members and username in group.members
 
     def get_isGatewayAdminsGroup(self, group):
@@ -635,6 +633,8 @@ class GroupResourceProfileSerializer(
         write_access = request.airavata_client.userHasAccess(
             request.authz_token, groupResourceProfile.groupResourceProfileId,
             ResourcePermissionType.WRITE)
+        log.info(request.authz_token)
+        log.info(write_access)
         if not write_access:
             return False
         # Check that user has READ access to all tokens in this
@@ -642,10 +642,12 @@ class GroupResourceProfileSerializer(
         tokens = set([groupResourceProfile.defaultCredentialStoreToken] +
                      [cp.resourceSpecificCredentialStoreToken
                       for cp in groupResourceProfile.computePreferences])
-
+        log.info(tokens)
         def check_token(token):
-            return token is None or request.airavata_client.userHasAccess(
+            rel = token is None or request.airavata_client.userHasAccess(
                 request.authz_token, token, ResourcePermissionType.READ)
+            log.info(rel)
+            return rel
         return all(map(check_token, tokens))
 
 
