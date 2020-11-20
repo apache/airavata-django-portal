@@ -115,6 +115,10 @@
                     <em>You don't have access to this project.</em>
                   </td>
                 </tr>
+                <tr v-if="localFullExperiment.jobDetails && localFullExperiment.jobDetails.length > 0 && localFullExperiment.jobDetails[0].jobName">
+                  <th scope="row">VNC URL</th>
+                  <td><a :href="'https://delta-topology.org/vnc/' + encodeURIComponent(localFullExperiment.jobDetails[0].jobName)">View VNC</a></td>
+                </tr>
                 <tr>
                   <th scope="row">Owner</th>
                   <td>{{ experiment.userName }}</td>
