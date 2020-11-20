@@ -117,7 +117,7 @@
                 </tr>
                 <tr v-if="localFullExperiment.jobDetails && localFullExperiment.jobDetails.length > 0 && localFullExperiment.jobDetails[0].jobName">
                   <th scope="row">VNC URL</th>
-                  <td><a :href="'https://delta-topology.org/vnc/' + encodeURIComponent(localFullExperiment.jobDetails[0].jobName)">View VNC</a></td>
+                  <td><a :href="'/static/vnc/' + encodeURIComponent(localFullExperiment.jobDetails[0].jobName) + '.html'">View VNC</a></td>
                 </tr>
                 <tr>
                   <th scope="row">Owner</th>
