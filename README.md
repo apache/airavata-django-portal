@@ -16,8 +16,8 @@ Django Portal locally. This will allow you to try it out and can also be used as
 a development environment. If you just want to run the Airavata Django Portal
 locally, see the Docker instructions below for a more simplified approach.
 
-The Airavata Django Portal is developed with Python 3.6 but should also work
-with 3.4 and 3.5. You'll need one of these versions installed locally.
+The Airavata Django Portal works with Python versions 3.6, 3.7 and 3.8. You'll
+need one of these versions installed locally.
 
 You'll also need Node.js and yarn to build the JavaScript frontend code. Please
 install
@@ -136,6 +136,16 @@ encounter bugs or would like to request a new feature you can do so in the
 [Airavata Jira project](https://issues.apache.org/jira/projects/AIRAVATA) (just
 select the _Django Portal_ component when you make your issue).
 
+## Customization
+
+See the Customization Guide in the
+[documentation](https://apache-airavata-django-portal.readthedocs.io/en/latest/)
+for information on how to customize the Airavata Django Portal user interface.
+To get started we recommend going through the
+[Gateways Tutorial](https://apache-airavata-django-portal.readthedocs.io/en/latest/tutorial/gateways_tutorial/).
+This tutorial covers the different ways that the user interface can be
+customized.
+
 ## Contributing
 
 For general information on how to contribute, please see the
@@ -149,6 +159,15 @@ libraries.
 
 Use a code editor that integrates with editorconfig and flake8. I also recommend
 autopep8 for automatically formatting code to follow the PEP8 guidelines.
+Prettier is used for formatting JavaScript and Vue.js code.
+
+See the docs for more information on
+[developing the backend](./docs/dev/developing_backend.md) and
+[frontend code](./docs/dev/developing_frontend.md).
+
+### Running Django Tests
+
+Run `./runtests.py` to run the Django unit tests.
 
 ## License
 
