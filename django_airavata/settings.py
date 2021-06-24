@@ -130,6 +130,7 @@ MIDDLEWARE = [
     'django_airavata.apps.auth.middleware.gateway_groups_middleware',
     # Wagtail related middleware
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
+    'django_airavata.apps.auth.middleware.user_profile_completeness_check',
 ]
 
 ROOT_URLCONF = 'django_airavata.urls'
