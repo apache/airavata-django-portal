@@ -16,8 +16,8 @@ Django Portal locally. This will allow you to try it out and can also be used as
 a development environment. If you just want to run the Airavata Django Portal
 locally, see the Docker instructions below for a more simplified approach.
 
-The Airavata Django Portal works with Python versions 3.6, 3.7 and 3.8. You'll
-need one of these versions installed locally.
+The Airavata Django Portal works with Python versions 3.6, 3.7, 3.8 and 3.9.
+You'll need one of these versions installed locally.
 
 You'll also need Node.js and yarn to build the JavaScript frontend code. Please
 install
@@ -34,7 +34,7 @@ information on how to install yarn.
     cd airavata-django-portal
     python3 -m venv venv
     source venv/bin/activate
-    pip install --upgrade pip
+    pip install --upgrade pip setuptools wheel
     pip install -r requirements.txt
     ```
 
@@ -44,14 +44,20 @@ information on how to install yarn.
       [mysqlclient-python installation notes](https://github.com/PyMySQL/mysqlclient-python#install)
       for more details.
 
-2.  Create a local settings file. Copy
-    `django_airavata/settings_local.py.sample` to
-    `django_airavata/settings_local.py` and edit the contents to match your
-    Keycloak and Airavata server deployments.
+2.  Create a local settings file.
 
-    ```
-    cp django_airavata/settings_local.py.sample django_airavata/settings_local.py
-    ```
+    - You can either copy `django_airavata/settings_local.py.sample` to
+      `django_airavata/settings_local.py` and edit the contents to match your
+      Keycloak and Airavata server deployments.
+
+      ```
+      cp django_airavata/settings_local.py.sample django_airavata/settings_local.py
+      ```
+
+    - Or, if you have Admin access to an Airavata Django Portal instance, you
+      can log in, go to _Settings_ and then _Developer Console_
+      (/admin/developers) and download a `settings_local.py` file for local
+      development. Save it to the `django_airavata/` directory.
 
 3.  Run Django migrations
 
@@ -78,14 +84,6 @@ information on how to install yarn.
     ```
     python manage.py runserver
     ```
-
-    - Note: if you want to use OpenID Connect authentication from the Django
-      Portal when running it locally, you'll need to first set the following
-      environment to allow OAuth over insecure HTTP:
-
-          ```
-          export OAUTHLIB_INSECURE_TRANSPORT=1
-          ```
 
 7.  Point your browser to http://localhost:8000.
 
@@ -117,6 +115,22 @@ following:
    ```
 
 4. Point your browser to http://localhost:8000.
+
+### Multi-architecture images
+
+To build and push
+[multi-architecture images](https://docs.docker.com/desktop/multi-arch/), first
+create a builder (one time)
+
+```
+docker buildx create --name mybuilder --use
+```
+
+then run
+
+```
+docker buildx build --platform linux/amd64,linux/arm64 -t TAG --push .
+```
 
 ## Documentation
 

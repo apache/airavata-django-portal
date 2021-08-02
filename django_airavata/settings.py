@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'modelcluster',
     'taggit',
     'wagtailfontawesome',
+    'wagtail_draftail_anchors',
 
     # wagtail custom apps
     'django_airavata.wagtailapps.base.apps.BaseConfig',
@@ -128,7 +129,6 @@ MIDDLEWARE = [
     # profile_service_client
     'django_airavata.apps.auth.middleware.gateway_groups_middleware',
     # Wagtail related middleware
-    'wagtail.core.middleware.SiteMiddleware',
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 
@@ -320,6 +320,18 @@ WEBPACK_LOADER = {
             'dist',
             'webpack-stats.json'),
         'TIMEOUT': 60,
+    },
+    'AUTH': {
+        'BUNDLE_DIR_NAME': 'django_airavata_auth/dist/',
+        'STATS_FILE': os.path.join(
+            BASE_DIR,
+            'django_airavata',
+            'apps',
+            'auth',
+            'static',
+            'django_airavata_auth',
+            'dist',
+            'webpack-stats.json'),
     },
     'DATAPARSERS': {
         'BUNDLE_DIR_NAME': 'django_airavata_dataparsers/dist/',

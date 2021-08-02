@@ -8,6 +8,7 @@ import DataProduct from "./models/DataProduct";
 import Experiment from "./models/Experiment";
 import ExperimentSearchFields from "./models/ExperimentSearchFields";
 import ExperimentStatistics from "./models/ExperimentStatistics";
+import ExperimentStoragePath from "./models/ExperimentStoragePath";
 import ExperimentSummary from "./models/ExperimentSummary";
 import FullExperiment from "./models/FullExperiment";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
@@ -23,6 +24,7 @@ import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
 import StorageResourceDescription from "./models/StorageResourceDescription";
 import UnverifiedEmailUserProfile from "./models/UnverifiedEmailUserProfile";
+import User from "./models/User";
 import UserProfile from "./models/UserProfile";
 import UserStoragePath from "./models/UserStoragePath";
 import WorkspacePreferences from "./models/WorkspacePreferences";
@@ -221,6 +223,17 @@ export default {
       },
     },
   },
+  ExperimentStoragePaths: {
+    url: "/api/experiment-storage",
+    methods: {
+      get: {
+        url: "/api/experiment-storage/<experimentId>/<path>",
+        requestType: "get",
+        modelClass: ExperimentStoragePath,
+        encodePathParams: false,
+      },
+    },
+  },
   FullExperiments: {
     url: "/api/full-experiments",
     viewSet: [
@@ -356,6 +369,29 @@ export default {
     pagination: true,
     queryParams: ["limit", "offset"],
     modelClass: UnverifiedEmailUserProfile,
+  },
+  Users: {
+    url: "/auth/users",
+    viewSet: true,
+    methods: {
+      current: {
+        url: "/auth/users/current/",
+        requestType: "get",
+      },
+      resendEmailVerification: {
+        url: "/auth/users/<lookup>/resend_email_verification/",
+        requestType: "post",
+      },
+      verifyEmailChange: {
+        url: "/auth/users/<lookup>/verify_email_change/",
+        requestType: "post",
+        bodyParams: {
+          name: "data",
+        },
+        modelClass: User,
+      },
+    },
+    modelClass: User,
   },
   UserProfiles: {
     url: "/api/user-profiles",

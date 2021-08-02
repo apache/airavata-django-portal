@@ -75,7 +75,9 @@ properties:
         highlight the currently active nav item in the left side navigation bar. For
         example, let's say the app's base url is "/myapp" and urls belonging to the
         "projects" nav item are of the form "/myapp/projects/`<project_id>`" and
-        "/myapp/new-project". Then you would set _active_prefixes_ to `["projects", "new-project"]`.
+        "/myapp/new-project". Then you would set _active_prefixes_ to
+        `["projects", "new-project"]`. These strings can also be [regular
+        expressions](https://docs.python.org/3/library/re.html#regular-expression-syntax).
 
 ### Add AppConfig to INSTALLED_APPS
 
@@ -228,7 +230,7 @@ django_airavata/apps/myapp):
   "name": "django-airavata-myapp-views",
   "description": "A Vue.js project",
   "version": "1.0.0",
-  "author": "Marcus Christie <machristie@apache.org>",
+  "author": "Apache Airavata <dev@airavata.apache.org>",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -239,8 +241,8 @@ django_airavata/apps/myapp):
   "dependencies": {
     "bootstrap": "^4.0.0-beta.2",
     "bootstrap-vue": "2.0.0-rc.26",
-    "django-airavata-api": "file:../api",
-    "django-airavata-common-ui": "file:../../static/common",
+    "django-airavata-api": "link:../api",
+    "django-airavata-common-ui": "link:../../static/common",
     "vue": "^2.5.21"
   },
   "devDependencies": {

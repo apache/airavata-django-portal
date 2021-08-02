@@ -44,11 +44,11 @@
         </div>
       </div>
     </template>
-    <div class="row" v-if="experiment.isFinished && storageDirLink">
+    <div class="row" v-if="experiment.isFinished">
       <div class="col">
-        <b-card header="Other Files">
-          <b-link :href="storageDirLink">Storage Directory</b-link>
-        </b-card>
+        <experiment-storage-view-container
+          :experimentId="experiment.experimentId"
+        />
       </div>
     </div>
     <div class="row">
@@ -251,12 +251,11 @@
                         <template v-if="input.type.isSimpleValueType">
                           <span class="text-break">{{ input.value }}</span>
                         </template>
-                        <user-storage-link
+                        <data-product-viewer
                           v-for="dp in inputDataProducts[input.name]"
                           v-else-if="input.type.isFileValueType"
-                          :data-product-uri="dp.productUri"
-                          :mime-type="dp.mimeType"
-                          :file-name="dp.productName"
+                          :data-product="dp"
+                          :input-file="true"
                           :key="dp.productUri"
                         />
                       </li>
@@ -291,7 +290,8 @@ import OutputDisplayContainer from "./output-displays/OutputDisplayContainer";
 import urls from "../../utils/urls";
 
 import moment from "moment";
-import UserStorageLink from "../storage/storage-edit/UserStorageLink";
+import ExperimentStorageViewContainer from "../storage/ExperimentStorageViewContainer.vue";
+import DataProductViewer from "django-airavata-common-ui/js/components/DataProductViewer.vue";
 
 export default {
   name: "experiment-summary",
@@ -311,10 +311,11 @@ export default {
     };
   },
   components: {
-    UserStorageLink,
     "clipboard-copy-link": components.ClipboardCopyLink,
     "share-button": components.ShareButton,
     OutputDisplayContainer,
+    ExperimentStorageViewContainer,
+    DataProductViewer,
   },
   computed: {
     inputDataProducts() {
@@ -385,13 +386,6 @@ export default {
     },
     isCancelable() {
       return this.localFullExperiment.experiment.isCancelable;
-    },
-    storageDirLink() {
-      if (this.experiment.relativeExperimentDataDir) {
-        return urls.storageDirectory(this.experiment.relativeExperimentDataDir);
-      } else {
-        return null;
-      }
     },
   },
   methods: {
