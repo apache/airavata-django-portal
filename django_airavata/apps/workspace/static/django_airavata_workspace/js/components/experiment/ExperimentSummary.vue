@@ -90,9 +90,9 @@
                     <em>You don't have access to this project.</em>
                   </td>
                 </tr>
-                <tr v-if="localFullExperiment.jobDetails && localFullExperiment.jobDetails.length > 0 && localFullExperiment.jobDetails[0].jobName">
+                <tr v-if="vncURL">
                   <th scope="row">VNC URL</th>
-                  <td><a :href="'/static/vnc/' + encodeURIComponent(localFullExperiment.jobDetails[0].jobName) + '.html'">View VNC</a></td>
+                  <td><a :href="vncURL">View VNC</a></td>
                 </tr>
                 <tr>
                   <th scope="row">Owner</th>
@@ -308,6 +308,7 @@ export default {
   data() {
     return {
       localFullExperiment: this.fullExperiment.clone(),
+      vncURL: null,
     };
   },
   components: {
@@ -468,6 +469,20 @@ export default {
         this.initPollingExperiment();
       }
     },
+    async localFullExperiment() {
+      if (this.localFullExperiment.jobDetails && this.localFullExperiment.jobDetails.length > 0 && this.localFullExperiment.jobDetails[0].jobStatusStateName === 'ACTIVE') {
+        const url = `/static/vnc/${encodeURIComponent(this.localFullExperiment.jobDetails[0].jobName)}.html`;
+        // Check that the html file exists
+        const response = await fetch(url);
+        if (response.ok) {
+          this.vncURL = url;
+        } else {
+          this.vncURL = null;
+        }
+      } else {
+        this.vncURL = null;
+      }
+    }
   },
   mounted: function () {
     this.initPollingExperiment();
