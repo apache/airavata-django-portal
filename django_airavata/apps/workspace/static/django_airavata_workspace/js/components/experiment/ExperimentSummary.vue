@@ -90,9 +90,12 @@
                     <em>You don't have access to this project.</em>
                   </td>
                 </tr>
-                <tr v-if="vncURL">
+                <tr v-if="experiment.isProgressing">
                   <th scope="row">VNC URL</th>
-                  <td><a :href="vncURL">View VNC</a></td>
+                  <td>
+                    <a v-if="vncURL" :href="vncURL">View VNC</a>
+                    <em v-else>Please wait for the VNC URL to be available when the job is active.</em>
+                  </td>
                 </tr>
                 <tr>
                   <th scope="row">Owner</th>
