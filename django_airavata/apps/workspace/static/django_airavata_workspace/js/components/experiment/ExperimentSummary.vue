@@ -93,8 +93,9 @@
                 <tr v-if="experiment.isProgressing">
                   <th scope="row">VNC URL</th>
                   <td>
-                    <a v-if="vncURL" :href="vncURL">View VNC</a>
-                    <em v-else>Please wait for the VNC URL to be available when the job is active.</em>
+                    <div ref="vncInfo">
+                      Please wait for the VNC URL to be available when the job is active.
+                    </div>
                   </td>
                 </tr>
                 <tr>
@@ -311,7 +312,6 @@ export default {
   data() {
     return {
       localFullExperiment: this.fullExperiment.clone(),
-      vncURL: null,
     };
   },
   components: {
@@ -473,18 +473,19 @@ export default {
       }
     },
     async localFullExperiment() {
+      let vncInfo = "Please wait for the VNC URL to be available when the job is active.";
       if (this.localFullExperiment.jobDetails && this.localFullExperiment.jobDetails.length > 0 && this.localFullExperiment.jobDetails[0].jobStatusStateName === 'ACTIVE') {
         const url = `/static/vnc/${encodeURIComponent(this.localFullExperiment.jobDetails[0].jobName)}.html`;
         // Check that the html file exists
         const response = await fetch(url);
         if (response.ok) {
-          this.vncURL = url;
-        } else {
-          this.vncURL = null;
+          // Grab the text from the HTML file's body tag and replace vncInfo
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(await response.text(), 'text/html');
+          vncInfo = doc.querySelector('body').textContent;
         }
-      } else {
-        this.vncURL = null;
       }
+      this.$refs.vncInfo.textContent = vncInfo;
     }
   },
   mounted: function () {
