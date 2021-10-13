@@ -473,19 +473,24 @@ export default {
       }
     },
     async localFullExperiment() {
-      let vncInfo = "Please wait for the VNC URL to be available when the job is active.";
+      let vncInfo = document.createElement('div');
+      vncInfo.textContent = "Please wait for the VNC URL to be available when the job is active.";
       if (this.localFullExperiment.jobDetails && this.localFullExperiment.jobDetails.length > 0 && this.localFullExperiment.jobDetails[0].jobStatusStateName === 'ACTIVE') {
         const url = `/static/vnc/${encodeURIComponent(this.localFullExperiment.jobDetails[0].jobName)}.html`;
         // Check that the html file exists
         const response = await fetch(url);
         if (response.ok) {
-          // Grab the text from the HTML file's body tag and replace vncInfo
+          // Copy all children from the HTML file's body tag and replace vncInfo
           const parser = new DOMParser();
           const doc = parser.parseFromString(await response.text(), 'text/html');
-          vncInfo = doc.querySelector('body').textContent;
+          vncInfo = document.createElement('div');
+          for (const child of doc.querySelector('body').children) {
+            vncInfo.append(child);
+          }
         }
       }
-      this.$refs.vncInfo.textContent = vncInfo;
+      this.$refs.vncInfo.innerHTML = ''; // clear all contents
+      this.$refs.vncInfo.append(vncInfo);
     }
   },
   mounted: function () {
