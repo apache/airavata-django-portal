@@ -2,10 +2,11 @@
   <b-form-group :label="label" label-for="group-resource-profile">
     <b-form-select
       id="group-resource-profile"
-      v-model="groupResourceProfileId"
+      :value="groupResourceProfileId"
       :options="groupResourceProfileOptions"
       required
       @change="groupResourceProfileChanged"
+      @input.native.stop
     >
       <template slot="first">
         <option :value="null" disabled>
@@ -28,7 +29,7 @@ export default {
   props: {
     value: {
       type: String,
-      required: true,
+      default: null,
     },
     label: {
       type: String,
@@ -36,15 +37,14 @@ export default {
     },
   },
   store: store,
-  data() {
-    return {
+  created() {
+    this.$store.dispatch("initializeGroupResourceProfileId", {
       groupResourceProfileId: this.value,
-    };
-  },
-  async mounted() {
-    await this.$store.dispatch("loadGroupResourceProfiles");
+    });
+    this.$store.dispatch("loadGroupResourceProfiles");
   },
   computed: {
+    ...mapGetters(["groupResourceProfileId", "groupResourceProfiles"]),
     groupResourceProfileOptions: function () {
       if (this.groupResourceProfiles && this.groupResourceProfiles.length > 0) {
         const groupResourceProfileOptions = this.groupResourceProfiles.map(
@@ -63,12 +63,12 @@ export default {
         return [];
       }
     },
-    ...mapGetters(["groupResourceProfiles"]),
   },
   methods: {
     groupResourceProfileChanged: function (groupResourceProfileId) {
-      this.groupResourceProfileId = groupResourceProfileId;
-      this.emitValueChanged();
+      this.$store.dispatch("updateGroupResourceProfileId", {
+        groupResourceProfileId,
+      });
     },
     emitValueChanged: function () {
       const inputEvent = new CustomEvent("input", {
@@ -80,8 +80,15 @@ export default {
     },
   },
   watch: {
-    value() {
-      this.groupResourceProfileId = this.value;
+    value(newValue) {
+      if (newValue !== this.groupResourceProfileId) {
+        this.$store.dispatch("updateGroupResourceProfileId", {
+          groupResourceProfileId: newValue,
+        });
+      }
+    },
+    groupResourceProfileId() {
+      this.emitValueChanged();
     },
   },
 };

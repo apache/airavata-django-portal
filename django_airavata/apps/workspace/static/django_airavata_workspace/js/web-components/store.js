@@ -7,6 +7,19 @@ Vue.use(Vuex);
 const PROMISES = {
   workspacePreferences: null,
 };
+let groupResourceProfileIdIsSet = false;
+let resourceHostIdIsSet = false;
+let queueSettingsAreSet = false;
+let applicationModuleIdIsSet = false;
+
+// For non-experiment editing case, need to defer compute resource settings
+// initialization until each components' settings have been set
+const areAllComputeResourceSettingsSet = () =>
+  groupResourceProfileIdIsSet &&
+  resourceHostIdIsSet &&
+  queueSettingsAreSet &&
+  applicationModuleIdIsSet;
+
 export const mutations = {
   setExperiment(state, { experiment }) {
     state.experiment = experiment;
@@ -23,29 +36,51 @@ export const mutations = {
   updateProjectId(state, { projectId }) {
     state.experiment.projectId = projectId;
   },
-  updateGroupResourceProfileId(state, { groupResourceProfileId }) {
+  updateExperimentGroupResourceProfileId(state, { groupResourceProfileId }) {
     state.experiment.userConfigurationData.groupResourceProfileId = groupResourceProfileId;
   },
-  updateResourceHostId(state, { resourceHostId }) {
+  updateGroupResourceProfileId(state, { groupResourceProfileId }) {
+    state.groupResourceProfileId = groupResourceProfileId;
+    groupResourceProfileIdIsSet = true;
+  },
+  updateExperimentResourceHostId(state, { resourceHostId }) {
     state.experiment.userConfigurationData.computationalResourceScheduling.resourceHostId = resourceHostId;
   },
-  updateQueueName(state, { queueName }) {
+  updateResourceHostId(state, { resourceHostId }) {
+    state.resourceHostId = resourceHostId;
+    resourceHostIdIsSet = true;
+  },
+  updateExperimentQueueName(state, { queueName }) {
     state.experiment.userConfigurationData.computationalResourceScheduling.queueName = queueName;
   },
-  setLazyQueueName(state, { queueName }) {
+  updateQueueName(state, { queueName }) {
     state.queueName = queueName;
+    // Assume all queue settings are initialized at once
+    queueSettingsAreSet = true;
   },
-  updateTotalCPUCount(state, { totalCPUCount }) {
+  updateExperimentTotalCPUCount(state, { totalCPUCount }) {
     state.experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount = totalCPUCount;
   },
-  updateNodeCount(state, { nodeCount }) {
+  updateExperimentNodeCount(state, { nodeCount }) {
     state.experiment.userConfigurationData.computationalResourceScheduling.nodeCount = nodeCount;
   },
-  updateWallTimeLimit(state, { wallTimeLimit }) {
+  updateExperimentWallTimeLimit(state, { wallTimeLimit }) {
     state.experiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit = wallTimeLimit;
   },
-  updateTotalPhysicalMemory(state, { totalPhysicalMemory }) {
+  updateExperimentTotalPhysicalMemory(state, { totalPhysicalMemory }) {
     state.experiment.userConfigurationData.computationalResourceScheduling.totalPhysicalMemory = totalPhysicalMemory;
+  },
+  updateTotalCPUCount(state, { totalCPUCount }) {
+    state.totalCPUCount = totalCPUCount;
+  },
+  updateNodeCount(state, { nodeCount }) {
+    state.nodeCount = nodeCount;
+  },
+  updateWallTimeLimit(state, { wallTimeLimit }) {
+    state.wallTimeLimit = wallTimeLimit;
+  },
+  updateTotalPhysicalMemory(state, { totalPhysicalMemory }) {
+    state.totalPhysicalMemory = totalPhysicalMemory;
   },
   setProjects(state, { projects }) {
     state.projects = projects;
@@ -61,6 +96,7 @@ export const mutations = {
   },
   setApplicationModuleId(state, { applicationModuleId }) {
     state.applicationModuleId = applicationModuleId;
+    applicationModuleIdIsSet = true;
   },
   setApplicationDeployments(state, { applicationDeployments }) {
     state.applicationDeployments = applicationDeployments;
@@ -121,10 +157,20 @@ export const actions = {
       });
     }
 
-    dispatch("initializeGroupResourceProfileId");
-    const groupResourceProfileId =
-      state.experiment.userConfigurationData.groupResourceProfileId;
-    // If experiment has a group resource profile, load additional necessary
+    // Since experiment is set, all of the compute resource settings are now
+    // assumed to be initialized so we can do the cross component initialization
+    dispatch("initializeComputeResourceSettings");
+  },
+  async initializeComputeResourceSettings({ dispatch, getters }) {
+    // This method initializes GroupResourceProfile, ApplicationDeployments and
+    // Queue settings at once since there they are interdependent.
+    // This method should only be called after groupResourceProfileId,
+    // resourceHostId, queue settings and applicationModuleId are all set (see
+    // areAllComputeResourceSettingsSet).
+
+    await dispatch("initializeGroupResourceProfile");
+    const groupResourceProfileId = getters.groupResourceProfileId;
+    // If there is a group resource profile, load additional necessary
     // data and re-apply group resource profile
     if (groupResourceProfileId) {
       await dispatch("loadApplicationDeployments");
@@ -132,35 +178,49 @@ export const actions = {
       await dispatch("applyGroupResourceProfile");
     }
   },
-  initializeGroupResourceProfileId({ commit, getters, state }) {
-    // If there is no groupResourceProfileId set on the experiment, or there
-    // is one set but it is no longer in the list of accessible
-    // groupResourceProfiles, set to the default one, or the first one
-    let groupResourceProfileId =
-      state.experiment.userConfigurationData.groupResourceProfileId;
+  async initializeGroupResourceProfile({ commit, dispatch, getters, state }) {
+    await dispatch("loadGroupResourceProfiles");
+    await dispatch("loadWorkspacePreferences");
+    let result = getters.groupResourceProfileId;
+
     if (
-      !groupResourceProfileId ||
-      !getters.findGroupResourceProfile(groupResourceProfileId)
+      !getters.groupResourceProfileId ||
+      !getters.findGroupResourceProfile(getters.groupResourceProfileId)
     ) {
+      // Figure out a default value for groupResourceProfileId
       if (
         getters.findGroupResourceProfile(
           state.workspacePreferences.most_recent_group_resource_profile_id
         )
       ) {
-        commit("updateGroupResourceProfileId", {
-          groupResourceProfileId:
-            state.workspacePreferences.most_recent_group_resource_profile_id,
-        });
+        result =
+          state.workspacePreferences.most_recent_group_resource_profile_id;
       } else if (state.groupResourceProfiles.length > 0) {
-        commit("updateGroupResourceProfileId", {
-          groupResourceProfileId:
-            state.groupResourceProfiles[0].groupResourceProfileId,
-        });
+        result = state.groupResourceProfiles[0].groupResourceProfileId;
       } else {
-        commit("updateGroupResourceProfileId", {
-          groupResourceProfileId: null,
-        });
+        result = null;
       }
+    }
+    if (state.experiment) {
+      commit("updateExperimentGroupResourceProfileId", {
+        groupResourceProfileId: result,
+      });
+    } else {
+      commit("updateGroupResourceProfileId", {
+        groupResourceProfileId: result,
+      });
+    }
+  },
+  async initializeGroupResourceProfileId(
+    { commit, dispatch, state },
+    { groupResourceProfileId }
+  ) {
+    commit("updateGroupResourceProfileId", {
+      groupResourceProfileId,
+    });
+    // only for non-experiment loading case do we call initializeComputeResourceSettings
+    if (!state.experiment && areAllComputeResourceSettingsSet()) {
+      dispatch("initializeComputeResourceSettings");
     }
   },
   updateExperimentName({ commit }, { name }) {
@@ -173,58 +233,110 @@ export const actions = {
     commit("updateProjectId", { projectId });
   },
   async updateGroupResourceProfileId(
-    { commit, dispatch },
+    { commit, dispatch, getters, state },
     { groupResourceProfileId }
   ) {
-    commit("updateGroupResourceProfileId", { groupResourceProfileId });
-    await dispatch("loadApplicationDeployments");
-    await dispatch("applyGroupResourceProfile");
+    const oldValue = getters.groupResourceProfileId;
+    if (state.experiment) {
+      commit("updateExperimentGroupResourceProfileId", {
+        groupResourceProfileId,
+      });
+    } else {
+      commit("updateGroupResourceProfileId", { groupResourceProfileId });
+    }
+    if (oldValue !== groupResourceProfileId) {
+      await dispatch("loadApplicationDeployments");
+      await dispatch("applyGroupResourceProfile");
+    }
   },
   async updateComputeResourceHostId(
-    { commit, dispatch, getters },
+    { commit, dispatch, getters, state },
     { resourceHostId }
   ) {
     if (getters.resourceHostId !== resourceHostId) {
-      commit("updateResourceHostId", { resourceHostId });
+      if (state.experiment) {
+        commit("updateExperimentResourceHostId", { resourceHostId });
+      } else {
+        commit("updateResourceHostId", { resourceHostId });
+      }
       await dispatch("loadAppDeploymentQueues");
       await dispatch("setDefaultQueue");
     }
   },
-  updateQueueName({ commit, dispatch, state }, { queueName }) {
-    if (state.experiment) {
-      commit("updateQueueName", { queueName });
-      dispatch("initializeQueue");
-    } else {
-      commit("setLazyQueueName", { queueName });
+  async initializeQueueSettings(
+    { commit, dispatch, state },
+    { queueName, nodeCount, totalCPUCount, wallTimeLimit, totalPhysicalMemory }
+  ) {
+    commit("updateQueueName", { queueName });
+    commit("updateNodeCount", { nodeCount });
+    commit("updateTotalCPUCount", { totalCPUCount });
+    commit("updateWallTimeLimit", { wallTimeLimit });
+    commit("updateTotalPhysicalMemory", { totalPhysicalMemory });
+
+    // only for non-experiment loading case do we call initializeComputeResourceSettings
+    if (!state.experiment && areAllComputeResourceSettingsSet()) {
+      dispatch("initializeComputeResourceSettings");
     }
   },
-  updateTotalCPUCount({ commit, getters }, { totalCPUCount }) {
-    commit("updateTotalCPUCount", { totalCPUCount });
+  updateQueueName({ commit, dispatch, state }, { queueName }) {
+    if (state.experiment) {
+      commit("updateExperimentQueueName", { queueName });
+    } else {
+      commit("updateQueueName", { queueName });
+    }
+    dispatch("initializeQueue");
+  },
+  updateTotalCPUCount({ commit, getters, state }, { totalCPUCount }) {
+    if (state.experiment) {
+      commit("updateExperimentTotalCPUCount", { totalCPUCount });
+    } else {
+      commit("updateTotalCPUCount", { totalCPUCount });
+    }
     if (getters.queue.cpuPerNode > 0) {
       const totalCPUCountInt = parseInt(totalCPUCount);
       const nodeCount = Math.min(
         Math.ceil(totalCPUCountInt / getters.queue.cpuPerNode),
         getters.maxAllowedNodes
       );
-      commit("updateNodeCount", { nodeCount });
+      if (state.experiment) {
+        commit("updateExperimentNodeCount", { nodeCount });
+      } else {
+        commit("updateNodeCount", { nodeCount });
+      }
     }
   },
-  updateNodeCount({ commit, getters }, { nodeCount }) {
-    commit("updateNodeCount", { nodeCount });
+  updateNodeCount({ commit, getters, state }, { nodeCount }) {
+    if (state.experiment) {
+      commit("updateExperimentNodeCount", { nodeCount });
+    } else {
+      commit("updateNodeCount", { nodeCount });
+    }
     if (getters.queue.cpuPerNode > 0) {
       const nodeCountInt = parseInt(nodeCount);
       const totalCPUCount = Math.min(
         nodeCountInt * getters.queue.cpuPerNode,
         getters.maxAllowedCores
       );
-      commit("updateTotalCPUCount", { totalCPUCount });
+      if (state.experiment) {
+        commit("updateExperimentTotalCPUCount", { totalCPUCount });
+      } else {
+        commit("updateTotalCPUCount", { totalCPUCount });
+      }
     }
   },
-  updateWallTimeLimit({ commit }, { wallTimeLimit }) {
-    commit("updateWallTimeLimit", { wallTimeLimit });
+  updateWallTimeLimit({ commit, state }, { wallTimeLimit }) {
+    if (state.experiment) {
+      commit("updateExperimentWallTimeLimit", { wallTimeLimit });
+    } else {
+      commit("updateWallTimeLimit", { wallTimeLimit });
+    }
   },
-  updateTotalPhysicalMemory({ commit }, { totalPhysicalMemory }) {
-    commit("updateTotalPhysicalMemory", { totalPhysicalMemory });
+  updateTotalPhysicalMemory({ commit, state }, { totalPhysicalMemory }) {
+    if (state.experiment) {
+      commit("updateExperimentTotalPhysicalMemory", { totalPhysicalMemory });
+    } else {
+      commit("updateTotalPhysicalMemory", { totalPhysicalMemory });
+    }
   },
   async loadApplicationDeployments({ commit, getters, state }) {
     const applicationDeployments = await services.ApplicationDeploymentService.list(
@@ -261,7 +373,20 @@ export const actions = {
       dispatch("applyBatchQueueResourcePolicy");
     }
   },
-  async initializeResourceHostId({ commit, dispatch, getters }) {
+  async initializeComputeResources(
+    { commit, dispatch, state },
+    { applicationModuleId, resourceHostId = null }
+  ) {
+    commit("setApplicationModuleId", { applicationModuleId });
+    commit("updateResourceHostId", {
+      resourceHostId,
+    });
+    // only for non-experiment loading case do we call initializeComputeResourceSettings
+    if (!state.experiment && areAllComputeResourceSettingsSet()) {
+      dispatch("initializeComputeResourceSettings");
+    }
+  },
+  async initializeResourceHostId({ commit, dispatch, getters, state }) {
     // if there isn't a selected compute resource or there is but it isn't in
     // the list of app deployments, set a default one
     // Returns true if the resourceHostId changed
@@ -270,9 +395,15 @@ export const actions = {
       !getters.computeResources.find((crid) => crid === getters.resourceHostId)
     ) {
       const defaultResourceHostId = await dispatch("getDefaultResourceHostId");
-      commit("updateResourceHostId", {
-        resourceHostId: defaultResourceHostId,
-      });
+      if (state.experiment) {
+        commit("updateExperimentResourceHostId", {
+          resourceHostId: defaultResourceHostId,
+        });
+      } else {
+        commit("updateResourceHostId", {
+          resourceHostId: defaultResourceHostId,
+        });
+      }
       return true;
     }
     return false;
@@ -318,24 +449,48 @@ export const actions = {
       dispatch("updateQueueName", { queueName: null });
     }
   },
-  initializeQueue({ commit, getters }) {
+  initializeQueue({ commit, getters, state }) {
     const queue = getters.queue;
     if (queue) {
-      commit("updateTotalCPUCount", {
-        totalCPUCount: getters.getDefaultCPUCount(queue),
-      });
-      commit("updateNodeCount", {
-        nodeCount: getters.getDefaultNodeCount(queue),
-      });
-      commit("updateWallTimeLimit", {
-        wallTimeLimit: getters.getDefaultWalltime(queue),
-      });
-      commit("updateTotalPhysicalMemory", { totalPhysicalMemory: 0 });
+      if (state.experiment) {
+        commit("updateExperimentTotalCPUCount", {
+          totalCPUCount: getters.getDefaultCPUCount(queue),
+        });
+        commit("updateExperimentNodeCount", {
+          nodeCount: getters.getDefaultNodeCount(queue),
+        });
+        commit("updateExperimentWallTimeLimit", {
+          wallTimeLimit: getters.getDefaultWalltime(queue),
+        });
+        commit("updateExperimentTotalPhysicalMemory", {
+          totalPhysicalMemory: 0,
+        });
+      } else {
+        commit("updateTotalCPUCount", {
+          totalCPUCount: getters.getDefaultCPUCount(queue),
+        });
+        commit("updateNodeCount", {
+          nodeCount: getters.getDefaultNodeCount(queue),
+        });
+        commit("updateWallTimeLimit", {
+          wallTimeLimit: getters.getDefaultWalltime(queue),
+        });
+        commit("updateTotalPhysicalMemory", { totalPhysicalMemory: 0 });
+      }
     } else {
-      commit("updateTotalCPUCount", { totalCPUCount: 0 });
-      commit("updateNodeCount", { nodeCount: 0 });
-      commit("updateWallTimeLimit", { wallTimeLimit: 0 });
-      commit("updateTotalPhysicalMemory", { totalPhysicalMemory: 0 });
+      if (state.experiment) {
+        commit("updateExperimentTotalCPUCount", { totalCPUCount: 0 });
+        commit("updateExperimentNodeCount", { nodeCount: 0 });
+        commit("updateExperimentWallTimeLimit", { wallTimeLimit: 0 });
+        commit("updateExperimentTotalPhysicalMemory", {
+          totalPhysicalMemory: 0,
+        });
+      } else {
+        commit("updateTotalCPUCount", { totalCPUCount: 0 });
+        commit("updateNodeCount", { nodeCount: 0 });
+        commit("updateWallTimeLimit", { wallTimeLimit: 0 });
+        commit("updateTotalPhysicalMemory", { totalPhysicalMemory: 0 });
+      }
     }
   },
   applyBatchQueueResourcePolicy({ commit, getters }) {
@@ -458,7 +613,7 @@ export const getters = {
   groupResourceProfileId: (state) =>
     state.experiment
       ? state.experiment.userConfigurationData.groupResourceProfileId
-      : null,
+      : state.groupResourceProfileId,
   findGroupResourceProfile: (state) => (groupResourceProfileId) =>
     state.groupResourceProfiles
       ? state.groupResourceProfiles.find(
@@ -473,7 +628,7 @@ export const getters = {
     state.experiment.userConfigurationData.computationalResourceScheduling
       ? state.experiment.userConfigurationData.computationalResourceScheduling
           .resourceHostId
-      : null,
+      : state.resourceHostId,
   computeResources: (state) =>
     state.applicationDeployments.map((dep) => dep.computeHostId),
   applicationDeployment: (state, getters) => {
@@ -514,7 +669,7 @@ export const getters = {
       state.experiment.userConfigurationData.computationalResourceScheduling
       ? state.experiment.userConfigurationData.computationalResourceScheduling
           .queueName
-      : null;
+      : state.queueName;
   },
   totalCPUCount: (state) => {
     return state.experiment &&
@@ -522,7 +677,7 @@ export const getters = {
       state.experiment.userConfigurationData.computationalResourceScheduling
       ? state.experiment.userConfigurationData.computationalResourceScheduling
           .totalCPUCount
-      : null;
+      : state.totalCPUCount;
   },
   nodeCount: (state) => {
     return state.experiment &&
@@ -530,7 +685,7 @@ export const getters = {
       state.experiment.userConfigurationData.computationalResourceScheduling
       ? state.experiment.userConfigurationData.computationalResourceScheduling
           .nodeCount
-      : null;
+      : state.nodeCount;
   },
   wallTimeLimit: (state) => {
     return state.experiment &&
@@ -538,7 +693,7 @@ export const getters = {
       state.experiment.userConfigurationData.computationalResourceScheduling
       ? state.experiment.userConfigurationData.computationalResourceScheduling
           .wallTimeLimit
-      : null;
+      : state.wallTimeLimit;
   },
   totalPhysicalMemory: (state) => {
     return state.experiment &&
@@ -546,7 +701,7 @@ export const getters = {
       state.experiment.userConfigurationData.computationalResourceScheduling
       ? state.experiment.userConfigurationData.computationalResourceScheduling
           .totalPhysicalMemory
-      : null;
+      : state.totalPhysicalMemory;
   },
   queue: (state, getters) => {
     return getters.queues && getters.queueName
@@ -661,8 +816,16 @@ export default new Vuex.Store({
     groupResourceProfiles: null,
     applicationModuleId: null,
     appDeploymentQueues: [],
-    // Lazy state fields that will be copied to the experiment once it is loaded
+    workspacePreferences: null,
+    // These state variables are to enable using UI components outside of a
+    // normal experiment editing context
     queueName: null,
+    nodeCount: null,
+    totalCPUCount: null,
+    wallTimeLimit: null,
+    totalPhysicalMemory: null,
+    groupResourceProfileId: null,
+    resourceHostId: null,
   },
   mutations,
   actions,

@@ -17,10 +17,7 @@
         <!-- programmatically define slots as native slots (not Vue slots), see #mounted() -->
       </div>
     </template>
-    <div
-      ref="groupResourceProfileSelector"
-      @input.stop="updateGroupResourceProfileId"
-    >
+    <div ref="groupResourceProfileSelector">
       <!-- programmatically define slot for adpf-group-resource-profile-selector -->
     </div>
     <div ref="computeResourceSelector">
@@ -153,6 +150,10 @@ export default {
       const computeResourceSelectorEl = document.createElement(
         "adpf-experiment-compute-resource-selector"
       );
+      computeResourceSelectorEl.setAttribute(
+        "application-module-id",
+        this.applicationId
+      );
       this.$refs.computeResourceSelector.append(
         this.createSlot(
           "experiment-compute-resource",
@@ -228,12 +229,6 @@ export default {
     updateProjectId(event) {
       const [projectId] = event.detail;
       this.$store.dispatch("updateProjectId", { projectId });
-    },
-    updateGroupResourceProfileId(event) {
-      const [groupResourceProfileId] = event.detail;
-      this.$store.dispatch("updateGroupResourceProfileId", {
-        groupResourceProfileId,
-      });
     },
     async onSubmit(event) {
       // console.log(event);
