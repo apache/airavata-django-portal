@@ -3042,13 +3042,49 @@ dir-glob@^2.0.0, dir-glob@^2.2.2:
   dependencies:
     path-type "^3.0.0"
 
+"django-airavata-api@link:../../apps/api":
+  version "1.0.0-beta.3"
+  dependencies:
+    "@babel/polyfill" "^7.0.0"
+    "@babel/runtime" "^7.1.2"
+    browserslist "^4.16.7"
+    stacktrace-js "^2.0.0"
+    terser "^4.1.2"
+    url-parse "^1.4.3"
+    uuid "^3.3.2"
+
 "django-airavata-api@link:../api":
-  version "0.0.0"
-  uid ""
+  version "1.0.0-beta.3"
+  dependencies:
+    "@babel/polyfill" "^7.0.0"
+    "@babel/runtime" "^7.1.2"
+    browserslist "^4.16.7"
+    stacktrace-js "^2.0.0"
+    terser "^4.1.2"
+    url-parse "^1.4.3"
+    uuid "^3.3.2"
 
 "django-airavata-common-ui@link:../../static/common":
-  version "0.0.0"
-  uid ""
+  version "1.0.0"
+  dependencies:
+    "@fortawesome/fontawesome-free" "^5.6.3"
+    "@uppy/core" "^1.2.0"
+    "@uppy/drag-drop" "^1.3.0"
+    "@uppy/status-bar" "^1.2.0"
+    "@uppy/tus" "^1.3.0"
+    "@uppy/xhr-upload" "^1.2.0"
+    bootstrap "^4.3.1"
+    bootstrap-vue "^2.21.2"
+    browserslist "^4.16.7"
+    clipboard "^2.0.4"
+    django-airavata-api "link:../../apps/api"
+    jquery "^3.3.1"
+    linkifyjs "^2.1.9"
+    moment "^2.24.0"
+    popper.js "^1.14.6"
+    terser "^4.1.2"
+    vue "^2.5.22"
+    vue-async-computed "^3.9.0"
 
 dns-equal@^1.0.0:
   version "1.0.0"
@@ -3558,9 +3594,9 @@ events@^3.0.0:
   integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
 
 eventsource@^1.0.7:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/eventsource/-/eventsource-1.1.0.tgz#00e8ca7c92109e94b0ddf32dac677d841028cfaf"
-  integrity sha512-VSJjT5oCNrFvCS6igjzPAt5hBzQ2qPBFIbJ03zLI9SE0mxwZpMw6BfJrbFHm1a141AavMEB8JHmBhWAd66PfCg==
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/eventsource/-/eventsource-1.1.1.tgz#4544a35a57d7120fba4fa4c86cb4023b2c09df2f"
+  integrity sha512-qV5ZC0h7jYIAOhArFJgSfdyz6rALJyb270714o7ZtNnw2WSJ+eexhKtE0O8LYPRsHZHf2osHKZBxGPvm3kPkCA==
   dependencies:
     original "^1.0.0"
 
@@ -8351,7 +8387,15 @@ url-loader@^1.1.2:
     mime "^2.0.3"
     schema-utils "^1.0.0"
 
-url-parse@^1.4.3, url-parse@^1.4.7, url-parse@^1.5.1:
+url-parse@^1.4.3:
+  version "1.5.10"
+  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.5.10.tgz#9d3c2f736c1d75dd3bd2be507dcc111f1e2ea9c1"
+  integrity sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==
+  dependencies:
+    querystringify "^2.1.1"
+    requires-port "^1.0.0"
+
+url-parse@^1.4.7, url-parse@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.5.1.tgz#d5fa9890af8a5e1f274a2c98376510f6425f6e3b"
   integrity sha512-HOfCOUJt7iSYzEx/UqgtwKRMC6EU91NFhsCHMv9oM03VJcVo2Qrp8T8kI9D7amFf1cu+/3CEhgb3rF9zL7k85Q==
