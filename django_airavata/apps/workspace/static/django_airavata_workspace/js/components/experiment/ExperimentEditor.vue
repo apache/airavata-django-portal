@@ -1,6 +1,6 @@
 <template>
   <div>
-    <unsaved-changes-guard :dirty="dirty" />
+    <unsaved-changes-guard :dirty="dirty"/>
     <div class="row">
       <div class="col-auto mr-auto">
         <h1 class="h4 mb-4">
@@ -89,7 +89,14 @@
       </div>
       <div class="row">
         <div class="col">
-          <h1 class="h4 mt-5 mb-4">Application Configuration</h1>
+          <workspace-notices-management-container class="mt-2"
+            v-if="appInterface && appInterface.applicationDescription"
+            :data="[{notificationMessage: appInterface.applicationDescription}]"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <h1 class="h4 mt-2 mb-4">Application Configuration</h1>
         </div>
       </div>
       <div class="row">
@@ -179,8 +186,9 @@ import ComputationalResourceSchedulingEditor from "./ComputationalResourceSchedu
 import ExperimentDescriptionEditor from "./ExperimentDescriptionEditor.vue";
 import GroupResourceProfileSelector from "./GroupResourceProfileSelector.vue";
 import InputEditorContainer from "./input-editors/InputEditorContainer.vue";
-import { models, services } from "django-airavata-api";
-import { components, utils } from "django-airavata-common-ui";
+import {models, services} from "django-airavata-api";
+import {components, utils} from "django-airavata-common-ui";
+import WorkspaceNoticesManagementContainer from "../notices/WorkspaceNoticesManagementContainer";
 
 export default {
   name: "edit-experiment",
@@ -191,6 +199,10 @@ export default {
     },
     appModule: {
       type: models.ApplicationModule,
+      required: true,
+    },
+    appInterface: {
+      type: models.ApplicationInterfaceDefinition,
       required: true,
     },
   },
@@ -206,6 +218,7 @@ export default {
     };
   },
   components: {
+    WorkspaceNoticesManagementContainer,
     ComputationalResourceSchedulingEditor,
     ExperimentDescriptionEditor,
     GroupResourceProfileSelector,
@@ -354,6 +367,7 @@ export default {
 .application-name {
   font-size: 12px;
 }
+
 #col-exp-buttons {
   text-align: right;
 }

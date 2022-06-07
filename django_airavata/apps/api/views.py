@@ -261,7 +261,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 request.authz_token, experiment_id, self.gateway_id)
             return Response({'success': True})
         except Exception as e:
-            log.error("Cancel action has thrown the following error: ", e)
+            log.exception("Cancel action has thrown the following error")
             raise e
 
     @action(methods=['post'], detail=True)
@@ -269,11 +269,11 @@ class ExperimentViewSet(mixins.CreateModelMixin,
         if "outputNames" not in request.data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
-            request.airavata_client.fetchIntermediateOutputs(
-                request.authz_token, experiment_id, request.data["outputNames"])
+            experiment_util.intermediate_output.fetch_intermediate_output(
+                request, experiment_id, *request.data["outputNames"])
             return Response({'success': True})
         except Exception as e:
-            log.error("fetchIntermediateOutputs failed with the following error: ", e)
+            log.exception("fetchIntermediateOutputs failed with the following error")
             raise e
 
     def _update_workspace_preferences(self, project_id,
@@ -1524,10 +1524,14 @@ class ManageNotificationViewSet(APIBackedViewSet):
             self.authz_token, notification)
         notification.notificationId = notificationId
 
+        serializer.update_notification_extension(self.request, notification)
+
     def perform_update(self, serializer):
         notification = serializer.save()
         self.request.airavata_client.updateNotification(
             self.authz_token, notification)
+
+        serializer.update_notification_extension(self.request, notification)
 
 
 class AckNotificationViewSet(APIView):

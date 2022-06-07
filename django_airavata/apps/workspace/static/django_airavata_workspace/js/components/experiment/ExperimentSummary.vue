@@ -181,7 +181,7 @@
                     >
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="showQueueSettings">
                   <th scope="row">Wall Time Limit</th>
                   <td>
                     {{
@@ -191,7 +191,7 @@
                     minutes
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="showQueueSettings">
                   <th scope="row">CPU Count</th>
                   <td>
                     {{
@@ -200,7 +200,7 @@
                     }}
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="showQueueSettings">
                   <th scope="row">Node Count</th>
                   <td>
                     {{
@@ -211,6 +211,7 @@
                 </tr>
                 <tr
                   v-if="
+                    showQueueSettings &&
                     experiment.userConfigurationData
                       .computationalResourceScheduling.totalPhysicalMemory
                   "
@@ -223,7 +224,7 @@
                     MB
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="showQueueSettings">
                   <th scope="row">Queue</th>
                   <td>
                     {{
@@ -321,7 +322,10 @@ export default {
       "launching",
       "clonedExperiment",
     ]),
-    ...mapGetters("viewExperiment", ["finishedOrExecuting"]),
+    ...mapGetters("viewExperiment", [
+      "finishedOrExecuting",
+      "showQueueSettings",
+    ]),
     localFullExperiment() {
       return this.fullExperiment;
     },
@@ -400,7 +404,8 @@ export default {
           (job) =>
             this.experiment.latestStatus.state ===
               models.ExperimentState.FAILED ||
-            job.latestJobStatus.jobState === models.JobState.FAILED
+            (job.latestJobStatus &&
+              job.latestJobStatus.jobState === models.JobState.FAILED)
         );
       } else {
         return [];
