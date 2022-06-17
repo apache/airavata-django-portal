@@ -20,9 +20,9 @@ Tutorial attendees should have:
 ### Installing Python
 
 Python 3.6-3.9 are supported, but I highly recommend you download and use
-**Python 3.9**
+**Python 3.8.3**
 
-Download and install Python 3.9.
+Download and install Python 3.8.3.
 
 -   (macOS/Windows): Download from <https://www.python.org/downloads/>
 -   (Linux): use your distribution's package manager to install Python 3.9
@@ -31,15 +31,15 @@ Verify you have installed Python 3.9:
 
 === "macOS/Linux"
 
-        $ python3.9 --version
-        Python 3.9.5
+        $ python3.8 --version
+        Python 3.8.3
 
 === "Windows"
 
     Open PowerShell then run:
 
         PS C:\Users\username> py --version
-        Python 3.9.5
+        Python 3.8.3
 
 ### Installing Git
 
@@ -527,7 +527,7 @@ can install in which we can write the custom output view code.
 === "macOS/Linux"
 
         $ cd $HOME
-        $ python3.9 -m venv tutorial-env
+        $ python3.8 -m venv tutorial-env
         $ source tutorial-env/bin/activate
         (tutorial-env) $
 
@@ -608,7 +608,7 @@ the settings_local.py file for local development. Move or copy it to the
 
     Verify that you have the following installed
 
-    -   Python 3.9
+    -   Python 3.8
     -   Node LTS
     -   Yarn
     -   Git
@@ -1314,10 +1314,10 @@ urlpatterns = [
 
 ```html
 {% block scripts %}
+{% load static %}
 <script src="{% static 'django_airavata_api/dist/airavata-api.js' %}"></script>
 <script>
     const { models, services, session, utils } = AiravataAPI;
-
     // STARTING HERE
     utils.FetchUtils.get("/custom_ui_tutorial_app/languages/").then((data) => {
         data.languages.forEach((language) => {
