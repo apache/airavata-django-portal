@@ -19,3 +19,5 @@ entry((Vue) => {
     router,
   }).$mount("#app");
 });
+
+Vue.config.devtools = true;

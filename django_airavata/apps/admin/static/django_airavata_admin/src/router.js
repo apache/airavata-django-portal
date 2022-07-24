@@ -16,7 +16,7 @@ import UnverifiedEmailUserManagementContainer from "./components/users/Unverifie
 import UserManagementContainer from "./components/users/UserManagementContainer.vue";
 import NoticesManagementContainer from "./components/notices/NoticesManagementContainer.vue";
 import VueRouter from "vue-router";
-
+import AdminDashboardContainer from "./components/dashboards/AdminDashboardContainer.vue";
 const routes = [
   {
     path: "/applications/new",
@@ -154,7 +154,13 @@ const routes = [
     path: "/developers",
     component: DevelopersContainer,
     name: "developers",
-  }
+  },
+  {
+    path: "/admin-dashboard",
+    component: AdminDashboardContainer,
+    name: "admin-dashboard",
+  },
+
 ];
 export default new VueRouter({
   mode: "history",

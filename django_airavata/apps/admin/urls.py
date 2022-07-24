@@ -13,7 +13,10 @@ urlpatterns = [
             name='group_resource_profile'),
     re_path(r'^gateway-resource-profile/', views.gateway_resource_profile,
             name='gateway_resource_profile'),
+    re_path(r'^admin-dashboard/', views.admin_dashboard,
+            name="admin-dashboard"),    
     re_path(r'^notices/', views.notices, name='notices'),
     re_path(r'^users/', views.users, name='users'),
     path('developers/', views.developers, name='developers'),
+    path('admin-dashboard/', views.admin_dashboard, name="admin-dashboard"),
 ]
