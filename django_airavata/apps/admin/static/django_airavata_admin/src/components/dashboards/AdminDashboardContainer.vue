@@ -12,26 +12,29 @@
       <div>
         <h1 class ="h4 mb-4 ">Duration</h1>
       </div>
-      <div>
-  <b-dropdown id="dropdown-1" text="week" class="m-md-2">
-    <b-dropdown-item>week</b-dropdown-item>
-    <b-dropdown-item>Month</b-dropdown-item>
-    <b-dropdown-item>15 days</b-dropdown-item>
-  </b-dropdown>
-</div>
-<span>Start Date:</span>
-     <b-form-datepicker class="m-md-2 temp"
-      id="ex-disabled-readonly"
-      :disabled="disabled"
-      :readonly="readonly"
-    ></b-form-datepicker>
-    <span>End Date:</span>
-     <b-form-datepicker class="m-md-2 temp" 
-      id="ex-disabled-readonly"
-      :disabled="disabled"
-      :readonly="readonly"
-    ></b-form-datepicker>
-    <button>Submit</button>
+      <b-input-group class="w-100 mb-2">
+      <b-input-group-prepend is-text>
+        <i class="fa fa-calendar-week" aria-hidden="true"></i>
+      </b-input-group-prepend>
+      <flat-pickr
+        :value="dateRange"
+        :config="dateConfig"
+        @on-change="dateRangeChanged"
+        class="form-control"
+      />
+      <b-input-group-append>
+        <b-button
+          @click="getPast24Hours"
+          variant="outline-secondary"
+          >Past 24 Hours</b-button
+        >
+        <b-button @click="getPastWeek" variant="outline-secondary"
+          >Past Week</b-button
+        >
+      </b-input-group-append>
+    </b-input-group>
+
+      <b-button>Submit</b-button>
     </b-card>
   </div>
   <div>
@@ -106,7 +109,9 @@
         header-text-variant="danger"
         align="center"
       >
-        <b-card-text></b-card-text>
+        <b-card-text :value="uniqueUsersCount">
+          {{uniqueUsersCount}} 
+        </b-card-text>
       </b-card>
     </b-card-group>
   </div>
@@ -128,10 +133,87 @@
 
 <script>
 
+import moment from "moment";
+import { services, session, utils } from "django-airavata-api";
 import BarChart from './AdminDashboardContainer.vue';
+
 export default {
   components: { BarChart },
   name: "admin-dashboard-container",
+  data() {
+    const fromTime = new Date().fp_incr(0);
+    const toTime = new Date().fp_incr(1);
+    return {
+      fromTime: fromTime,
+      toTime: toTime,
+      dateRange: [fromTime, toTime],
+      uniqueUsersCount: 0,
+      dateConfig: {
+        mode: "range",
+        wrap: true,
+        dateFormat: "Y-m-d",
+        maxDate: new Date().fp_incr(1),
+      },
+    }
+  },
+  created() {
+    this.uniqueUserProfileCount(this.fromTime, this.toTime);
+  },
+  methods: {
+    getPast24Hours() {
+      this.fromTime = new Date().fp_incr(0);
+      //this.fromTime = new Date(this.fromTime.setHours(0,0,0));
+      this.toTime = new Date().fp_incr(1);
+      this.updateDateRange();
+    },
+    getPastWeek() {
+      this.fromTime = new Date().fp_incr(-7);
+      this.toTime = new Date().fp_incr(1);
+      this.updateDateRange();
+    },
+    updateDateRange() {
+      this.dateRange = [
+        moment(this.fromTime).format("YYYY-MM-DD"),
+        moment(this.toTime).format("YYYY-MM-DD"),
+      ];
+    },
+    daysAgo(days) {
+      return new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    },
+    fromTimeDisplay() {
+      return moment(this.fromTime).format("MMM Do YYYY");
+    },
+    toTimeDisplay() {
+      return moment(this.toTime).format("MMM Do YYYY");
+    },
+    dateRangeChanged(selectedDates) {
+      [this.fromTime, this.toTime] = selectedDates;
+      if (this.fromTime && this.toTime) {
+        this.uniqueUserProfileCount(this.fromTime, this.toTime);
+      }
+    },
+    uniqueUserCountDisplay() {
+      return String(this.userCount)
+    }, 
+    async uniqueUserProfileCount(from, to) {
+      let fromTime = from.toJSON();
+      let toTime = to.toJSON();
+      const response = await services.UserProfileService.list();
+      let filteredUsers = new Set();
+      fromTime = new Date(Date.parse(fromTime)).getTime();
+      toTime = new Date(Date.parse(toTime)).getTime();
+      response.forEach((user) => {
+        var uct = user.creationTime.getTime();
+        if (uct == undefined) {
+          uct = new Date();
+        }
+        if (uct < toTime && uct > fromTime) {
+          filteredUsers.add(user.userId);
+        }
+      });
+      this.uniqueUsersCount = filteredUsers.size;
+    },
+  },
 };
 
 </script>
