@@ -22,22 +22,61 @@
       </div>
       <div class="col">
         <b-form-group
-          label="Enable Optional File Inputs"
-          label-for="optional-file-inputs"
+          label="Show Queue Settings"
+          label-for="show-queue-settings"
         >
           <b-form-radio-group
-            id="optional-file-inputs"
-            v-model="data.hasOptionalFileInputs"
+            id="show-queue-settings"
+            v-model="data.showQueueSettings"
             :options="trueFalseOptions"
-            :disabled="true"
+            :disabled="readonly"
           >
           </b-form-radio-group>
           <div slot="description">
-            <b>Removed</b>: please add an input of Type URI_COLLECTION with
-            Required set to False instead.
+            Show a queue selector along with queue related settings (nodes,
+            cores, walltime limit).
           </div>
         </b-form-group>
+        <b-form-group
+          label="Queue Settings Calculator"
+          description="Select function to automatically compute queue settings."
+        >
+          <b-form-select
+            v-model="data.queueSettingsCalculatorId"
+            :options="queueSettingsCalculatorOptions"
+            :disabled="queueSettingsCalculatorOptions.length === 0"
+          >
+            <template slot="first">
+              <option :value="null">
+                If applicable, select a queue settings calculator
+              </option>
+            </template>
+          </b-form-select>
+        </b-form-group>
       </div>
+    </div>
+    <div class="w-100">
+      <b-form-group
+        label="Application Instructions"
+        label-for="application-description"
+      >
+        <b-form-textarea
+          id="application-description"
+          :rows="5"
+          v-model="data.applicationDescription"
+          :state="
+            !data.applicationDescription ||
+            data.applicationDescription.length < 500
+          "
+        >
+        </b-form-textarea>
+        <b-form-valid-feedback v-if="!!data.applicationDescription">
+          {{ data.applicationDescription.length }} / 500
+        </b-form-valid-feedback>
+        <b-form-invalid-feedback>
+          Application instructions text is limited to 500 characters maximum.
+        </b-form-invalid-feedback>
+      </b-form-group>
     </div>
     <div class="row">
       <div class="col">
@@ -101,7 +140,7 @@
 </template>
 
 <script>
-import { models } from "django-airavata-api";
+import { models, services } from "django-airavata-api";
 import { mixins } from "django-airavata-common-ui";
 import ApplicationInputFieldEditor from "./ApplicationInputFieldEditor.vue";
 import ApplicationOutputFieldEditor from "./ApplicationOutputFieldEditor.vue";
@@ -125,12 +164,27 @@ export default {
     ApplicationOutputFieldEditor,
     draggable,
   },
+  created() {
+    this.loadQueueSettingsCalculators();
+  },
   computed: {
     trueFalseOptions() {
       return [
         { text: "True", value: true },
         { text: "False", value: false },
       ];
+    },
+    queueSettingsCalculatorOptions() {
+      if (this.queueSettingsCalculators) {
+        return this.queueSettingsCalculators.map((qsc) => {
+          return {
+            text: qsc.name,
+            value: qsc.id,
+          };
+        });
+      } else {
+        return [];
+      }
     },
   },
   data() {
@@ -141,6 +195,7 @@ export default {
         handle: ".drag-handle",
       },
       collapseApplicationInputs: false,
+      queueSettingsCalculators: null,
     };
   },
   methods: {
@@ -189,6 +244,9 @@ export default {
     },
     onDragEnd() {
       this.collapseApplicationInputs = false;
+    },
+    async loadQueueSettingsCalculators() {
+      this.queueSettingsCalculators = await services.QueueSettingsCalculatorService.list();
     },
   },
 };

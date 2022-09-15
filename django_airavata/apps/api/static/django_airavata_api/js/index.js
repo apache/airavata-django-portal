@@ -18,6 +18,9 @@ import DataType from "./models/DataType";
 import Experiment from "./models/Experiment";
 import ExperimentSearchFields from "./models/ExperimentSearchFields";
 import ExperimentState from "./models/ExperimentState";
+import ExtendedUserProfileField from "./models/ExtendedUserProfileField";
+import ExtendedUserProfileFieldChoice from "./models/ExtendedUserProfileFieldChoice";
+import ExtendedUserProfileFieldLink from "./models/ExtendedUserProfileFieldLink";
 import FullExperiment from "./models/FullExperiment";
 import Group from "./models/Group";
 import GroupComputeResourcePreference from "./models/GroupComputeResourcePreference";
@@ -80,6 +83,9 @@ const models = {
   Experiment,
   ExperimentSearchFields,
   ExperimentState,
+  ExtendedUserProfileField,
+  ExtendedUserProfileFieldChoice,
+  ExtendedUserProfileFieldLink,
   FullExperiment,
   Group,
   GroupComputeResourcePreference,
@@ -120,6 +126,12 @@ const services = {
   ExperimentStoragePathService: ServiceFactory.service(
     "ExperimentStoragePaths"
   ),
+  ExtendedUserProfileFieldService: ServiceFactory.service(
+    "ExtendedUserProfileFields"
+  ),
+  ExtendedUserProfileValueService: ServiceFactory.service(
+    "ExtendedUserProfileValues"
+  ),
   FullExperimentService: ServiceFactory.service("FullExperiments"),
   GatewayResourceProfileService: ServiceFactory.service(
     "GatewayResourceProfile"
@@ -135,6 +147,9 @@ const services = {
 
   ParserService: ServiceFactory.service("Parsers"),
   ProjectService: ServiceFactory.service("Projects"),
+  QueueSettingsCalculatorService: ServiceFactory.service(
+    "QueueSettingsCalculators"
+  ),
   SCPDataMovementService,
   ServiceFactory,
   SettingsService: ServiceFactory.service("Settings"),

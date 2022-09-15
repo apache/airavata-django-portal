@@ -27,6 +27,14 @@ class ApplicationPreferences(models.Model):
         unique_together = (('username', 'application_id'),)
 
 
+class NotificationExtension(models.Model):
+    class Meta:
+        unique_together = (('notification_id', ),)
+
+    notification_id = models.CharField(max_length=255)
+    showInDashboard = models.BooleanField(default=False)
+
+
 class User_Notifications(models.Model):
     class Meta:
         unique_together = (('username', 'notification_id'),)
@@ -59,3 +67,9 @@ class ApplicationTemplateContextProcessor(models.Model):
 
     def __str__(self):
         return self.callable_path
+
+
+class ApplicationSettings(models.Model):
+    application_module_id = models.CharField(max_length=255, unique=True)
+    show_queue_settings = models.BooleanField(default=True)
+    queue_settings_calculator_id = models.CharField(max_length=255, null=True)

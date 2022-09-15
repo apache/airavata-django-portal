@@ -10,6 +10,8 @@ import ExperimentSearchFields from "./models/ExperimentSearchFields";
 import ExperimentStatistics from "./models/ExperimentStatistics";
 import ExperimentStoragePath from "./models/ExperimentStoragePath";
 import ExperimentSummary from "./models/ExperimentSummary";
+import ExtendedUserProfileField from "./models/ExtendedUserProfileField";
+import ExtendedUserProfileValue from "./models/ExtendedUserProfileValue";
 import FullExperiment from "./models/FullExperiment";
 import GatewayResourceProfile from "./models/GatewayResourceProfile";
 import Group from "./models/Group";
@@ -19,6 +21,7 @@ import LogRecord from "./models/LogRecord";
 import Notification from "./models/Notification";
 import Parser from "./models/Parser";
 import Project from "./models/Project";
+import QueueSettingsCalculator from "./models/QueueSettingsCalculator";
 import Settings from "./models/Settings";
 import SharedEntity from "./models/SharedEntity";
 import StoragePreference from "./models/StoragePreference";
@@ -245,6 +248,27 @@ export default {
       },
     },
   },
+  ExtendedUserProfileFields: {
+    url: "/auth/extended-user-profile-fields",
+    viewSet: true,
+    modelClass: ExtendedUserProfileField,
+  },
+  ExtendedUserProfileValues: {
+    url: "/auth/extended-user-profile-values",
+    viewSet: true,
+    modelClass: ExtendedUserProfileValue,
+    queryParams: ["username"],
+    methods: {
+      saveAll: {
+        url: "/auth/extended-user-profile-values/save-all/",
+        requestType: "post",
+        modelClass: ExtendedUserProfileValue,
+        bodyParams: {
+          name: "data",
+        },
+      },
+    },
+  },
   FullExperiments: {
     url: "/api/full-experiments",
     viewSet: [
@@ -340,6 +364,20 @@ export default {
     },
     queryParams: ["limit", "offset"],
     modelClass: Project,
+  },
+  QueueSettingsCalculators: {
+    url: "/api/queue-settings-calculators",
+    viewSet: ["retrieve", "list"],
+    methods: {
+      calculate: {
+        url: "/api/queue-settings-calculators/<lookup>/calculate/",
+        requestType: "post",
+        bodyParams: {
+          name: "data",
+        },
+      },
+    },
+    modelClass: QueueSettingsCalculator,
   },
   Settings: {
     url: "/api/settings/",
