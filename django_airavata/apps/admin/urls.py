@@ -17,6 +17,7 @@ urlpatterns = [
             name="admin-dashboard"),    
     re_path(r'^notices/', views.notices, name='notices'),
     re_path(r'^users/', views.users, name='users'),
+    path('extended-user-profile/', views.extended_user_profile, name="extended_user_profile"),
     path('developers/', views.developers, name='developers'),
     path('admin-dashboard/', views.admin_dashboard, name="admin-dashboard"),
 ]

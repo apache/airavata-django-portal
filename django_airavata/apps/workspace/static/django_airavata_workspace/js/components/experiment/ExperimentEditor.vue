@@ -89,7 +89,18 @@
       </div>
       <div class="row">
         <div class="col">
-          <h1 class="h4 mt-5 mb-4">Application Configuration</h1>
+          <workspace-notices-management-container
+            class="mt-2"
+            v-if="appInterface && appInterface.applicationDescription"
+            :data="[
+              { notificationMessage: appInterface.applicationDescription },
+            ]"
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <h1 class="h4 mt-2 mb-4">Application Configuration</h1>
         </div>
       </div>
       <div class="row">
@@ -141,12 +152,8 @@
       </div>
       <div class="row">
         <div class="col">
-          <b-form-group
-            label="Email Settings"
-          >
-            <b-form-checkbox
-              v-model="localExperiment.enableEmailNotification"
-            >
+          <b-form-group label="Email Settings">
+            <b-form-checkbox v-model="localExperiment.enableEmailNotification">
               Receive email notification of experiment status
             </b-form-checkbox>
           </b-form-group>
@@ -181,6 +188,8 @@ import GroupResourceProfileSelector from "./GroupResourceProfileSelector.vue";
 import InputEditorContainer from "./input-editors/InputEditorContainer.vue";
 import { models, services } from "django-airavata-api";
 import { components, utils } from "django-airavata-common-ui";
+import WorkspaceNoticesManagementContainer from "../notices/WorkspaceNoticesManagementContainer";
+import _ from "lodash";
 
 export default {
   name: "edit-experiment",
@@ -191,6 +200,10 @@ export default {
     },
     appModule: {
       type: models.ApplicationModule,
+      required: true,
+    },
+    appInterface: {
+      type: models.ApplicationInterfaceDefinition,
       required: true,
     },
   },
@@ -206,6 +219,7 @@ export default {
     };
   },
   components: {
+    WorkspaceNoticesManagementContainer,
     ComputationalResourceSchedulingEditor,
     ExperimentDescriptionEditor,
     GroupResourceProfileSelector,
@@ -335,6 +349,32 @@ export default {
     inputValueChanged: function () {
       this.localExperiment.evaluateInputDependencies();
     },
+    calculateQueueSettings: _.debounce(async function () {
+      const queueSettingsUpdate = await services.QueueSettingsCalculatorService.calculate(
+        {
+          lookup: this.appInterface.queueSettingsCalculatorId,
+          data: this.localExperiment,
+        },
+        { showSpinner: false }
+      );
+      // Override values in computationalResourceScheduling with the values
+      // returned from the queue settings calculator
+      Object.assign(
+        this.localExperiment.userConfigurationData
+          .computationalResourceScheduling,
+        queueSettingsUpdate
+      );
+    }, 500),
+    experimentInputsChanged() {
+      if (this.appInterface.queueSettingsCalculatorId) {
+        this.calculateQueueSettings();
+      }
+    },
+    resourceHostIdChanged() {
+      if (this.appInterface.queueSettingsCalculatorId) {
+        this.calculateQueueSettings();
+      }
+    },
   },
   watch: {
     experiment: function (newValue) {
@@ -346,6 +386,15 @@ export default {
       },
       deep: true,
     },
+    "experiment.experimentInputs": {
+      handler() {
+        this.experimentInputsChanged();
+      },
+      deep: true,
+    },
+    "experiment.userConfigurationData.computationalResourceScheduling.resourceHostId": function () {
+      this.resourceHostIdChanged();
+    },
   },
 };
 </script>
@@ -354,6 +403,7 @@ export default {
 .application-name {
   font-size: 12px;
 }
+
 #col-exp-buttons {
   text-align: right;
 }

@@ -38,7 +38,14 @@ const testAction = (
     }
 
     mutationCount++;
-    if (mutationCount >= expectedMutations.length) {
+    checkIfDone();
+  };
+
+  const checkIfDone = () => {
+    if (
+      mutationCount >= expectedMutations.length &&
+      actionCount >= expectedActions.length
+    ) {
       done();
     }
   };
@@ -55,9 +62,7 @@ const testAction = (
     }
 
     actionCount++;
-    if (actionCount >= expectedActions.length) {
-      done();
-    }
+    checkIfDone();
     return action.result;
   };
 
@@ -764,6 +769,7 @@ test("updateNodeCount: only update nodeCount when cpuPerNode <= 0", (done) => {
 
 test("updateNodeCount: update also totalCPUCount when cpuPerNode > 0", (done) => {
   const nodeCount = 4;
+  const enableNodeCountToCpuCheck = true;
   const mockGetters = {
     queue: new models.BatchQueue({
       cpuPerNode: 24,
@@ -777,6 +783,7 @@ test("updateNodeCount: update also totalCPUCount when cpuPerNode > 0", (done) =>
   testAction(actions.updateNodeCount, {
     payload: {
       nodeCount,
+      enableNodeCountToCpuCheck,
     },
     getters: mockGetters,
     expectedMutations,
@@ -786,6 +793,7 @@ test("updateNodeCount: update also totalCPUCount when cpuPerNode > 0", (done) =>
 
 test("updateNodeCount: update totalCPUCount when cpuPerNode > 0, but apply maximums", (done) => {
   const nodeCount = 4;
+  const enableNodeCountToCpuCheck = true;
   const mockGetters = {
     queue: new models.BatchQueue({
       cpuPerNode: 24,
@@ -799,6 +807,7 @@ test("updateNodeCount: update totalCPUCount when cpuPerNode > 0, but apply maxim
   testAction(actions.updateNodeCount, {
     payload: {
       nodeCount,
+      enableNodeCountToCpuCheck,
     },
     getters: mockGetters,
     expectedMutations,
@@ -829,6 +838,7 @@ test("updateTotalCPUCount: only update totalCPUCount when cpuPerNode <= 0", (don
 test("updateTotalCPUCount: update also nodeCount when cpuPerNode > 0", (done) => {
   const nodeCount = 4;
   const totalCPUCount = 96;
+  const enableNodeCountToCpuCheck = true;
   const mockGetters = {
     queue: new models.BatchQueue({
       cpuPerNode: 24,
@@ -842,6 +852,7 @@ test("updateTotalCPUCount: update also nodeCount when cpuPerNode > 0", (done) =>
   testAction(actions.updateTotalCPUCount, {
     payload: {
       totalCPUCount,
+      enableNodeCountToCpuCheck,
     },
     getters: mockGetters,
     expectedMutations,
@@ -851,6 +862,7 @@ test("updateTotalCPUCount: update also nodeCount when cpuPerNode > 0", (done) =>
 
 test("updateTotalCPUCount: update nodeCount when cpuPerNode > 0, but apply maximums", (done) => {
   const totalCPUCount = 96;
+  const enableNodeCountToCpuCheck = true;
   const mockGetters = {
     queue: new models.BatchQueue({
       cpuPerNode: 24,
@@ -867,6 +879,54 @@ test("updateTotalCPUCount: update nodeCount when cpuPerNode > 0, but apply maxim
   testAction(actions.updateTotalCPUCount, {
     payload: {
       totalCPUCount,
+      enableNodeCountToCpuCheck,
+    },
+    getters: mockGetters,
+    expectedMutations,
+    done,
+  });
+});
+
+test("updateGroupResourceProfileId: test normal case where updated to a GRP id", (done) => {
+  const mockGetters = {
+    groupResourceProfileId: "old_grp_id",
+  };
+  const groupResourceProfileId = "new_grp_id";
+  const expectedMutations = [
+    {
+      type: "updateGroupResourceProfileId",
+      payload: { groupResourceProfileId },
+    },
+  ];
+  const expectedActions = [
+    { type: "loadApplicationDeployments" },
+    { type: "applyGroupResourceProfile" },
+  ];
+  testAction(actions.updateGroupResourceProfileId, {
+    payload: {
+      groupResourceProfileId,
+    },
+    getters: mockGetters,
+    expectedMutations,
+    done,
+    expectedActions,
+  });
+});
+
+test("updateGroupResourceProfileId: test case where GRP id is updated to null", (done) => {
+  const mockGetters = {
+    groupResourceProfileId: "old_grp_id",
+  };
+  const groupResourceProfileId = null;
+  const expectedMutations = [
+    {
+      type: "updateGroupResourceProfileId",
+      payload: { groupResourceProfileId },
+    },
+  ];
+  testAction(actions.updateGroupResourceProfileId, {
+    payload: {
+      groupResourceProfileId,
     },
     getters: mockGetters,
     expectedMutations,

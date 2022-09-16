@@ -23,7 +23,11 @@ from airavata.model.data.movement.ttypes import (
 from airavata.model.experiment.ttypes import ExperimentSearchFields
 from airavata.model.group.ttypes import ResourcePermissionType
 from airavata.model.user.ttypes import Status
-from airavata_django_portal_sdk import experiment_util, user_storage
+from airavata_django_portal_sdk import (
+    experiment_util,
+    queue_settings_calculators,
+    user_storage
+)
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
@@ -261,7 +265,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 request.authz_token, experiment_id, self.gateway_id)
             return Response({'success': True})
         except Exception as e:
-            log.error("Cancel action has thrown the following error: ", e)
+            log.exception("Cancel action has thrown the following error")
             raise e
 
     @action(methods=['post'], detail=True)
@@ -269,11 +273,11 @@ class ExperimentViewSet(mixins.CreateModelMixin,
         if "outputNames" not in request.data:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
-            request.airavata_client.fetchIntermediateOutputs(
-                request.authz_token, experiment_id, request.data["outputNames"])
+            experiment_util.intermediate_output.fetch_intermediate_output(
+                request, experiment_id, *request.data["outputNames"])
             return Response({'success': True})
         except Exception as e:
-            log.error("fetchIntermediateOutputs failed with the following error: ", e)
+            log.exception("fetchIntermediateOutputs failed with the following error")
             raise e
 
     def _update_workspace_preferences(self, project_id,
@@ -1524,10 +1528,14 @@ class ManageNotificationViewSet(APIBackedViewSet):
             self.authz_token, notification)
         notification.notificationId = notificationId
 
+        serializer.update_notification_extension(self.request, notification)
+
     def perform_update(self, serializer):
         notification = serializer.save()
         self.request.airavata_client.updateNotification(
             self.authz_token, notification)
+
+        serializer.update_notification_extension(self.request, notification)
 
 
 class AckNotificationViewSet(APIView):
@@ -1858,3 +1866,28 @@ def _generate_output_view_data(request):
                                       experiment_id,
                                       test_mode=test_mode,
                                       **params.dict())
+
+
+class QueueSettingsCalculatorViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, GenericAPIBackedViewSet):
+    serializer_class = serializers.QueueSettingsCalculatorSerializer
+
+    def get_list(self):
+        return queue_settings_calculators.get_all()
+
+    def get_instance(self, lookup_value):
+        calcs = queue_settings_calculators.get_all()
+        calc = [calc for calc in calcs if calc.id == lookup_value]
+        if len(calc) == 0:
+            return None
+        return calc[0]
+
+    @action(methods=['post'], detail=True, serializer_class=serializers.ExperimentSerializer)
+    def calculate(self, request, pk=None):
+
+        serializer = self.get_serializer(data=request.data)
+        result = {}
+        # Just ignore invalid experiment model since likely caused by late initialization
+        if serializer.is_valid():
+            experiment_model = serializer.save()
+            result = queue_settings_calculators.calculate_queue_settings(pk, request, experiment_model)
+        return Response(result)

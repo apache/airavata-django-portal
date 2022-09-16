@@ -1,4 +1,4 @@
-import { models, services } from "django-airavata-api";
+import { errors, models, services } from "django-airavata-api";
 import ExperimentState from "django-airavata-api/static/django_airavata_api/js/models/ExperimentState";
 import JobState from "django-airavata-api/static/django_airavata_api/js/models/JobState";
 
@@ -27,21 +27,34 @@ export const mutations = {
   ) {
     state.runningIntermediateOutputFetches = runningIntermediateOutputFetches;
   },
+  setApplicationInterface(state, { applicationInterface }) {
+    state.applicationInterface = applicationInterface;
+  },
 };
 export const actions = {
-  async setInitialFullExperimentData(
-    { commit, dispatch },
-    { fullExperimentData }
-  ) {
+  async setInitialFullExperimentData({ dispatch }, { fullExperimentData }) {
     const fullExperiment = await services.FullExperimentService.retrieve({
       lookup: fullExperimentData.experimentId,
       initialFullExperimentData: fullExperimentData,
     });
-    commit("setFullExperiment", { fullExperiment });
-    dispatch("initPollingExperiment");
+    dispatch("setFullExperiment", { fullExperiment });
   },
-  setFullExperiment({ dispatch, commit }, { fullExperiment }) {
+  async setFullExperiment({ dispatch, commit }, { fullExperiment }) {
     commit("setFullExperiment", { fullExperiment });
+    const appInterfaceId = fullExperiment.experiment.executionId;
+    try {
+      const applicationInterface = await services.ApplicationInterfaceService.retrieve(
+        { lookup: appInterfaceId },
+        { ignoreErrors: true }
+      );
+      commit("setApplicationInterface", { applicationInterface });
+    } catch (error) {
+      // Ignore when application interface is not found; it was probably deleted
+      // But in all other cases, report the error as unhandled
+      if (!errors.ErrorUtils.isNotFoundError(error)) {
+        errors.UnhandledErrorDispatcher.reportUnhandledError(error);
+      }
+    }
     dispatch("initPollingExperiment");
   },
   setLaunching({ dispatch, commit }, { launching }) {
@@ -218,9 +231,15 @@ export const getters = {
       state.fullExperiment.jobDetails &&
       state.fullExperiment.jobDetails.some(
         (job) =>
-          job.latestJobStatus && job.latestJobStatus.jobState === JobState.ACTIVE
+          job.latestJobStatus &&
+          job.latestJobStatus.jobState === JobState.ACTIVE
       )
     );
+  },
+  showQueueSettings(state) {
+    return state.applicationInterface
+      ? state.applicationInterface.showQueueSettings
+      : false;
   },
 };
 
@@ -230,6 +249,7 @@ const state = {
   polling: false,
   clonedExperiment: null,
   runningIntermediateOutputFetches: {},
+  applicationInterface: null,
 };
 export default {
   namespaced: true,
