@@ -2,7 +2,7 @@
   <div>
     <div class="row">
       <div class="col">
-        <h1 class="h4 mb-4">MY Console</h1>
+        <h1 class="h4 mb-4">Developer Console</h1>
       </div>
     </div>
     <b-card header="Download a settings_local.py file for local development">
