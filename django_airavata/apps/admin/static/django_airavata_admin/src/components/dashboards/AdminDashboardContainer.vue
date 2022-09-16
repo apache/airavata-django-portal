@@ -166,7 +166,7 @@
 <script>
 
 import moment from "moment";
-import { models, services, session, utils } from "django-airavata-api";
+import { models, services, utils } from "django-airavata-api";
 import BarChart from './AdminDashboardContainer.vue';
 import ExperimentDetailsView from "../statistics/ExperimentDetailsView.vue";
 import ExperimentStatisticsCard from "../statistics/ExperimentDetailsView.vue";
@@ -418,7 +418,6 @@ export default {
       };
       let results =  await services.ExperimentStatisticsService.get(requestData).then(
         (stats) => {
-          console.log(stats);
           this.allExperimentStatisticsPaginator = stats;
         }
       );      
@@ -437,7 +436,7 @@ export default {
       });
 
       this.uniqueUsersWithJob = uniqueUsers.size;
-      console.log("Unique Job", this.uniqueUsersWithJob);
+      //console.log("Unique Job", this.uniqueUsersWithJob);
       return results;
     },
 
