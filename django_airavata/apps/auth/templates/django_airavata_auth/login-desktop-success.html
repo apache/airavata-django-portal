@@ -8,6 +8,9 @@
       <div class="alert alert-success" role="alert">
         <h4 class="alert-heading">Logged in!</h4>
       </div>
+      {% if show_code  %}
+      <textarea style="width: 100%" rows="5" onfocus="this.select()">{{ code }}</textarea>
+      {% endif %}
     </div>
   </main>
 </div>

@@ -6,6 +6,19 @@
         >This field is required.</b-form-invalid-feedback
       >
     </b-form-group>
+    <b-form-group
+      label="Checkbox Label"
+      label-cols="3"
+      v-if="extendedUserProfileField.field_type === 'user_agreement'"
+    >
+      <b-form-input
+        v-model="checkbox_label"
+        :state="validateState($v.checkbox_label)"
+      />
+      <b-form-invalid-feedback :state="validateState($v.checkbox_label)"
+        >This field is required.</b-form-invalid-feedback
+      >
+    </b-form-group>
     <b-form-group label="Help text" label-cols="3">
       <b-form-input v-model="help_text" />
     </b-form-group>
@@ -34,7 +47,7 @@
               <b-input-group-append>
                 <b-button
                   @click="handleChoiceMoveUp(choice)"
-                  :disabled="index === 0"
+                  :disabled="index === String(0)"
                   v-b-tooltip.hover.left
                   title="Move Up"
                 >
@@ -43,7 +56,8 @@
                 <b-button
                   @click="handleChoiceMoveDown(choice)"
                   :disabled="
-                    index === extendedUserProfileField.choices.length - 1
+                    index ===
+                    String(extendedUserProfileField.choices.length - 1)
                   "
                   v-b-tooltip.hover.left
                   title="Move Down"
@@ -189,7 +203,7 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import { validationMixin } from "vuelidate";
-import { required } from "vuelidate/lib/validators";
+import { required, requiredIf } from "vuelidate/lib/validators";
 import { errors } from "django-airavata-common-ui";
 export default {
   mixins: [validationMixin],
@@ -203,6 +217,15 @@ export default {
       set(value) {
         this.setName({ value, field: this.extendedUserProfileField });
         this.$v.name.$touch();
+      },
+    },
+    checkbox_label: {
+      get() {
+        return this.extendedUserProfileField.checkbox_label;
+      },
+      set(value) {
+        this.setCheckboxLabel({ value, field: this.extendedUserProfileField });
+        this.$v.checkbox_label.$touch();
       },
     },
     help_text: {
@@ -249,11 +272,17 @@ export default {
     valid() {
       return !this.$v.$invalid;
     },
+    checkboxLabelIsRequired() {
+      return this.extendedUserProfileField.field_type === "user_agreement";
+    },
   },
   validations() {
     return {
       name: {
         required,
+      },
+      checkbox_label: {
+        required: requiredIf("checkboxLabelIsRequired"),
       },
       choices: {
         $each: {
@@ -277,6 +306,7 @@ export default {
   methods: {
     ...mapMutations("extendedUserProfile", [
       "setName",
+      "setCheckboxLabel",
       "setHelpText",
       "setRequired",
       "setOther",

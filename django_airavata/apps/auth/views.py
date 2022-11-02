@@ -73,10 +73,10 @@ def redirect_login(request, idp_alias):
     redirect_uri = request.build_absolute_uri(
         reverse('django_airavata_auth:callback'))
     redirect_uri += '?idp_alias=' + quote(idp_alias)
-    if 'next' in request.GET:
-        redirect_uri += "&next=" + quote(request.GET['next'])
-    if 'login_desktop' in request.GET:
-        redirect_uri += "&login_desktop=" + quote(request.GET['login_desktop'])
+    passthrough_query_params = ('next', 'login_desktop', 'download-code', 'show-code')
+    for passthrough_query_param in passthrough_query_params:
+        if passthrough_query_param in request.GET:
+            redirect_uri += f"&{passthrough_query_param}={quote(request.GET[passthrough_query_param])}"
     oauth2_session = OAuth2Session(
         client_id, scope='openid', redirect_uri=redirect_uri)
     authorization_url, state = oauth2_session.authorization_url(
@@ -105,6 +105,8 @@ def handle_login(request):
     password = request.POST['password']
     login_type = request.POST.get('login_type', None)
     login_desktop = request.POST.get('login_desktop', "false") == "true"
+    download_code = request.POST.get('download-code', 'false') == "true"
+    show_code = request.POST.get('show-code', 'false') == "true"
     template = "django_airavata_auth/login.html"
     if login_type and login_type == 'password':
         template = "django_airavata_auth/login_username_password.html"
@@ -118,7 +120,9 @@ def handle_login(request):
             request.authz_token = utils.get_authz_token(request, user=user)
             login(request, user)
             if login_desktop:
-                return _create_login_desktop_success_response(request)
+                return _create_login_desktop_success_response(request,
+                                                              download_code=download_code,
+                                                              show_code=show_code)
             else:
                 next_url = request.POST.get('next',
                                             settings.LOGIN_REDIRECT_URL)
@@ -126,7 +130,7 @@ def handle_login(request):
         else:
             messages.error(request, "Login failed. Please try again.")
     except Exception as err:
-        logger.exception("Login failed for user {}".format(username))
+        logger.exception("Login failed for user {}".format(username), extra={'request': request})
         messages.error(request,
                        "Login failed: {}. Please try again.".format(str(err)))
     if login_desktop:
@@ -156,14 +160,17 @@ def callback(request):
         if user is not None:
             login(request, user)
             if login_desktop:
-                return _create_login_desktop_success_response(request)
+                download_code = request.GET.get('download-code', 'false') == "true"
+                show_code = request.GET.get('show-code', 'false') == "true"
+                return _create_login_desktop_success_response(request, download_code=download_code, show_code=show_code)
             next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
             return redirect(next_url)
         else:
             raise Exception("Failed to authenticate user")
     except Exception as err:
         logger.exception("An error occurred while processing OAuth2 "
-                         "callback: {}".format(request.build_absolute_uri()))
+                         "callback: {}".format(request.build_absolute_uri()),
+                         extra={'request': request})
         messages.error(
             request,
             "Failed to process OAuth2 callback: {}".format(str(err)))
@@ -220,7 +227,7 @@ def create_account(request):
                         reverse('django_airavata_auth:create_account'))
             except Exception as e:
                 logger.exception(
-                    "Failed to create account for user", exc_info=e)
+                    "Failed to create account for user", exc_info=e, extra={'request', request})
                 form.add_error(None, ValidationError(e.message))
     else:
         form = forms.CreateAccountForm(initial=request.GET)
@@ -272,14 +279,14 @@ def verify_email(request, code):
         # if doesn't exist, give user a form where they can enter their
         # username to resend verification code
         logger.exception("EmailVerification object doesn't exist for "
-                         "code {}".format(code))
+                         "code {}".format(code), extra={'request': request})
         messages.error(
             request,
             "Email verification failed. Please enter your username and we "
             "will send you another email verification link.")
         return redirect(reverse('django_airavata_auth:resend_email_link'))
     except Exception:
-        logger.exception("Email verification processing failed!")
+        logger.exception("Email verification processing failed!", extra={'request': request})
         messages.error(
             request,
             "Email verification failed. Please try clicking the email "
@@ -318,7 +325,7 @@ def resend_email_link(request):
                     reverse('django_airavata_auth:resend_email_link'))
             except Exception as e:
                 logger.exception(
-                    "Failed to resend email verification link", exc_info=e)
+                    "Failed to resend email verification link", exc_info=e, extra={'request': request})
                 form.add_error(None, ValidationError(str(e)))
     else:
         form = forms.ResendEmailVerificationLinkForm()
@@ -386,7 +393,7 @@ def forgot_password(request):
             except Exception as e:
                 logger.exception(
                     "Failed to generate password reset request for user",
-                    exc_info=e)
+                    exc_info=e, extra={'request': request})
                 form.add_error(None, ValidationError(str(e)))
     else:
         form = forms.ForgotPasswordForm()
@@ -458,7 +465,7 @@ def reset_password(request, code):
                         reverse('django_airavata_auth:login_with_password'))
             except Exception as e:
                 logger.exception(
-                    "Failed to reset password for user", exc_info=e)
+                    "Failed to reset password for user", exc_info=e, extra={'request': request})
                 form.add_error(None, ValidationError(str(e)))
     else:
         form = forms.ResetPasswordForm()
@@ -475,11 +482,27 @@ def login_desktop(request):
     }
     if 'username' in request.GET:
         context['username'] = request.GET['username']
+    download_code = request.GET.get('download-code', "false") == "true"
+    show_code = request.GET.get('show-code', "false") == "true"
+    context['download_code'] = download_code
+    context['show_code'] = show_code
     return render(request, 'django_airavata_auth/login-desktop.html', context)
 
 
 def login_desktop_success(request):
-    return render(request, 'django_airavata_auth/login-desktop-success.html')
+    download_code = request.GET.get('download-code', "false") == "true"
+    show_code = request.GET.get('show-code', "false") == "true"
+
+    access_token = request.session['ACCESS_TOKEN']
+    if download_code:
+        access_token_bytesio = io.BytesIO(access_token.encode())
+        return FileResponse(access_token_bytesio, as_attachment=True, filename="access_token.txt")
+    else:
+        context = {
+            'show_code': show_code,
+            'code': access_token,
+        } if (show_code) else {}
+        return render(request, 'django_airavata_auth/login-desktop-success.html', context)
 
 
 def refreshed_token_desktop(request):
@@ -500,17 +523,21 @@ def refreshed_token_desktop(request):
         })
 
 
-def _create_login_desktop_success_response(request):
+def _create_login_desktop_success_response(request, download_code=False, show_code=False):
     valid_time = int(request.session['ACCESS_TOKEN_EXPIRES_AT'] - time.time())
+    query_params = {
+        'status': 'ok',
+        'code': request.session['ACCESS_TOKEN'],
+        'refresh_code': request.session['REFRESH_TOKEN'],
+        'valid_time': valid_time,
+        'username': request.user.username,
+    }
+    if download_code:
+        query_params['download-code'] = "true"
+    if show_code:
+        query_params['show-code'] = "true"
     return redirect(
-        reverse('django_airavata_auth:login_desktop_success') +
-        "?" + urlencode({
-            'status': 'ok',
-            'code': request.session['ACCESS_TOKEN'],
-            'refresh_code': request.session['REFRESH_TOKEN'],
-            'valid_time': valid_time,
-            'username': request.user.username
-        }))
+        reverse('django_airavata_auth:login_desktop_success') + "?" + urlencode(query_params))
 
 
 def _create_login_desktop_failed_response(request, idp_alias=None):
@@ -744,11 +771,10 @@ class ExtendedUserProfileValueViewset(mixins.CreateModelMixin,
 
     def get_queryset(self):
         user = self.request.user
-        if self.request.is_gateway_admin:
+        if self.request.is_gateway_admin and self.request.query_params.get('username'):
             queryset = models.ExtendedUserProfileValue.objects.all()
             username = self.request.query_params.get('username')
-            if username is not None:
-                queryset = queryset.filter(user_profile__user__username=username)
+            queryset = queryset.filter(user_profile__user__username=username)
         else:
             queryset = user.user_profile.extended_profile_values.all()
         return queryset
