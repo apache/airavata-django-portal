@@ -862,3 +862,5 @@ export default new Vuex.Store({
   actions,
   getters,
 });
+
+Vue.config.devtools = true;
