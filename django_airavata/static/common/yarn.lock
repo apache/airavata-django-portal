@@ -3233,8 +3233,16 @@ dir-glob@^3.0.1:
     path-type "^4.0.0"
 
 "django-airavata-api@link:../../apps/api":
-  version "0.0.0"
-  uid ""
+  version "1.0.0-beta.3"
+  dependencies:
+    "@babel/polyfill" "^7.0.0"
+    "@babel/runtime" "^7.1.2"
+    browserslist "^4.16.7"
+    core-js "^3.8.3"
+    stacktrace-js "^2.0.0"
+    terser "^4.1.2"
+    url-parse "^1.4.3"
+    uuid "^3.3.2"
 
 dns-equal@^1.0.0:
   version "1.0.0"
@@ -4773,10 +4781,10 @@ joi@^17.4.0:
     "@sideway/formula" "^3.0.0"
     "@sideway/pinpoint" "^2.0.0"
 
-jquery@^3.3.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.1.tgz#714f1f8d9dde4bdfa55764ba37ef214630d80ef2"
-  integrity sha512-36+AdBzCL+y6qjw5Tx7HgzeGCzC81MDDgaUP8ld2zhx58HdqXGoBd+tHdrBMiyjGQs0Hxs/MLZTu/eHNJJuWPw==
+jquery@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.5.0.tgz#9980b97d9e4194611c36530e7dc46a58d7340fc9"
+  integrity sha512-Xb7SVYMvygPxbFMpTFQiHh1J7HClEaThguL15N/Gg37Lri/qKyhRGZYzHRyLH8Stq3Aow0LsHO2O2ci86fCrNQ==
 
 js-base64@^2.4.9:
   version "2.5.1"
