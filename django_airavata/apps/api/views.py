@@ -20,7 +20,10 @@ from airavata.model.data.movement.ttypes import (
     SCPDataMovement,
     UnicoreDataMovement
 )
-from airavata.model.experiment.ttypes import ExperimentSearchFields
+from airavata.model.experiment.ttypes import (
+    ExperimentModel,
+    ExperimentSearchFields
+)
 from airavata.model.group.ttypes import ResourcePermissionType
 from airavata.model.user.ttypes import Status
 from airavata_django_portal_sdk import (
@@ -43,6 +46,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django_airavata.apps.admin.models import UserDataArchiveEntry
 from django_airavata.apps.api.view_utils import (
     APIBackedViewSet,
     APIResultIterator,
@@ -240,7 +244,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
             experiment_util.launch(request, experiment_id)
             return Response({'success': True})
         except Exception as e:
-            log.exception(f"Failed to launch experiment {experiment_id}")
+            log.exception(f"Failed to launch experiment {experiment_id}", extra={'request': request})
             return Response({'success': False, 'errorMessage': str(e)})
 
     @action(methods=['get'], detail=True)
@@ -267,7 +271,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 request.authz_token, experiment_id, self.gateway_id)
             return Response({'success': True})
         except Exception as e:
-            log.exception("Cancel action has thrown the following error")
+            log.exception("Cancel action has thrown the following error", extra={'request': request})
             raise e
 
     @action(methods=['post'], detail=True)
@@ -279,7 +283,7 @@ class ExperimentViewSet(mixins.CreateModelMixin,
                 request, experiment_id, *request.data["outputNames"])
             return Response({'success': True})
         except Exception as e:
-            log.exception("fetchIntermediateOutputs failed with the following error")
+            log.exception("fetchIntermediateOutputs failed with the following error", extra={'request': request})
             raise e
 
     def _update_workspace_preferences(self, project_id,
@@ -382,7 +386,7 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 log.warning(
                     "Cannot load application model since app interface failed to load")
         except Exception:
-            log.exception("Failed to load app interface/module")
+            log.exception("Failed to load app interface/module", extra={'request': self.request})
 
         compute_resource_id = None
         user_conf = experimentModel.userConfigurationData
@@ -395,7 +399,7 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                 if compute_resource_id else None
         except Exception:
             log.exception("Failed to load compute resource for {}".format(
-                compute_resource_id))
+                compute_resource_id), extra={'request': self.request})
             compute_resource = None
         if self.request.airavata_client.userHasAccess(
                 self.authz_token,
@@ -464,7 +468,7 @@ class ApplicationModuleViewSet(APIBackedViewSet):
         elif len(app_interfaces) > 1:
             log.error(
                 "More than one application interface found for module {}: {}"
-                .format(app_module_id, app_interfaces))
+                .format(app_module_id, app_interfaces), extra={'request': request})
             raise Exception(
                 'More than one application interface found for module {}'
                 .format(app_module_id)
@@ -1280,6 +1284,25 @@ class CurrentGatewayResourceProfile(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ExperimentArchiveView(APIView):
+
+    def get(self, request, experiment_id=None, format=None):
+        experiment: ExperimentModel = request.airavata_client.getExperiment(
+            request.authz_token, experiment_id)
+        result = dict(archived=False, archive_name=None, created_date=None,
+                      max_age=settings.GATEWAY_USER_DATA_ARCHIVE_MAX_AGE_DAYS)
+        try:
+            archive_entry = UserDataArchiveEntry.objects.get(
+                entry_path=experiment.userConfigurationData.experimentDataDir,
+                user_data_archive__rolled_back=False)
+            result["archived"] = True
+            result["archive_name"] = archive_entry.user_data_archive.archive_name
+            result["created_date"] = archive_entry.user_data_archive.created_date
+        except UserDataArchiveEntry.DoesNotExist:
+            pass
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class StorageResourceViewSet(mixins.RetrieveModelMixin,
