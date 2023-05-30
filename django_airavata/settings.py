@@ -238,6 +238,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Wagtail related stuff
 WAGTAIL_SITE_NAME = 'Django Airavata Portal'
+WAGTAILADMIN_BASE_URL = 'http://localhost:8000'
 
 WAGTAILIMAGES_JPEG_QUALITY = 100
 
