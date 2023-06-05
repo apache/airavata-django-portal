@@ -7,7 +7,7 @@ isort==5.2.2
 Jinja2==3.0.3
 mkdocs==1.2.4
 Markdown==3.2.1
-pymdown-extensions==8.2
+pymdown-extensions==10.0
 pycodestyle==2.8.0
 pyflakes==2.4.0
 tox==3.25.0
