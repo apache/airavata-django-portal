@@ -3,8 +3,8 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 import wagtail.images.blocks
 
 
@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='rowblankpagerelation',
             name='container',
-            field=wagtail.core.fields.StreamField((('full_width_container', wagtail.core.blocks.StructBlock((('inline_styles', wagtail.core.blocks.TextBlock(blank=True, help_text='Apply inline CSS styles to container wrapper.', required=False)), ('custom_classes', wagtail.core.blocks.CharBlock(help_text='Apply custom CSS classes to container wrapper. You can define CSS classes in a Custom CSS snippet.', required=False)), ('background_image', wagtail.images.blocks.ImageChooserBlock(help_text='Apply background image to container wrapper.', required=False))))), ('max_width_container', wagtail.core.blocks.StructBlock((('inline_styles', wagtail.core.blocks.TextBlock(blank=True, help_text='Apply inline CSS styles to container wrapper.', required=False)), ('custom_classes', wagtail.core.blocks.CharBlock(help_text='Apply custom CSS classes to container wrapper. You can define CSS classes in a Custom CSS snippet.', required=False)), ('background_image', wagtail.images.blocks.ImageChooserBlock(help_text='Apply background image to container wrapper.', required=False)))))), blank=True, help_text='(Optional) Create a new Bootstrap container for this and following rows.', null=True),
+            field=wagtail.fields.StreamField((('full_width_container', wagtail.blocks.StructBlock((('inline_styles', wagtail.blocks.TextBlock(blank=True, help_text='Apply inline CSS styles to container wrapper.', required=False)), ('custom_classes', wagtail.blocks.CharBlock(help_text='Apply custom CSS classes to container wrapper. You can define CSS classes in a Custom CSS snippet.', required=False)), ('background_image', wagtail.images.blocks.ImageChooserBlock(help_text='Apply background image to container wrapper.', required=False))))), ('max_width_container', wagtail.blocks.StructBlock((('inline_styles', wagtail.blocks.TextBlock(blank=True, help_text='Apply inline CSS styles to container wrapper.', required=False)), ('custom_classes', wagtail.blocks.CharBlock(help_text='Apply custom CSS classes to container wrapper. You can define CSS classes in a Custom CSS snippet.', required=False)), ('background_image', wagtail.images.blocks.ImageChooserBlock(help_text='Apply background image to container wrapper.', required=False)))))), blank=True, help_text='(Optional) Create a new Bootstrap container for this and following rows.', null=True),
         ),
     ]

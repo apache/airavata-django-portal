@@ -1,10 +1,10 @@
 import logging
 
 from django.shortcuts import redirect
+from wagtail import hooks
 from wagtail.admin.rich_text.converters.html_to_contentstate import (
     BlockElementHandler
 )
-from wagtail.core import hooks
 
 logger = logging.getLogger(__name__)
 

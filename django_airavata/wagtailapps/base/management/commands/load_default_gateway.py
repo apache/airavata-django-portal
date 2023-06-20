@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
-from wagtail.core.models import Page, Site
+from wagtail.models import Page, Site
 
 
 class Command(BaseCommand):

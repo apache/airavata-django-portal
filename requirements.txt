@@ -9,10 +9,10 @@ django-webpack-loader==0.6.0
 logging-formatter-anticrlf==1.2
 zipstream-new==1.1.8
 
-wagtail>=4.0,<4.1
+wagtail>=4.2,<4.3
 wagtailfontawesome==1.2.1
 wagtail-draftail-anchors==0.2.0
-wagtailcodeblock==1.17.1.0
+wagtailcodeblock==1.29.0.0
 
 jupyter==1.0.0
 papermill==1.0.1

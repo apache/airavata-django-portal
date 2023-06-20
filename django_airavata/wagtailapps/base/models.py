@@ -5,15 +5,15 @@ import os
 from django.db import models
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
-from wagtail.admin.edit_handlers import (
+from wagtail.admin.panels import (
     FieldPanel,
     InlinePanel,
     MultiFieldPanel,
     ObjectList,
     TabbedInterface
 )
-from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Orderable, Page
+from wagtail.fields import RichTextField, StreamField
+from wagtail.models import Orderable, Page
 from wagtail.snippets.models import register_snippet
 
 from .blocks import BaseStreamBlock, ContainerChoiceBlock, CssStreamBlock, Nav
@@ -60,7 +60,7 @@ class NavExtra(models.Model):
     """
     nav = StreamField([
         ('nav', Nav(max_num=1)),
-    ])
+    ], use_json_field=True)
     panels = [
         FieldPanel('nav'),
     ]
@@ -84,7 +84,8 @@ class CustomCss(models.Model):
         blank=True,
         null=True,
         help_text="Write custom css and give comments as necessary",
-        default="")
+        default="",
+        use_json_field=True)
 
     panels = [
         FieldPanel('css'),
@@ -109,7 +110,8 @@ class FooterText(models.Model):
         BaseStreamBlock(),
         verbose_name="Footer content block",
         blank=True,
-        null=True)
+        null=True,
+        use_json_field=True)
 
     panels = [
         FieldPanel('footer'),
@@ -477,7 +479,8 @@ class HomePage(Page):
         BaseStreamBlock(),
         verbose_name="Home content block",
         blank=True,
-        null=True)
+        null=True,
+        use_json_field=True)
 
     # Promo section of the HomePage
     site_logo = models.ForeignKey(
@@ -671,7 +674,7 @@ class HomePage(Page):
 
 class Row(models.Model):
     body = StreamField(
-        BaseStreamBlock(), verbose_name="Row Content", blank=True, null=True
+        BaseStreamBlock(), verbose_name="Row Content", blank=True, null=True, use_json_field=True
     )
 
     panels = [
@@ -688,9 +691,10 @@ class BootstrapRow(Row):
         null=True,
         blank=True,
         help_text="(Optional) Create a new Bootstrap container for this "
-                  "and following rows.")
+                  "and following rows.",
+        use_json_field=True)
     body = StreamField(
-        BaseStreamBlock(), verbose_name="Row Content", blank=True, null=True
+        BaseStreamBlock(), verbose_name="Row Content", blank=True, null=True, use_json_field=True
     )
 
     panels = [
@@ -839,13 +843,15 @@ class CybergatewayHomePage(Page):
         BaseStreamBlock(),
         verbose_name="Contact Info Block",
         blank=True,
-        null=True)
+        null=True,
+        use_json_field=True)
 
     footer = StreamField(
         BaseStreamBlock(),
         verbose_name="Footer Content Block",
         blank=True,
-        null=True)
+        null=True,
+        use_json_field=True)
 
     boolean_choices = (
         ("yes", "Yes"),
