@@ -10,13 +10,10 @@ from wagtail.admin.edit_handlers import (
     InlinePanel,
     MultiFieldPanel,
     ObjectList,
-    PageChooserPanel,
-    StreamFieldPanel,
     TabbedInterface
 )
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Orderable, Page
-from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.snippets.models import register_snippet
 
 from .blocks import BaseStreamBlock, ContainerChoiceBlock, CssStreamBlock, Nav
@@ -65,7 +62,7 @@ class NavExtra(models.Model):
         ('nav', Nav(max_num=1)),
     ])
     panels = [
-        StreamFieldPanel('nav'),
+        FieldPanel('nav'),
     ]
 
     def __str__(self):
@@ -90,7 +87,7 @@ class CustomCss(models.Model):
         default="")
 
     panels = [
-        StreamFieldPanel('css'),
+        FieldPanel('css'),
     ]
 
     def __str__(self):
@@ -115,7 +112,7 @@ class FooterText(models.Model):
         null=True)
 
     panels = [
-        StreamFieldPanel('footer'),
+        FieldPanel('footer'),
     ]
 
     def __str__(self):
@@ -196,7 +193,7 @@ class Navbar(models.Model):
     )
 
     panels = [
-        ImageChooserPanel('logo'),
+        FieldPanel('logo'),
         FieldPanel('logo_redirect_link'),
         FieldPanel('logo_width'),
         FieldPanel('logo_height'),
@@ -344,7 +341,7 @@ class GatewayIcon(models.Model):
     )
 
     panels = [
-        ImageChooserPanel('icon'),
+        FieldPanel('icon'),
         FieldPanel('background_color'),
     ]
 
@@ -618,40 +615,40 @@ class HomePage(Page):
 
     content_panels = Page.content_panels + [
         MultiFieldPanel([
-            ImageChooserPanel('image'),
+            FieldPanel('image'),
             FieldPanel('hero_text', classname="full"),
             MultiFieldPanel([
                 FieldPanel('hero_cta'),
-                PageChooserPanel('hero_cta_link'),
+                FieldPanel('hero_cta_link'),
             ])
         ], heading="Hero section"),
-        StreamFieldPanel('body'),
+        FieldPanel('body'),
         MultiFieldPanel([
-            ImageChooserPanel('site_logo'),
+            FieldPanel('site_logo'),
             FieldPanel('features_text'),
             MultiFieldPanel([
-                ImageChooserPanel('feature_logo_1'),
+                FieldPanel('feature_logo_1'),
                 FieldPanel('feature_1_title'),
                 FieldPanel('feature_1_text'),
             ]),
             MultiFieldPanel([
-                ImageChooserPanel('feature_logo_2'),
+                FieldPanel('feature_logo_2'),
                 FieldPanel('feature_2_title'),
                 FieldPanel('feature_2_text'),
             ]),
             MultiFieldPanel([
-                ImageChooserPanel('feature_logo_3'),
+                FieldPanel('feature_logo_3'),
                 FieldPanel('feature_3_title'),
                 FieldPanel('feature_3_text'),
             ]),
             MultiFieldPanel([
-                ImageChooserPanel('feature_logo_4'),
+                FieldPanel('feature_logo_4'),
                 FieldPanel('feature_4_title'),
                 FieldPanel('feature_4_text'),
             ])
         ], heading="Feature section", classname="collapsible"),
         FieldPanel('custom_body_message'),
-        ImageChooserPanel('banner_image')
+        FieldPanel('banner_image')
     ]
 
     customization_panels = [
@@ -678,7 +675,7 @@ class Row(models.Model):
     )
 
     panels = [
-        StreamFieldPanel('body'),
+        FieldPanel('body'),
     ]
 
     class Meta:
@@ -697,8 +694,8 @@ class BootstrapRow(Row):
     )
 
     panels = [
-        StreamFieldPanel('container'),
-        StreamFieldPanel('body'),
+        FieldPanel('container'),
+        FieldPanel('body'),
     ]
 
     class Meta:
@@ -875,7 +872,7 @@ class CybergatewayHomePage(Page):
 
     content_panels = Page.content_panels + [
         MultiFieldPanel([
-            ImageChooserPanel('site_logo'),
+            FieldPanel('site_logo'),
             FieldPanel('site_link'),
             FieldPanel('site_text'),
             FieldPanel('site_header'),
@@ -887,8 +884,8 @@ class CybergatewayHomePage(Page):
             FieldPanel('site_link_text3'),
         ], heading="Navbar Section"),
         InlinePanel("row", label="row"),
-        StreamFieldPanel('contact'),
-        StreamFieldPanel('footer'),
+        FieldPanel('contact'),
+        FieldPanel('footer'),
     ]
 
     customization_panels = [
