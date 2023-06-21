@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 from django.shortcuts import redirect
 from wagtail import hooks
@@ -7,6 +8,9 @@ from wagtail.admin.rich_text.converters.html_to_contentstate import (
 )
 
 logger = logging.getLogger(__name__)
+
+BASE_DIR = Path(__file__).resolve().parent
+TEMPLATES_DIR = BASE_DIR / "templates"
 
 
 @hooks.register('register_rich_text_features')
@@ -51,3 +55,10 @@ def direct_serve_document(document, request):
     except Exception as e:
         logger.warning("direct_serve_document error: ", exc_info=e)
         return None
+
+
+@hooks.register('register_icons')
+def register_icons(icons):
+    svg_files = TEMPLATES_DIR.glob("**/*.svg")
+    svg_paths = [str(svg_file.relative_to(TEMPLATES_DIR)) for svg_file in svg_files]
+    return icons + svg_paths

@@ -61,7 +61,7 @@ class FontAwesomeIcon(StructBlock):
                   "separated by space and styling the class in css")
 
     class Meta:
-        icon = 'fa-flag'
+        icon = 'icons'
         template = "blocks/font_awesome_icon_block.html"
 
 
@@ -77,7 +77,7 @@ class ParagraphBlock(StructBlock):
     body = RichTextBlock()
 
     class Meta:
-        icon = "fa-paragraph"
+        icon = "pilcrow"
         template = "blocks/paragraph_block.html"
         help_text = "Create a free form paragraph"
 
@@ -94,7 +94,7 @@ class IuFooter(StructBlock):
     footer_links = RichTextBlock()
 
     class Meta:
-        icon = "fa-university"
+        icon = "building-columns"
         template = "blocks/iu_footer.html"
         help_text = "Create an IU Footer"
 
@@ -134,7 +134,7 @@ class PlaceholderBlock(StructBlock):
                   "separated by space and styling the class in css")
 
     class Meta:
-        icon = "fa-map-marker"
+        icon = "arrows-left-right"
         template = "blocks/placeholder_block.html"
 
 
@@ -150,7 +150,7 @@ class CustomEmbedBlock(StructBlock):
                   "separated by space and styling the class in css")
 
     class Meta:
-        icon = "fa-link"
+        icon = "link"
         template = "blocks/embed_block.html"
         help_text = ("Insert a youtube URL e.g "
                      "https://www.youtube.com/watch?v=SGJFWirQ3ks")
@@ -164,7 +164,7 @@ class CssCommentBlock(StructBlock):
         required=True, help_text="Write some comment to mark the css")
 
     class Meta:
-        icon = "fa-comment"
+        icon = "comment"
         template = "blocks/css_comment.html"
         help_text = "Css Comment"
 
@@ -187,7 +187,7 @@ class HorizontalRule(StructBlock):
                   "separated by space and styling the class in css")
 
     class Meta:
-        icon = "fa-long-arrow-right"
+        icon = "horizontalrule"
         template = "blocks/hrule.html"
         help_text = "Horizontal Rule"
 
@@ -221,7 +221,7 @@ class BootstrapJumbotron(StructBlock):
                   "separated by space and styling the class in css")
 
     class Meta:
-        icon = "fa-indent"
+        icon = "form"
         template = "blocks/bootstrap/jumbotron.html"
         help_text = "Create a bootstrap jumbotron"
 
@@ -251,7 +251,7 @@ class BootstrapButton(StructBlock):
                   "separated by space and styling the class in css")
 
     class Meta:
-        icon = "fa-bold"
+        icon = "bold"
         template = "blocks/bootstrap/button.html"
         help_text = "Create a bootstrap button"
 
@@ -320,7 +320,7 @@ class BootstrapAlert(StructBlock):
                   "separated by space and styling the class in css")
 
     class Meta:
-        icon = "fa-bell"
+        icon = "warning"
         template = "blocks/bootstrap/alert.html"
         help_text = "Create a bootstrap alert"
 
@@ -371,7 +371,7 @@ class BootstrapCard(StructBlock):
                   "separated by space and styling the class in css")
 
     class Meta:
-        icon = "fa-id-card"
+        icon = "square"
         template = "blocks/bootstrap/card.html"
         help_text = "Create a bootstrap card"
 
@@ -416,7 +416,7 @@ class BootstrapCarousel(StructBlock):
                   "separated by space and styling the class in css")
 
     class Meta:
-        icon = "fa-film"
+        icon = "film"
         template = "blocks/bootstrap/carousel.html"
         help_text = ("Create a bootstrap carousel. Fill the images in order "
                      "to get optimized display.")
@@ -444,7 +444,7 @@ class BootstrapWell(StructBlock):
                   "separated by space and styling the class in css")
 
     class Meta:
-        icon = "fa-window-minimize"
+        icon = "window-minimize"
         template = "blocks/bootstrap/well.html"
 
 
@@ -475,7 +475,7 @@ class BootstrapMediaObject(StructBlock):
                   "separated by space and styling the class in css")
 
     class Meta:
-        icon = "fa-align-right"
+        icon = "align-right"
         template = "blocks/bootstrap/media.html"
 
 
@@ -563,14 +563,14 @@ class FullWidthContainer(ContainerBlock):
     container_class = "container-fluid"
 
     class Meta:
-        icon = "fa-arrows-h"
+        icon = "arrows-h"
 
 
 class MaxWidthContainer(ContainerBlock):
     container_class = "container"
 
     class Meta:
-        icon = "fa-square-o"
+        icon = "square-o"
 
 
 class ContainerChoiceBlock(StreamBlock):
@@ -602,7 +602,7 @@ class NavItem(StructBlock):
     ], required=False, help_text="The main menu is at the top of the dashboard when a user first logs in. Horizontal alignment does not apply when added to main menu.")
 
     class Meta:
-        icon = "fa-minus"
+        icon = "minus"
         template = "blocks/bootstrap/nav-item.html"
 
 
@@ -663,5 +663,5 @@ class Nav(StructBlock):
     ])
 
     class Meta:
-        icon = "fa-bars"
+        icon = "bars"
         template = "blocks/bootstrap/nav.html"
