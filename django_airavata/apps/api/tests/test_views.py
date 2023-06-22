@@ -73,11 +73,11 @@ class GroupViewSetTests(TestCase):
             sender=views.GroupViewSet)
         group_create = views.GroupViewSet.as_view({'post': 'create'})
         response = group_create(request)
-        self.assertEquals(201, response.status_code)
-        self.assertEquals("abc123", response.data['id'])
+        self.assertEqual(201, response.status_code)
+        self.assertEqual("abc123", response.data['id'])
         user_added_to_group_handler.assert_called_once()
         args, kwargs = user_added_to_group_handler.call_args
-        self.assertEquals("abc123", kwargs["groups"][0].id)
+        self.assertEqual("abc123", kwargs["groups"][0].id)
         self.assertIs(user_profile, kwargs["user"])
 
     def test_update_group_sends_user_added_to_group_signal(self):
@@ -142,8 +142,8 @@ class GroupViewSetTests(TestCase):
             sender=views.GroupViewSet)
         group_update = views.GroupViewSet.as_view({'put': 'update'})
         response = group_update(request, group_id="abc123")
-        self.assertEquals(200, response.status_code)
-        self.assertEquals("abc123", response.data['id'])
+        self.assertEqual(200, response.status_code)
+        self.assertEqual("abc123", response.data['id'])
 
         # verify addUsersToGroup
         group_manager_mock.addUsersToGroup.assert_called_once()
@@ -160,7 +160,7 @@ class GroupViewSetTests(TestCase):
 
         user_added_to_group_handler.assert_called_once()
         args, kwargs = user_added_to_group_handler.call_args
-        self.assertEquals("abc123", kwargs["groups"][0].id)
+        self.assertEqual("abc123", kwargs["groups"][0].id)
         self.assertIs(user_profile, kwargs["user"])
 
 
@@ -249,7 +249,7 @@ class IAMUserViewSetTests(TestCase):
             sender=views.IAMUserViewSet)
         iam_user_update = views.IAMUserViewSet.as_view({'put': 'update'})
         response = iam_user_update(request, user_id=username)
-        self.assertEquals(200, response.status_code)
+        self.assertEqual(200, response.status_code)
 
         user_profile_mock.doesUserExist.assert_called_once()
         group_manager_mock.getAllGroupsUserBelongs.assert_called_once()
@@ -357,7 +357,7 @@ class IAMUserViewSetTests(TestCase):
             sender=views.IAMUserViewSet)
         iam_user_update = views.IAMUserViewSet.as_view({'put': 'update'})
         response = iam_user_update(request, user_id=username)
-        self.assertEquals(200, response.status_code)
+        self.assertEqual(200, response.status_code)
 
         user_profile_mock.doesUserExist.assert_called_once()
         group_manager_mock.getAllGroupsUserBelongs.assert_called_once()
@@ -457,7 +457,7 @@ class IAMUserViewSetTests(TestCase):
             sender=views.IAMUserViewSet)
         iam_user_update = views.IAMUserViewSet.as_view({'put': 'update'})
         response = iam_user_update(request, user_id=username)
-        self.assertEquals(200, response.status_code)
+        self.assertEqual(200, response.status_code)
 
         user_profile_mock.doesUserExist.assert_called_once()
         group_manager_mock.getAllGroupsUserBelongs.assert_called_once()
@@ -488,6 +488,6 @@ class ExceptionHandlingTest(TestCase):
         # Deliberately not authenticating user for request
         group_create = views.GroupViewSet.as_view({'post': 'create'})
         response = group_create(request)
-        self.assertEquals(403, response.status_code)
+        self.assertEqual(403, response.status_code)
         self.assertIn('is_authenticated', response.data)
         self.assertFalse(response.data['is_authenticated'])
