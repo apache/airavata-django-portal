@@ -10,7 +10,7 @@ Tutorial attendees should have:
 -   a text editor or IDE for writing Python and web code. Any text editor or IDE
     will do but if you're looking for recommendations, I recommend
     [Visual Studio Code](https://code.visualstudio.com/).
--   Python (3.6 - 3.10)
+-   Python (3.9 - 3.11)
 -   Git client
 -   [Docker Desktop](https://www.docker.com/products/docker-desktop)
 -   If you don't have Docker installed or can't install it, you'll also need:
@@ -20,27 +20,27 @@ Tutorial attendees should have:
 
 ### Installing Python
 
-Python 3.6-3.10 are supported, but I highly recommend you download and use
-**Python 3.10**
+Python 3.9-3.11 are supported, but I highly recommend you download and use
+**Python 3.11**
 
-Download and install Python 3.10.
+Download and install Python 3.11.
 
 -   (macOS/Windows): Download from <https://www.python.org/downloads/>
--   (Linux): use your distribution's package manager to install Python 3.10
+-   (Linux): use your distribution's package manager to install Python 3.11
 
-Verify you have installed Python 3.10:
+Verify you have installed Python 3.11:
 
 === "macOS/Linux"
 
-        $ python3.10 --version
-        Python 3.10.0
+        $ python3.11 --version
+        Python 3.11.0
 
 === "Windows"
 
     Open PowerShell then run:
 
         PS C:\Users\username> py --version
-        Python 3.10.0
+        Python 3.11.0
 
 ### Installing Git
 
@@ -615,7 +615,7 @@ the settings_local.py file for local development. Move or copy it to the
 
     Verify that you have the following installed
 
-    -   Python 3.10
+    -   Python 3.11
     -   Node LTS
     -   Yarn
     -   Git
@@ -661,7 +661,7 @@ the settings_local.py file for local development. Move or copy it to the
 
     Verify that you have the following installed
 
-    -   Python 3.10
+    -   Python 3.11
     -   Node LTS
     -   Yarn
     -   Git

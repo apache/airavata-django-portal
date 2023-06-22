@@ -22,7 +22,7 @@ name: Build and Test
 on: [push]
 jobs:
   build-js:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js as specified in .nvmrc
@@ -69,12 +69,11 @@ jobs:
         shell: cmd
 
   build:
-    # ubuntu-22 doesn't support Python 3.6
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: build-js
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.9", "3.10", "3.11"]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
