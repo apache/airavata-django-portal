@@ -23,6 +23,6 @@ grpcio==1.51.1
 
 airavata-django-portal-sdk==1.8.3
 airavata-python-sdk==1.1.6
-airavata-django-portal-commons==1.0.2
+airavata-django-portal-commons==1.0.3
 
 -e "."
