@@ -7,7 +7,7 @@
       id="modal-new-project"
       ref="modalNewProject"
       title="Create New Project"
-      v-on:ok="onCreateProject"
+      v-on:ok="onOkClicked"
       v-bind:ok-disabled="okDisabled"
       @cancel="onCancelNewProject"
     >
@@ -40,9 +40,10 @@ export default {
     ProjectEditor,
   },
   methods: {
-    onCreateProject: function (event) {
-      // Prevent hiding modal, hide it programmatically when project gets created
-      event.preventDefault();
+    onCreateProject: function () {
+      if (!this.valid) {
+        return;
+      }
       services.ProjectService.create({ data: this.newProject }).then(
         (result) => {
           this.$refs.modalNewProject.hide();
@@ -52,6 +53,11 @@ export default {
           this.$refs.projectEditor.reset();
         }
       );
+    },
+    onOkClicked(event) {
+      // Prevent hiding modal, hide it programmatically when project gets created
+      event.preventDefault();
+      this.onCreateProject();
     },
     onCancelNewProject() {
       this.newProject = new models.Project();
