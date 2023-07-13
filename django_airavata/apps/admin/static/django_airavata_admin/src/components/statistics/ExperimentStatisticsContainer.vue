@@ -298,6 +298,59 @@
         </b-tab>
       </b-tabs>
     </b-card>
+    <b-card header="Compute Resource with Atleast one Job Submitted">
+      <div class="row">
+            <div class="col">
+              <b-card header="Filter Options">
+                <b-input-group class="w-100 mb-2">
+                  <b-input-group-prepend is-text>
+                    <i class="fa fa-calendar-week" aria-hidden="true"></i>
+                  </b-input-group-prepend>
+                  <flat-pickr
+                    :value="dateRangeForHost"
+                    :config="dateConfig"
+                    @on-change="dateRangeChangedForHost"
+                    class="form-control"
+                  />
+                  <b-input-group-append>
+                    <b-button
+                      @click="getPast24HoursForHost"
+                      variant="outline-secondary"
+                      >Past 24 Hours</b-button
+                    >
+                    <b-button @click="getPastWeekForHost" variant="outline-secondary"
+                      >Past Week</b-button
+                    >
+                  </b-input-group-append>
+                </b-input-group>
+                <template slot="footer">
+                  <div class="d-flex justify-content-end">
+                    <b-button
+                      @click="loadStatisticsForHost"
+                      class="ml-auto"
+                      variant="primary"
+                      >Get Statistics</b-button
+                    >
+                  </div>
+                </template>
+              </b-card>
+            </div>
+      </div>
+      <div class="row" v-if="itemsForHost.length > 0">
+        <div class="col">
+          <b-card>
+            <b-table :fields="fieldsForHost" :items="itemsForHost">
+              <template slot="cell(resourceHostId)" slot-scope="data">
+                <compute-resource-name :compute-resource-id="data.value" />
+              </template>
+              <template slot="cell(numberOfJobs)" slot-scope="data">
+              <span>{{data.item.numberOfJobs}}</span> 
+              </template>
+            </b-table>
+          </b-card>
+        </div>
+      </div>
+    </b-card>
   </div>
 </template>
 <script>
@@ -321,6 +374,10 @@ export default {
       fromTime: fromTime,
       toTime: toTime,
       dateRange: [fromTime, toTime],
+      fromTimeForHost: fromTime,
+      toTimeForHost: toTime,
+      dateRangeForHost: [fromTime, toTime],
+      itemsForHost: [],
       dateConfig: {
         mode: "range",
         wrap: true,
@@ -344,6 +401,7 @@ export default {
   },
   created() {
     this.loadStatistics();
+    this.loadStatisticsForHost();
     this.loadApplicationInterfaces();
     this.loadComputeResources();
     this.loadGroupResourceProfiles();
@@ -415,6 +473,18 @@ export default {
         {
           key: "actions",
           label: "Actions",
+        },
+      ];
+    },
+    fieldsForHost() {
+      return [
+        {
+          key: "resourceHostId",
+          label: "ResourceHostId",
+        },
+        {
+          key: "numberOfJobs",
+          label: "NumberOfJobs",
         },
       ];
     },
@@ -506,6 +576,12 @@ export default {
         this.loadStatistics();
       }
     },
+    dateRangeChangedForHost(selectedDates) {
+      [this.fromTimeForHost, this.toTimeForHost] = selectedDates;
+      if (this.fromTimeForHost && this.toTimeForHost) {
+        this.loadStatisticsForHost();
+      }
+    },
     loadApplicationInterfaces() {
       return services.ApplicationInterfaceService.list().then(
         (appInterfaces) => (this.appInterfaces = appInterfaces)
@@ -539,21 +615,59 @@ export default {
         }
       );
     },
+    loadStatisticsForHost() {
+      const requestData = {
+        fromTime: this.fromTimeForHost.toJSON(),
+        toTime: this.toTimeForHost.toJSON(),
+      };
+      return services.ExperimentStatisticsService.get(requestData).then(
+        (stats) => {
+          const results = stats ? stats.results : {};
+          const allExperiments = "allExperiments" in results ? results["allExperiments"] : [];
+          const allresourceHostIds = allExperiments.map(item => item.resourceHostId);
+          const cnt = new Map();
+          allresourceHostIds.forEach(resourceHostId => {
+            cnt.has(resourceHostId) ? cnt.set(resourceHostId, cnt.get(resourceHostId)+1) : cnt.set(resourceHostId, 1);
+          });
+          this.itemsForHost = [];
+          cnt.forEach((numberOfJobs, resourceHostId) => {
+            this.itemsForHost.push({"resourceHostId" : resourceHostId, "numberOfJobs" : numberOfJobs});
+          });
+        }
+      );
+    },
     getPast24Hours() {
       this.fromTime = new Date().fp_incr(0);
       //this.fromTime = new Date(this.fromTime.setHours(0,0,0));
       this.toTime = new Date().fp_incr(1);
       this.updateDateRange();
     },
+    getPast24HoursForHost() {
+      this.fromTimeForHost = new Date().fp_incr(0);
+      //this.fromTimeForHost = new Date(this.fromTimeForHost.setHours(0,0,0));
+      this.toTimeForHost = new Date().fp_incr(1);
+      this.updateDateRangeForHost();
+    },
     getPastWeek() {
       this.fromTime = new Date().fp_incr(-7);
       this.toTime = new Date().fp_incr(1);
       this.updateDateRange();
     },
+    getPastWeekForHost() {
+      this.fromTimeForHost = new Date().fp_incr(-7);
+      this.toTimeForHost = new Date().fp_incr(1);
+      this.updateDateRangeForHost();
+    },
     updateDateRange() {
       this.dateRange = [
         moment(this.fromTime).format("YYYY-MM-DD"),
         moment(this.toTime).format("YYYY-MM-DD"),
+      ];
+    },
+    updateDateRangeForHost() {
+      this.dateRangeForHost = [
+        moment(this.fromTimeForHost).format("YYYY-MM-DD"),
+        moment(this.toTimeForHost).format("YYYY-MM-DD"),
       ];
     },
     daysAgo(days) {
