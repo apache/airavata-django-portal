@@ -21,7 +21,7 @@ google-api-python-client==1.12.8
 grpcio-tools==1.51.1
 grpcio==1.51.1
 
-airavata-django-portal-sdk==1.8.3
+airavata-django-portal-sdk==1.8.4
 airavata-python-sdk==1.1.6
 airavata-django-portal-commons==1.0.3
 
