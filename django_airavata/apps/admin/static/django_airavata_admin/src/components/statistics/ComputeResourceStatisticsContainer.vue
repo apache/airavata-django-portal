@@ -103,11 +103,11 @@ export default {
                     const allresourceHostIds = allExperiments.map(item => item.resourceHostId);
                     const cnt = new Map();
                     allresourceHostIds.forEach(resourceHostId => {
-                        cnt.has(resourceHostId) ? cnt.set(resourceHostId, cnt.get(resourceHostId) + 1) : cnt.set(resourceHostId, 1);
+                        cnt.set(resourceHostId, cnt.has(resourceHostId) ? cnt.get(resourceHostId) + 1 : 1);
                     });
                     this.items = [];
                     cnt.forEach((numberOfJobs, resourceHostId) => {
-                        this.items.push({ "resourceHostId": resourceHostId, "numberOfJobs": numberOfJobs });
+                        this.items.push({ numberOfJobs, resourceHostId });
                     });
                 }
             );
