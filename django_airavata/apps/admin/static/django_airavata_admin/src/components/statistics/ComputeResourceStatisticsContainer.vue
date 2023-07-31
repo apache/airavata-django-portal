@@ -31,7 +31,7 @@
                             <compute-resource-name :compute-resource-id="data.value" />
                         </template>
                         <template slot="cell(numberOfJobs)" slot-scope="data">
-                            {{ data.item.numberOfJobs }}
+                            {{ data.value }}
                         </template>
                     </b-table>
                 </b-card>
