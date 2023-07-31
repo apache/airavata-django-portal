@@ -75,7 +75,7 @@ export default {
             return [
                 {
                     key: "resourceHostId",
-                    label: "ResourceHostId",
+                    label: "Resource",
                 },
                 {
                     key: "numberOfJobs",
