@@ -299,6 +299,7 @@
       </b-tabs>
     </b-card>
     <compute-resource-statistics-container />
+    <application-statistics-container />
   </div>
 </template>
 <script>
@@ -306,7 +307,8 @@ import { errors, models, services, utils } from "django-airavata-api";
 import { components, notifications } from "django-airavata-common-ui";
 import ExperimentStatisticsCard from "./ExperimentStatisticsCard";
 import ExperimentDetailsView from "./ExperimentDetailsView";
-import ComputeResourceStatisticsContainer from "./ComputeResourceStatisticsContainer"
+import ComputeResourceStatisticsContainer from "./ComputeResourceStatisticsContainer";
+import ApplicationStatisticsContainer from "./ApplicationStatisticsContainer.vue";
 
 import moment from "moment";
 
@@ -354,6 +356,7 @@ export default {
     ExperimentDetailsView,
     ExperimentStatisticsCard,
     ComputeResourceStatisticsContainer,
+    ApplicationStatisticsContainer,
     "application-name": components.ApplicationName,
     "compute-resource-name": components.ComputeResourceName,
     "human-date": components.HumanDate,
