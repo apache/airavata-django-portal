@@ -1,38 +1,58 @@
 <template>
-    <b-card header="Users who submitted at least a single job">
-        <div class="row">
-            <div class="col">
-                <b-card header="Filter Options">
-                    <b-input-group class="w-100 mb-2">
-                        <b-input-group-prepend is-text>
-                            <i class="fa fa-calendar-week" aria-hidden="true"></i>
-                        </b-input-group-prepend>
-                        <flat-pickr :value="dateRange" :config="dateConfig" @on-change="dateRangeChanged"
-                            class="form-control" />
-                        <b-input-group-append>
-                            <b-button @click="getPast24Hours" variant="outline-secondary">Past 24 Hours</b-button>
-                            <b-button @click="getPastWeek" variant="outline-secondary">Past Week</b-button>
-                        </b-input-group-append>
-                    </b-input-group>
-                    <template slot="footer">
-                        <div class="d-flex justify-content-end">
-                            <b-button @click="loadStatistics" class="ml-auto" variant="primary">Get
-                                Statistics</b-button>
-                        </div>
-                    </template>
-                </b-card>
+    <div>
+        <b-card header="Users who submitted at least a single job">
+            <div class="row">
+                <div class="col">
+                    <b-card header="Filter Options">
+                        <b-input-group class="w-100 mb-2">
+                            <b-input-group-prepend is-text>
+                                <i class="fa fa-calendar-week" aria-hidden="true"></i>
+                            </b-input-group-prepend>
+                            <flat-pickr :value="dateRange" :config="dateConfig" @on-change="dateRangeChanged"
+                                class="form-control" />
+                            <b-input-group-append>
+                                <b-button @click="getPast24Hours" variant="outline-secondary">Past 24 Hours</b-button>
+                                <b-button @click="getPastWeek" variant="outline-secondary">Past Week</b-button>
+                            </b-input-group-append>
+                        </b-input-group>
+                        <template slot="footer">
+                            <div class="d-flex justify-content-end">
+                                <b-button @click="loadStatistics" class="ml-auto" variant="primary">
+                                    Get Statistics
+                                </b-button>
+                            </div>
+                        </template>
+                    </b-card>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <b-card><b-card-text>Number of users: {{ countOfUsers }}</b-card-text>
-                    <b-link @click="downloadUserEmailCsv">
+            <div class="row">
+                <div class="col">
+                    <b-card>
+                        <b-card-text>
+                            Number of users who submitted at least a single job: {{ countOfUsersWithAtLeastSingleJob }}
+                        </b-card-text>
+                        <b-link @click="downloadUserWithAtLeastSingleJobEmailCsv">
+                            <i class="fas fa-download"></i>
+                            Download emails.csv
+                        </b-link>
+                    </b-card>
+                </div>
+            </div>
+        </b-card>
+        <b-card header="All Users">
+            <div class="row">
+                <div class="col">
+                    <b-card>
+                        <b-card-text>Total number of unique users: {{ countOfAllUsers }}</b-card-text>
+                    </b-card>
+                    <b-link @click="downloadAllUserEmailCsv">
                         <i class="fas fa-download"></i>
                         Download emails.csv
-                    </b-link></b-card>
+                    </b-link>
+                </div>
             </div>
-        </div>
-    </b-card>
+        </b-card>
+    </div>
 </template>
 
 <script>
@@ -48,9 +68,11 @@ export default {
             fromTime: fromTime,
             toTime: toTime,
             dateRange: [fromTime, toTime],
-            countOfUsers: 0,
-            userEmailList: [],
+            countOfUsersWithAtLeastSingleJob: null,
+            userWithAtLeastSingleJobEmailList: [],
             userProfiles: [],
+            countOfAllUsers: null,
+            allUserEmailList: [],
             dateConfig: {
                 mode: "range",
                 wrap: true,
@@ -72,6 +94,10 @@ export default {
         loadStatistics() {
             services.UserProfileService.list().then((userProfiles) => {
                 this.userProfiles = userProfiles;
+                this.countOfAllUsers = this.userProfiles.length;
+                this.userProfiles.forEach(({ email }) => {
+                    if (email) this.allUserEmailList.push(email);
+                });
             });
             const requestData = {
                 fromTime: this.fromTime.toJSON(),
@@ -81,20 +107,26 @@ export default {
                 (stats) => {
                     let results = stats ? stats.results : {};
                     const allExperiments = "allExperiments" in results ? results["allExperiments"] : [];
-                    const userSet = new Set();
+                    const userWithAtLeastSingleJobSet = new Set();
                     allExperiments.forEach(({ userName }) => {
                         const userEmail = this.userProfiles.find(({ userId }) => userId === userName)?.email;
-                        if (userEmail) userSet.add(userEmail);
+                        if (userEmail) userWithAtLeastSingleJobSet.add(userEmail);
                     });
 
-                    this.userEmailList = Array.from(userSet);
-                    this.countOfUsers = this.userEmailList.length;
+                    this.userWithAtleastSingleJobEmailList = Array.from(userWithAtLeastSingleJobSet);
+                    this.countOfUsersWithAtLeastSingleJob = this.userWithAtleastSingleJobEmailList.length;
                 }
             );
         },
-        downloadUserEmailCsv() {
+        downloadUserWithAtLeastSingleJobEmailCsv() {
+            this.downloadEmailCsv(this.userWithAtLeastSingleJobEmailList);
+        },
+        downloadAllUserEmailCsv() {
+            this.downloadEmailCsv(this.allUserEmailList);
+        },
+        downloadEmailCsv(emailList) {
             const csvContent = "data:text/csv;charset=utf-8,"
-                + this.userEmailList.join("\n");
+                + emailList.join("\n");
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
