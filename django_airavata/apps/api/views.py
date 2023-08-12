@@ -139,6 +139,31 @@ class GroupViewSet(APIBackedViewSet):
                 user=user_profile,
                 groups=[group],
                 request=self.request)
+     
+    @action(detail=False)
+    def groups_filtered_by_creation_date(self, request):
+        view = self
+        limit = -1
+        offset = 0
+        
+        if 'fromTime' in request.GET:
+            from_time = view_utils.convert_utc_iso8601_to_date(
+                request.GET['fromTime']).timestamp() * 1000
+        else:
+            from_time = (datetime.utcnow() -
+                        timedelta(days=7)).timestamp() * 1000
+        from_time = int(from_time)
+        if 'toTime' in request.GET:
+            to_time = view_utils.convert_utc_iso8601_to_date(
+                request.GET['toTime']).timestamp() * 1000
+        else:
+            to_time = datetime.utcnow().timestamp() * 1000
+        to_time = int(to_time)
+        group_manager = view.request.profile_service['group_manager']
+        groups = group_manager.getGroupsFilteredByCreationDate(view.authz_token, from_time, to_time)
+        end = offset + limit if limit > 0 else len(groups)
+        groups = groups[offset:end] if groups else []
+        return Response(groups)
 
 
 class ProjectViewSet(APIBackedViewSet):

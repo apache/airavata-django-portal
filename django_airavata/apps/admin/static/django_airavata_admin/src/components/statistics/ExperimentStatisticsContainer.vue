@@ -301,6 +301,7 @@
     <compute-resource-statistics-container />
     <application-statistics-container />
     <user-statistics-container />
+    <user-group-statistics-container />
   </div>
 </template>
 <script>
@@ -311,6 +312,7 @@ import ExperimentDetailsView from "./ExperimentDetailsView";
 import ComputeResourceStatisticsContainer from "./ComputeResourceStatisticsContainer";
 import ApplicationStatisticsContainer from "./ApplicationStatisticsContainer.vue";
 import UserStatisticsContainer from "./UserStatisticsContainer.vue";
+import UserGroupStatisticsContainer from "./UserGroupStatisticsContainer.vue";
 
 import moment from "moment";
 
@@ -360,6 +362,7 @@ export default {
     ComputeResourceStatisticsContainer,
     ApplicationStatisticsContainer,
     UserStatisticsContainer,
+    UserGroupStatisticsContainer,
     "application-name": components.ApplicationName,
     "compute-resource-name": components.ComputeResourceName,
     "human-date": components.HumanDate,

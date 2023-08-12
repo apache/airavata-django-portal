@@ -317,6 +317,20 @@ export default {
     pagination: true,
     queryParams: ["limit", "offset"],
     modelClass: Group,
+    methods: {
+      getGroupsFilteredByCreationDate: {
+        url: "/api/groups/groups_filtered_by_creation_date",
+        requestType: "get",
+        queryParams: [
+          "fromTime",
+          "toTime",
+          "limit",
+          "offset",
+        ],
+        pagination: true,
+        modelClass: Group
+      },
+    },
   },
   IAMUserProfiles: {
     url: "/api/iam-user-profiles",
