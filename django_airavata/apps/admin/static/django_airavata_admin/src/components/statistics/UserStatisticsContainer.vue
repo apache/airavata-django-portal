@@ -31,7 +31,7 @@
                         <b-card-text>
                             Number of users who submitted at least a single job: {{ countOfUsersWithAtLeastSingleJob }}
                         </b-card-text>
-                        <b-link @click="downloadUserWithAtLeastSingleJobEmailCsv">
+                        <b-link @click="downloadUsersWithAtLeastSingleJobEmailCsv">
                             <i class="fas fa-download"></i>
                             Download emails.csv
                         </b-link>
@@ -44,11 +44,11 @@
                 <div class="col">
                     <b-card>
                         <b-card-text>Total number of unique users: {{ countOfAllUsers }}</b-card-text>
+                        <b-link @click="downloadAllUserEmailCsv">
+                            <i class="fas fa-download"></i>
+                            Download emails.csv
+                        </b-link>
                     </b-card>
-                    <b-link @click="downloadAllUserEmailCsv">
-                        <i class="fas fa-download"></i>
-                        Download emails.csv
-                    </b-link>
                 </div>
             </div>
         </b-card>
@@ -82,6 +82,7 @@ export default {
         };
     },
     created() {
+        this.loadAllUserProfiles();
         this.loadStatistics();
     },
     methods: {
@@ -91,7 +92,7 @@ export default {
                 this.loadStatistics();
             }
         },
-        loadStatistics() {
+        loadAllUserProfiles() {
             services.UserProfileService.list().then((userProfiles) => {
                 this.userProfiles = userProfiles;
                 this.countOfAllUsers = this.userProfiles.length;
@@ -99,6 +100,8 @@ export default {
                     if (email) this.allUserEmailList.push(email);
                 });
             });
+        },
+        loadStatistics() {            
             const requestData = {
                 fromTime: this.fromTime.toJSON(),
                 toTime: this.toTime.toJSON(),
@@ -118,7 +121,7 @@ export default {
                 }
             );
         },
-        downloadUserWithAtLeastSingleJobEmailCsv() {
+        downloadUsersWithAtLeastSingleJobEmailCsv() {
             this.downloadEmailCsv(this.userWithAtLeastSingleJobEmailList);
         },
         downloadAllUserEmailCsv() {
