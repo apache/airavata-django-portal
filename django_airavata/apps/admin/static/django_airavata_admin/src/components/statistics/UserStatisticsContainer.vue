@@ -52,13 +52,46 @@
                 </div>
             </div>
         </b-card>
+        <b-card header="User Registration Trends">
+            <div class="row">
+                <div class="col-md-5">
+                    <b-card header="Monthwise User Registration Trend">
+                        <PieChart :chart-data="userGroupedByCreationMonth" />
+                    </b-card>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-5">
+                    <b-card header="Yearwise User Registration Trend">
+                        <b-card-text>Only years with atleast 1 registration are shown</b-card-text>
+                        <BarChart :chart-data="userGroupedByCreaionYear" />
+                    </b-card>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <b-card header="Organizationwise User Registration Trend">
+                        <b-card-text>Only organizations with atleast 1 registration are shown</b-card-text>
+                        <PieChart :chart-data="userGroupedByHomeOrg" />
+                    </b-card>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-5">
+                    <b-card header="Countrywise User Registration Trend">
+                        <b-card-text>Only countries with atleast 1 registration are shown</b-card-text>
+                        <BarChart :chart-data="userGroupedByCountry" />
+                    </b-card>
+                </div>
+            </div>
+        </b-card>
     </div>
 </template>
 
 <script>
 import { services } from "django-airavata-api";
+import { components } from "django-airavata-common-ui";
 
 import moment from "moment";
+
 export default {
     name: 'user-statistics-container',
     data() {
@@ -81,6 +114,73 @@ export default {
             },
         };
     },
+    components: {
+        PieChart: components.PieChart,
+        BarChart: components.BarChart,
+    },
+    computed: {
+        userGroupedByCreationMonth() {
+            let countOfUserCreatedEachMonth = new Array(12).fill(0);
+            if (this.userProfiles) {
+                this.userProfiles.forEach(({ creationTime }) => {
+                    const idx = (new Date(creationTime)).getMonth();
+                    if (idx) countOfUserCreatedEachMonth[idx]++;
+                });
+            }
+            return {
+                labels: this.getMonthNameList(),
+                datasets: [
+                    {
+                        data: countOfUserCreatedEachMonth,
+                        backgroundColor: this.getBackgroundColorListForMonths(),
+                    }
+                ],
+            };
+        },
+        userGroupedByCreaionYear() {
+            let userCountMap = new Map();
+            if (this.userProfiles) {
+                this.userProfiles.forEach(({ creationTime }) => {
+                    const year = (new Date(creationTime)).getFullYear();
+                    if (year) {
+                        userCountMap.set(year, 1 +
+                            (userCountMap.has(year) ? userCountMap.get(year) : 0));
+                    }
+                });
+            }
+            const keys = Array.from(userCountMap.keys()).sort();
+            const values = keys.map((key) => userCountMap.get(key))
+            return this.mapToData(keys, values);
+        },
+        userGroupedByCountry() {
+            let userCountMap = new Map();
+            if (this.userProfiles) {
+                this.userProfiles.forEach(({ country }) => {
+                    if (country) {
+                        userCountMap.set(country, 1 +
+                            (userCountMap.has(country) ? userCountMap.get(country) : 0));
+                    }
+                });
+            }
+            const keys = Array.from(userCountMap.keys());
+            const values = keys.map((key) => userCountMap.get(key))
+            return this.mapToData(keys, values);
+        },
+        userGroupedByHomeOrg() {
+            let userCountMap = new Map();
+            if (this.userProfiles) {
+                this.userProfiles.forEach(({ homeOrganization }) => {
+                    if (homeOrganization) {
+                        userCountMap.set(homeOrganization, 1 +
+                            (userCountMap.has(homeOrganization) ? userCountMap.get(homeOrganization) : 0));
+                    }
+                });
+            }
+            const keys = Array.from(userCountMap.keys());
+            const values = keys.map((key) => userCountMap.get(key))
+            return this.mapToData(keys, values);
+        },
+    },
     created() {
         this.loadAllUserProfiles();
         this.loadStatistics();
@@ -101,7 +201,7 @@ export default {
                 });
             });
         },
-        loadStatistics() {            
+        loadStatistics() {
             const requestData = {
                 fromTime: this.fromTime.toJSON(),
                 toTime: this.toTime.toJSON(),
@@ -153,6 +253,27 @@ export default {
                 moment(this.fromTime).format("YYYY-MM-DD"),
                 moment(this.toTime).format("YYYY-MM-DD"),
             ];
+        },
+        getMonthNameList() {
+            return ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
+        },
+        getBackgroundColorListForMonths() {
+            return ['#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#4B0082',
+                '#EE82EE', '#FFC0CB', '#800000', '#808080', '#FFFFFF', '#000000'];
+        },
+        mapToData(keys, values) {
+            return {
+                labels: keys,
+                datasets: [
+                    {
+                        label: 'No. of Users',
+                        data: values,
+                        backgroundColor: '#FFC0CB'
+                    }
+                ]
+            };
         },
     }
 };

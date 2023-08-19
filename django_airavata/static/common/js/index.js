@@ -1,6 +1,7 @@
 import ApplicationCard from "./components/ApplicationCard.vue";
 import ApplicationName from "./components/ApplicationName";
 import AutocompleteTextInput from "./components/AutocompleteTextInput.vue";
+import BarChart from "./components/BarChart.vue";
 import ClipboardCopyButton from "./components/ClipboardCopyButton.vue";
 import ClipboardCopyLink from "./components/ClipboardCopyLink.vue";
 import ComputeResourceName from "./components/ComputeResourceName";
@@ -14,8 +15,10 @@ import FavoriteToggle from "./components/FavoriteToggle";
 import GatewayGroupsBadge from "./components/GatewayGroupsBadge";
 import HumanDate from "./components/HumanDate.vue";
 import Linkify from "./components/Linkify.vue";
+import LineChart from "./components/LineChart.vue";
 import MainLayout from "./components/MainLayout.vue";
 import Pager from "./components/Pager.vue";
+import PieChart from "./components/PieChart.vue";
 import ShareButton from "./components/ShareButton.vue";
 import Sidebar from "./components/Sidebar.vue";
 import SidebarFeed from "./components/SidebarFeed.vue";
@@ -46,6 +49,7 @@ const components = {
   ApplicationCard,
   ApplicationName,
   AutocompleteTextInput,
+  BarChart,
   ClipboardCopyButton,
   ClipboardCopyLink,
   ComputeResourceName,
@@ -59,7 +63,9 @@ const components = {
   GatewayGroupsBadge,
   HumanDate,
   Linkify,
+  LineChart,
   MainLayout,
+  PieChart,
   ShareButton,
   Sidebar,
   SidebarFeed,
