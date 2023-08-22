@@ -118,6 +118,7 @@ const services = {
   ApplicationModuleService: ServiceFactory.service("ApplicationModules"),
   CloudJobSubmissionService,
   ComputeResourceService: ServiceFactory.service("ComputeResources"),
+  CpuUsageService: ServiceFactory.service("CpuUsages"),
   CredentialSummaryService: ServiceFactory.service("CredentialSummaries"),
   DataProductService: ServiceFactory.service("DataProducts"),
   ExperimentArchiveService: ServiceFactory.service("ExperimentArchive"),

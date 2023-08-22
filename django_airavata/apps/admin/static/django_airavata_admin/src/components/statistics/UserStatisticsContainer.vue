@@ -83,6 +83,11 @@
                 </div>
             </div>
         </b-card>
+        <b-card header="CPU hours used by user within the selected period">
+            <div class="w-50">
+                <BarChart :chart-data="cpuHoursConsumedByUser" />
+            </div>
+        </b-card>
     </div>
 </template>
 
@@ -106,6 +111,7 @@ export default {
             userProfiles: [],
             countOfAllUsers: null,
             allUserEmailList: [],
+            cpuUsages: null,
             dateConfig: {
                 mode: "range",
                 wrap: true,
@@ -150,7 +156,7 @@ export default {
             }
             const keys = Array.from(userCountMap.keys()).sort();
             const values = keys.map((key) => userCountMap.get(key))
-            return this.mapToData(keys, values);
+            return this.mapToBarChartData(keys, values);
         },
         userGroupedByCountry() {
             let userCountMap = new Map();
@@ -164,7 +170,7 @@ export default {
             }
             const keys = Array.from(userCountMap.keys());
             const values = keys.map((key) => userCountMap.get(key))
-            return this.mapToData(keys, values);
+            return this.mapToBarChartData(keys, values);
         },
         userGroupedByHomeOrg() {
             let userCountMap = new Map();
@@ -178,11 +184,40 @@ export default {
             }
             const keys = Array.from(userCountMap.keys());
             const values = keys.map((key) => userCountMap.get(key))
-            return this.mapToData(keys, values);
+            return this.mapToBarChartData(keys, values);
+        },
+        cpuHoursConsumedByUser() {
+            let cpuUsageMap = new Map();
+            if(this.userProfiles) this.userProfiles.forEach(({userId}) => cpuUsageMap.set(userId, 0));
+            if(this.cpuUsages){
+                this.cpuUsages.forEach(({userName, cpuHours}) => {
+                    cpuUsageMap.set(userName, cpuHours + (cpuUsageMap.has(userName) ? cpuUsageMap.get(userName) : 0));
+                });
+            }
+
+            let cpuUsageSortedList = Array.from(cpuUsageMap.keys()).map((userId) => {
+                return {
+                    userId,
+                    cpuHours: cpuUsageMap.get(userId),
+                };
+            }).sort((a, b) => b.cpuHours - a.cpuHours);
+
+            if(cpuUsageSortedList.length > 11){
+                const firstTenUsers = cpuUsageSortedList.slice(0, 10);
+                const remainingUsers = cpuUsageSortedList.slice(10, cpuUsageSortedList.length);
+                const average = arr => arr.reduce( ( p, c ) => p + c, 0 ) / arr.length;
+                const remainingAvgUsage = Math.floor(average(remainingUsers.map(({cpuHours}) => cpuHours)));
+                cpuUsageSortedList = [...firstTenUsers, {userId: "Avg of other " + remainingUsers.length + " users", cpuHours: remainingAvgUsage}]
+            }
+            
+            const keys = cpuUsageSortedList.map(({userId}) => userId);
+            const values = cpuUsageSortedList.map(({cpuHours}) => cpuHours);
+            return this.mapToBarChartData(keys, values);
         },
     },
     created() {
         this.loadAllUserProfiles();
+        this.loadCpuUsages();
         this.loadStatistics();
     },
     methods: {
@@ -218,6 +253,17 @@ export default {
 
                     this.userWithAtleastSingleJobEmailList = Array.from(userWithAtLeastSingleJobSet);
                     this.countOfUsersWithAtLeastSingleJob = this.userWithAtleastSingleJobEmailList.length;
+                }
+            );
+        },
+        loadCpuUsages() {
+            const requestData = {
+                fromTime: this.fromTime.toJSON(),
+                toTime: this.toTime.toJSON(),
+            };
+            services.CpuUsageService.getCpuUsages(requestData).then(
+                (cpuUsages) => {
+                    this.cpuUsages = cpuUsages;
                 }
             );
         },
@@ -263,7 +309,7 @@ export default {
             return ['#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#4B0082',
                 '#EE82EE', '#FFC0CB', '#800000', '#808080', '#FFFFFF', '#000000'];
         },
-        mapToData(keys, values) {
+        mapToBarChartData(keys, values) {
             return {
                 labels: keys,
                 datasets: [
