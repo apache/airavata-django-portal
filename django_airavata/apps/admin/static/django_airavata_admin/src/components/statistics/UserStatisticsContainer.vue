@@ -3,30 +3,6 @@
         <b-card header="Users who submitted at least a single job">
             <div class="row">
                 <div class="col">
-                    <b-card header="Filter Options">
-                        <b-input-group class="w-100 mb-2">
-                            <b-input-group-prepend is-text>
-                                <i class="fa fa-calendar-week" aria-hidden="true"></i>
-                            </b-input-group-prepend>
-                            <flat-pickr :value="dateRange" :config="dateConfig" @on-change="dateRangeChanged"
-                                class="form-control" />
-                            <b-input-group-append>
-                                <b-button @click="getPast24Hours" variant="outline-secondary">Past 24 Hours</b-button>
-                                <b-button @click="getPastWeek" variant="outline-secondary">Past Week</b-button>
-                            </b-input-group-append>
-                        </b-input-group>
-                        <template slot="footer">
-                            <div class="d-flex justify-content-end">
-                                <b-button @click="loadStatistics" class="ml-auto" variant="primary">
-                                    Get Statistics
-                                </b-button>
-                            </div>
-                        </template>
-                    </b-card>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
                     <b-card>
                         <b-card-text>
                             Number of users who submitted at least a single job: {{ countOfUsersWithAtLeastSingleJob }}
@@ -95,29 +71,26 @@
 import { services } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
 
-import moment from "moment";
-
 export default {
     name: 'user-statistics-container',
+    props: {
+        fromTime: {
+            type: Date,
+            required: true,
+        },
+        toTime: {
+            type: Date,
+            required: true,
+        }
+    },
     data() {
-        const fromTime = new Date().fp_incr(0);
-        const toTime = new Date().fp_incr(1);
         return {
-            fromTime: fromTime,
-            toTime: toTime,
-            dateRange: [fromTime, toTime],
             countOfUsersWithAtLeastSingleJob: null,
             userWithAtLeastSingleJobEmailList: [],
             userProfiles: [],
             countOfAllUsers: null,
             allUserEmailList: [],
             cpuUsages: null,
-            dateConfig: {
-                mode: "range",
-                wrap: true,
-                dateFormat: "Y-m-d",
-                maxDate: new Date().fp_incr(1),
-            },
         };
     },
     components: {
@@ -188,9 +161,9 @@ export default {
         },
         cpuHoursConsumedByUser() {
             let cpuUsageMap = new Map();
-            if(this.userProfiles) this.userProfiles.forEach(({userId}) => cpuUsageMap.set(userId, 0));
-            if(this.cpuUsages){
-                this.cpuUsages.forEach(({userName, cpuHours}) => {
+            if (this.userProfiles) this.userProfiles.forEach(({ userId }) => cpuUsageMap.set(userId, 0));
+            if (this.cpuUsages) {
+                this.cpuUsages.forEach(({ userName, cpuHours }) => {
                     cpuUsageMap.set(userName, cpuHours + (cpuUsageMap.has(userName) ? cpuUsageMap.get(userName) : 0));
                 });
             }
@@ -202,18 +175,26 @@ export default {
                 };
             }).sort((a, b) => b.cpuHours - a.cpuHours);
 
-            if(cpuUsageSortedList.length > 11){
+            if (cpuUsageSortedList.length > 11) {
                 const firstTenUsers = cpuUsageSortedList.slice(0, 10);
                 const remainingUsers = cpuUsageSortedList.slice(10, cpuUsageSortedList.length);
-                const average = arr => arr.reduce( ( p, c ) => p + c, 0 ) / arr.length;
-                const remainingAvgUsage = Math.floor(average(remainingUsers.map(({cpuHours}) => cpuHours)));
-                cpuUsageSortedList = [...firstTenUsers, {userId: "Avg of other " + remainingUsers.length + " users", cpuHours: remainingAvgUsage}]
+                const average = arr => arr.reduce((p, c) => p + c, 0) / arr.length;
+                const remainingAvgUsage = Math.floor(average(remainingUsers.map(({ cpuHours }) => cpuHours)));
+                cpuUsageSortedList = [...firstTenUsers, { userId: "Avg of other " + remainingUsers.length + " users", cpuHours: remainingAvgUsage }]
             }
-            
-            const keys = cpuUsageSortedList.map(({userId}) => userId);
-            const values = cpuUsageSortedList.map(({cpuHours}) => cpuHours);
+
+            const keys = cpuUsageSortedList.map(({ userId }) => userId);
+            const values = cpuUsageSortedList.map(({ cpuHours }) => cpuHours);
             return this.mapToBarChartData(keys, values);
         },
+    },
+    watch: {
+        fromTime() {
+            this.reloadAfterPropsChange();
+        },
+        toTime() {
+            this.reloadAfterPropsChange();
+        }
     },
     created() {
         this.loadAllUserProfiles();
@@ -221,11 +202,11 @@ export default {
         this.loadStatistics();
     },
     methods: {
-        dateRangeChanged(selectedDates) {
-            [this.fromTime, this.toTime] = selectedDates;
-            if (this.fromTime && this.toTime) {
+        reloadAfterPropsChange() {
+            if(this.fromTime && this.toTime){
+                this.loadCpuUsages();
                 this.loadStatistics();
-            }
+            } 
         },
         loadAllUserProfiles() {
             services.UserProfileService.list().then((userProfiles) => {
@@ -283,22 +264,6 @@ export default {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        },
-        getPast24Hours() {
-            this.fromTime = new Date().fp_incr(0);
-            this.toTime = new Date().fp_incr(1);
-            this.updateDateRange();
-        },
-        getPastWeek() {
-            this.fromTime = new Date().fp_incr(-7);
-            this.toTime = new Date().fp_incr(1);
-            this.updateDateRange();
-        },
-        updateDateRange() {
-            this.dateRange = [
-                moment(this.fromTime).format("YYYY-MM-DD"),
-                moment(this.toTime).format("YYYY-MM-DD"),
-            ];
         },
         getMonthNameList() {
             return ["Jan", "Feb", "Mar", "Apr", "May", "Jun",

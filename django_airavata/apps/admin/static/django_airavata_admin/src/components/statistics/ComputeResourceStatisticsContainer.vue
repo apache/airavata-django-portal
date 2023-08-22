@@ -1,28 +1,5 @@
 <template>
     <b-card header="Compute Resource with Atleast one Job Submitted">
-        <div class="row">
-            <div class="col">
-                <b-card header="Filter Options">
-                    <b-input-group class="w-100 mb-2">
-                        <b-input-group-prepend is-text>
-                            <i class="fa fa-calendar-week" aria-hidden="true"></i>
-                        </b-input-group-prepend>
-                        <flat-pickr :value="dateRange" :config="dateConfig" @on-change="dateRangeChanged"
-                            class="form-control" />
-                        <b-input-group-append>
-                            <b-button @click="getPast24Hours" variant="outline-secondary">Past 24 Hours</b-button>
-                            <b-button @click="getPastWeek" variant="outline-secondary">Past Week</b-button>
-                        </b-input-group-append>
-                    </b-input-group>
-                    <template slot="footer">
-                        <div class="d-flex justify-content-end">
-                            <b-button @click="loadStatistics" class="ml-auto" variant="primary">Get
-                                Statistics</b-button>
-                        </div>
-                    </template>
-                </b-card>
-            </div>
-        </div>
         <div class="row" v-if="items.length > 0">
             <div class="col">
                 <b-card>
@@ -44,17 +21,28 @@
 import { services } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
 
-import moment from "moment";
-
 export default {
     name: 'compute-resource-statistics-container',
+    props: {
+        fromTime: {
+            type: Date,
+            required: true,
+        },
+        toTime: {
+            type: Date,
+            required: true,
+        }
+    },
+    watch: {
+        fromTime() {
+            this.reloadAfterPropsChange();
+        },
+        toTime() {
+            this.reloadAfterPropsChange();
+        }
+    },
     data() {
-        const fromTime = new Date().fp_incr(0);
-        const toTime = new Date().fp_incr(1);
         return {
-            fromTime: fromTime,
-            toTime: toTime,
-            dateRange: [fromTime, toTime],
             items: [],
             dateConfig: {
                 mode: "range",
@@ -85,9 +73,8 @@ export default {
         }
     },
     methods: {
-        dateRangeChanged(selectedDates) {
-            [this.fromTime, this.toTime] = selectedDates;
-            if (this.fromTime && this.toTime) {
+        reloadAfterPropsChange() {
+            if(this.fromTime && this.toTime) {
                 this.loadStatistics();
             }
         },
@@ -111,23 +98,6 @@ export default {
                     });
                 }
             );
-        },
-        getPast24Hours() {
-            this.fromTime = new Date().fp_incr(0);
-            //this.fromTime = new Date(this.fromTime.setHours(0,0,0));
-            this.toTime = new Date().fp_incr(1);
-            this.updateDateRange();
-        },
-        getPastWeek() {
-            this.fromTime = new Date().fp_incr(-7);
-            this.toTime = new Date().fp_incr(1);
-            this.updateDateRange();
-        },
-        updateDateRange() {
-            this.dateRange = [
-                moment(this.fromTime).format("YYYY-MM-DD"),
-                moment(this.toTime).format("YYYY-MM-DD"),
-            ];
         },
     }
 };
