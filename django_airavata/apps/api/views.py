@@ -1760,7 +1760,7 @@ class CpuUsageView(APIView):
     # TODO: restrict to only Admins or Read Only Admins group members
     serializer_class = serializers.CpuUsageSerializer
 
-    def getCpuUsages(self, request, format=None):
+    def get(self, request, format=None):
         if 'fromTime' in request.GET:
             from_time = view_utils.convert_utc_iso8601_to_date(
                 request.GET['fromTime']).timestamp() * 1000

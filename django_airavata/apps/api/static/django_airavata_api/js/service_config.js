@@ -132,7 +132,7 @@ export default {
   CpuUsages: {
     url: "/api/cpu-usages",
     methods: {
-      getCpuUsages: {
+      get: {
         url: "/api/cpu-usages",
         requestType: "get",
         queryParams: [

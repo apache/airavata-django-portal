@@ -242,7 +242,7 @@ export default {
                 fromTime: this.fromTime.toJSON(),
                 toTime: this.toTime.toJSON(),
             };
-            services.CpuUsageService.getCpuUsages(requestData).then(
+            services.CpuUsageService.get(requestData).then(
                 (cpuUsages) => {
                     this.cpuUsages = cpuUsages;
                 }
