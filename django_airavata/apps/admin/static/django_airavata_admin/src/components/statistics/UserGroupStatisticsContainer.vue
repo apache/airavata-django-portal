@@ -1,5 +1,5 @@
 <template>
-    <b-card header="User groups created within a given period">
+    <b-card header="User groups created within selected period">
         <div class="row" v-if="items.length > 0">
             <div class="col">
                 <b-card>

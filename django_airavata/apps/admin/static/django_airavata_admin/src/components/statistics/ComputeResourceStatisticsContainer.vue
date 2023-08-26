@@ -1,5 +1,5 @@
 <template>
-    <b-card header="Compute Resource with Atleast one Job Submitted">
+    <b-card header="Compute Resource with Atleast one Job Submitted within the selected period">
         <div class="row" v-if="items.length > 0">
             <div class="col">
                 <b-card>

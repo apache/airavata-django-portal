@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-card header="Experiments count grouped by applications">
+        <b-card header="Experiments count grouped by applications within the selected period">
             <div class="row" v-if="items.length > 0">
                 <div class="col">
                     <b-card>
@@ -66,7 +66,7 @@ export default {
         BarChart: components.BarChart,
     },
     created() {
-        this.loadappInterfaces();
+        this.loadAppInterfaces();
         this.loadCpuUsages();
         this.loadStatistics();
     },
@@ -129,7 +129,7 @@ export default {
             let appInterfaceNameMap = new Map();
             if (this.appInterfaces)
                 this.appInterfaces.forEach(({applicationInterfaceId, applicationName}) => appInterfaceNameMap.set(applicationInterfaceId, applicationName));
-            const keys = cpuUsageSortedList.map(({applicationInterfaceId}) => appInterfaceNameMap.get(applicationInterfaceId));
+            const keys = cpuUsageSortedList.map(({applicationInterfaceId}) => appInterfaceNameMap.get(applicationInterfaceId) ? appInterfaceNameMap.get(applicationInterfaceId) : applicationInterfaceId);
             const values = cpuUsageSortedList.map(({cpuHours}) => cpuHours);
             return this.mapToBarChartData(keys, values);
         },
@@ -149,7 +149,7 @@ export default {
                 this.loadStatistics();
             }
         },
-        loadappInterfaces() {
+        loadAppInterfaces() {
             services.ApplicationInterfaceService.list().then(
                 (appInterfaces) => {
                     this.appInterfaces = appInterfaces;
@@ -157,8 +157,6 @@ export default {
             );
         },
         loadStatistics() {
-            let appInterfaceList = this.appInterfaces ? this.appInterfaces : [];
-            
             const requestData = {
                 fromTime: this.fromTime.toJSON(),
                 toTime: this.toTime.toJSON(),
@@ -172,7 +170,7 @@ export default {
                     const failedExperiments = "failedExperiments" in results ? results["failedExperiments"] : [];
                     const cancelledExperiments = "cancelledExperiments" in results ? results["cancelledExperiments"] : [];
                     const createdExperiments = "createdExperiments" in results ? results["createdExperiments"] : [];
-                    this.items = appInterfaceList.map(({ applicationInterfaceId, applicationName }) => {
+                    this.items = this.appInterfaces ? this.appInterfaces.map(({ applicationInterfaceId, applicationName }) => {
                         return {
                             applicationName,
                             allExperimentCount: allExperiments.filter(({ executionId }) => executionId === applicationInterfaceId).length,
@@ -182,7 +180,7 @@ export default {
                             cancelledExperimentCount: cancelledExperiments.filter(({ executionId }) => executionId === applicationInterfaceId).length,
                             createdExperimentCount: createdExperiments.filter(({ executionId }) => executionId === applicationInterfaceId).length,
                         }
-                    });
+                    }) : [];
 
                 }
             );
@@ -203,7 +201,7 @@ export default {
                 labels: keys,
                 datasets: [
                     {
-                        label: 'No. of Applications',
+                        label: 'CPU Hours',
                         data: values,
                         backgroundColor: '#FFC0CB'
                     }

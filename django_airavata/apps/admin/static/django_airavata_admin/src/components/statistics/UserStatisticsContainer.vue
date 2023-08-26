@@ -1,11 +1,11 @@
 <template>
     <div>
-        <b-card header="Users who submitted at least a single job">
+        <b-card header="Users who submitted at least a single job within the selected period">
             <div class="row">
                 <div class="col">
                     <b-card>
                         <b-card-text>
-                            Number of users who submitted at least a single job: {{ countOfUsersWithAtLeastSingleJob }}
+                            Number of users who submitted at least a single job within the selected period: {{ countOfUsersWithAtLeastSingleJob }}
                         </b-card-text>
                         <b-link @click="downloadUsersWithAtLeastSingleJobEmailCsv">
                             <i class="fas fa-download"></i>
@@ -47,7 +47,7 @@
                 <div class="col-md-5">
                     <b-card header="Organizationwise User Registration Trend">
                         <b-card-text>Only organizations with atleast 1 registration are shown</b-card-text>
-                        <PieChart :chart-data="userGroupedByHomeOrg" />
+                        <BarChart :chart-data="userGroupedByHomeOrg" />
                     </b-card>
                 </div>
                 <div class="col-md-2"></div>
@@ -129,7 +129,7 @@ export default {
             }
             const keys = Array.from(userCountMap.keys()).sort();
             const values = keys.map((key) => userCountMap.get(key))
-            return this.mapToBarChartData(keys, values);
+            return this.mapToBarChartData(keys, values, 'No. of Users');
         },
         userGroupedByCountry() {
             let userCountMap = new Map();
@@ -143,7 +143,7 @@ export default {
             }
             const keys = Array.from(userCountMap.keys());
             const values = keys.map((key) => userCountMap.get(key))
-            return this.mapToBarChartData(keys, values);
+            return this.mapToBarChartData(keys, values, 'No. of Users');
         },
         userGroupedByHomeOrg() {
             let userCountMap = new Map();
@@ -157,7 +157,7 @@ export default {
             }
             const keys = Array.from(userCountMap.keys());
             const values = keys.map((key) => userCountMap.get(key))
-            return this.mapToBarChartData(keys, values);
+            return this.mapToBarChartData(keys, values, 'No. of Users');
         },
         cpuHoursConsumedByUser() {
             let cpuUsageMap = new Map();
@@ -185,7 +185,7 @@ export default {
 
             const keys = cpuUsageSortedList.map(({ userId }) => userId);
             const values = cpuUsageSortedList.map(({ cpuHours }) => cpuHours);
-            return this.mapToBarChartData(keys, values);
+            return this.mapToBarChartData(keys, values, "CPU hours");
         },
     },
     watch: {
@@ -274,12 +274,12 @@ export default {
             return ['#FF0000', '#FFA500', '#FFFF00', '#008000', '#0000FF', '#4B0082',
                 '#EE82EE', '#FFC0CB', '#800000', '#808080', '#FFFFFF', '#000000'];
         },
-        mapToBarChartData(keys, values) {
+        mapToBarChartData(keys, values, label) {
             return {
                 labels: keys,
                 datasets: [
                     {
-                        label: 'No. of Users',
+                        label,
                         data: values,
                         backgroundColor: '#FFC0CB'
                     }
