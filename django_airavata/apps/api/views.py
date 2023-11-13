@@ -1759,6 +1759,7 @@ class ExperimentStatisticsView(APIView):
 class CpuUsageView(APIView):
     # TODO: restrict to only Admins or Read Only Admins group members
     serializer_class = serializers.CpuUsageSerializer
+    permission_classes = (IsAuthenticated, IsInAdminsGroupPermission,)
 
     def get(self, request, format=None):
         if 'fromTime' in request.GET:
