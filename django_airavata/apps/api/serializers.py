@@ -44,6 +44,7 @@ from airavata.model.data.replica.ttypes import (
     DataReplicaLocationModel
 )
 from airavata.model.experiment.ttypes import (
+    CpuUsage,
     ExperimentModel,
     ExperimentStatistics,
     ExperimentSummaryModel
@@ -1201,6 +1202,9 @@ class ExperimentStatisticsSerializer(
     cancelledExperiments = BaseExperimentSummarySerializer(many=True)
     createdExperiments = BaseExperimentSummarySerializer(many=True)
     runningExperiments = BaseExperimentSummarySerializer(many=True)
+
+class CpuUsageSerializer(thrift_utils.create_serializer_class(CpuUsage)):
+    pass
 
 
 class UnverifiedEmailUserProfile(serializers.Serializer):

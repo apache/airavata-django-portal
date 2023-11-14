@@ -139,6 +139,31 @@ class GroupViewSet(APIBackedViewSet):
                 user=user_profile,
                 groups=[group],
                 request=self.request)
+     
+    @action(detail=False)
+    def groups_filtered_by_creation_date(self, request):
+        view = self
+        
+        if 'fromTime' in request.GET:
+            from_time = view_utils.convert_utc_iso8601_to_date(
+                request.GET['fromTime']).timestamp() * 1000
+        else:
+            from_time = (datetime.utcnow() -
+                        timedelta(days=7)).timestamp() * 1000
+        from_time = int(from_time)
+        if 'toTime' in request.GET:
+            to_time = view_utils.convert_utc_iso8601_to_date(
+                request.GET['toTime']).timestamp() * 1000
+        else:
+            to_time = datetime.utcnow().timestamp() * 1000
+        to_time = int(to_time)
+        limit = int(request.GET.get('limit', '-1'))
+        offset = int(request.GET.get('offset', '0'))
+        group_manager = view.request.profile_service['group_manager']
+        groups = group_manager.getGroupsFilteredByCreationDate(view.authz_token, from_time, to_time)
+        end = offset + limit if limit > 0 else len(groups)
+        groups = groups[offset:end] if groups else []
+        return Response(groups)
 
 
 class ProjectViewSet(APIBackedViewSet):
@@ -1730,6 +1755,32 @@ class ExperimentStatisticsView(APIView):
         response.data['limit'] = limit
         response.data['offset'] = offset
         return response
+
+class CpuUsageView(APIView):
+    serializer_class = serializers.CpuUsageSerializer
+    permission_classes = (IsAuthenticated, IsInAdminsGroupPermission,)
+
+    def get(self, request, format=None):
+        if 'fromTime' in request.GET:
+            from_time = view_utils.convert_utc_iso8601_to_date(
+                request.GET['fromTime']).timestamp() * 1000
+        else:
+            from_time = (datetime.utcnow() -
+                         timedelta(days=7)).timestamp() * 1000
+        from_time = int(from_time)
+        if 'toTime' in request.GET:
+            to_time = view_utils.convert_utc_iso8601_to_date(
+                request.GET['toTime']).timestamp() * 1000
+        else:
+            to_time = datetime.utcnow().timestamp() * 1000
+        to_time = int(to_time)
+        limit = int(request.GET.get('limit', '-1'))
+        offset = int(request.GET.get('offset', '0'))
+        cpu_usages = request.airavata_client.getCpuUsages(
+            request.authz_token, settings.GATEWAY_ID, from_time, to_time)
+        end = offset + limit if limit > 0 else len(cpu_usages)
+        cpu_usages = cpu_usages[offset:end] if cpu_usages else []
+        return Response(cpu_usages)
 
 
 class UnverifiedEmailUserViewSet(mixins.ListModelMixin,

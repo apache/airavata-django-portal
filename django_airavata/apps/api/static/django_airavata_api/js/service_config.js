@@ -3,6 +3,7 @@ import ApplicationInterfaceDefinition from "./models/ApplicationInterfaceDefinit
 import ApplicationModule from "./models/ApplicationModule";
 import BatchQueue from "./models/BatchQueue";
 import ComputeResourceDescription from "./models/ComputeResourceDescription";
+import CpuUsage from "./models/CpuUsage";
 import CredentialSummary from "./models/CredentialSummary";
 import DataProduct from "./models/DataProduct";
 import Experiment from "./models/Experiment";
@@ -127,6 +128,23 @@ export default {
       },
     },
     modelClass: ComputeResourceDescription,
+  },
+  CpuUsages: {
+    url: "/api/cpu-usages",
+    methods: {
+      get: {
+        url: "/api/cpu-usages",
+        requestType: "get",
+        queryParams: [
+          "fromTime",
+          "toTime",
+          "limit",
+          "offset",
+        ],
+        pagination: true,
+        modelClass: CpuUsage,
+      },
+    },
   },
   CredentialSummaries: {
     url: "/api/credential-summaries/",
@@ -317,6 +335,20 @@ export default {
     pagination: true,
     queryParams: ["limit", "offset"],
     modelClass: Group,
+    methods: {
+      getGroupsFilteredByCreationDate: {
+        url: "/api/groups/groups_filtered_by_creation_date",
+        requestType: "get",
+        queryParams: [
+          "fromTime",
+          "toTime",
+          "limit",
+          "offset",
+        ],
+        pagination: true,
+        modelClass: Group
+      },
+    },
   },
   IAMUserProfiles: {
     url: "/api/iam-user-profiles",
