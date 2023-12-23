@@ -3209,12 +3209,39 @@ dir-glob@^3.0.1:
     path-type "^4.0.0"
 
 "django-airavata-api@link:../api":
-  version "0.0.0"
-  uid ""
+  version "1.0.0-beta.3"
+  dependencies:
+    "@babel/polyfill" "^7.0.0"
+    "@babel/runtime" "^7.1.2"
+    browserslist "^4.16.7"
+    core-js "^3.8.3"
+    stacktrace-js "^2.0.0"
+    terser "^4.1.2"
+    url-parse "^1.4.3"
+    uuid "^3.3.2"
 
 "django-airavata-common-ui@link:../../static/common":
-  version "0.0.0"
-  uid ""
+  version "1.0.0"
+  dependencies:
+    "@fortawesome/fontawesome-free" "^5.6.3"
+    "@uppy/core" "^1.2.0"
+    "@uppy/drag-drop" "^1.3.0"
+    "@uppy/status-bar" "^1.2.0"
+    "@uppy/tus" "^1.3.0"
+    "@uppy/xhr-upload" "^1.2.0"
+    bootstrap "^4.3.1"
+    bootstrap-vue "^2.21.2"
+    browserslist "^4.16.7"
+    clipboard "^2.0.4"
+    core-js "^3.8.3"
+    django-airavata-api "link:../api"
+    jquery "^3.3.1"
+    linkifyjs "^2.1.9"
+    moment "^2.24.0"
+    popper.js "^1.14.6"
+    terser "^4.1.2"
+    vue "^2.5.22"
+    vue-async-computed "^3.9.0"
 
 dns-equal@^1.0.0:
   version "1.0.0"
@@ -4928,9 +4955,9 @@ minimatch@^3.1.1:
     brace-expansion "^1.1.7"
 
 minimist@^1.2.0, minimist@^1.2.5:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
-  integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
+  integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
 
 minipass-collect@^1.0.2:
   version "1.0.2"
