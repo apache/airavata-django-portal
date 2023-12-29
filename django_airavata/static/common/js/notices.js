@@ -17,8 +17,9 @@ const app = createApp({
     };
   },
   beforeMount() {
-    this.unreadCount = parseInt(this.$el.dataset.unreadCount);
-    this.notices = JSON.parse(this.$el.dataset.notices);
+    const root = document.getElementById('gateway-notices')
+    this.unreadCount = parseInt(root.dataset.unreadCount);
+    this.notices = JSON.parse(root.dataset.notices);
   },
 })
 app.mount("#gateway-notices");
