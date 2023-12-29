@@ -1,8 +1,8 @@
-import Vue from "vue";
+import { createApp, h }from "vue";
 import GatewayNoticesContainer from "./components/GatewayNoticesContainer";
 
-new Vue({
-  render(h) {
+const app = createApp({
+  render() {
     return h(GatewayNoticesContainer, {
       props: {
         unreadCount: this.unreadCount,
@@ -20,4 +20,5 @@ new Vue({
     this.unreadCount = parseInt(this.$el.dataset.unreadCount);
     this.notices = JSON.parse(this.$el.dataset.notices);
   },
-}).$mount("#gateway-notices");
+})
+app.mount("#gateway-notices");
