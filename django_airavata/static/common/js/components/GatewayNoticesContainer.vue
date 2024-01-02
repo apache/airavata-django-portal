@@ -98,8 +98,5 @@ export default {
       return this.notices;
     }
   },
-  mounted() {
-    console.log(` From gateWay Vue: ${this.localUnreadCount}`)
-  }
 };
 </script>
