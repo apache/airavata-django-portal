@@ -93,7 +93,7 @@
             @change="defaultQueueChanged"
             :disabled="readonly"
           >
-            <template slot="first">
+            <template v-slot:first>
               <option :value="null">Select a Default Queue</option>
             </template>
           </b-form-select>

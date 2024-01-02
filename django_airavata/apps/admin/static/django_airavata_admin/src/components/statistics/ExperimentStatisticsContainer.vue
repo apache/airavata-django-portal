@@ -118,7 +118,7 @@
                     :options="applicationNameOptions"
                     @input="loadStatistics"
                   >
-                    <template slot="first">
+                    <template v-slot:first>
                       <option :value="null" disabled>
                         Select an application to filter on
                       </option>
@@ -139,7 +139,7 @@
                     :options="hostnameOptions"
                     @input="loadStatistics"
                   >
-                    <template slot="first">
+                    <template v-slot:first>
                       <option :value="null" disabled>
                         Select compute resource to filter on
                       </option>
@@ -152,7 +152,7 @@
                     </b-button>
                   </b-input-group-append>
                 </b-input-group>
-                <template slot="footer">
+                <template v-slot:footer>
                   <div class="d-flex justify-content-end">
                     <b-button
                       @click="loadStatistics"
@@ -182,7 +182,9 @@
                 title="Total Experiments"
                 @click="selectExperiments('allExperiments')"
               >
-                <span slot="link-text">All</span>
+                <template v-slot:link-text>
+                  <span>All</span>
+                </template>
               </experiment-statistics-card>
             </div>
             <div class="col-xl-2 col-md-4">
@@ -247,19 +249,19 @@
             <div class="col">
               <b-card>
                 <b-table :fields="fields" :items="items">
-                  <template slot="cell(executionId)" slot-scope="data">
+                  <template v-slot:cell(executionId)="data">
                     <application-name :application-interface-id="data.value" />
                   </template>
-                  <template slot="cell(resourceHostId)" slot-scope="data">
+                  <template v-slot:cell(resourceHostId)="data">
                     <compute-resource-name :compute-resource-id="data.value" />
                   </template>
-                  <template slot="cell(creationTime)" slot-scope="data">
+                  <template v-slot:cell(creationTime)="data">
                     <human-date :date="data.value" />
                   </template>
-                  <template slot="cell(experimentStatus)" slot-scope="data">
+                  <template v-slot:cell(experimentStatus)="data">
                     <experiment-status-badge :status-name="data.value.name" />
                   </template>
-                  <template slot="cell(actions)" slot-scope="data">
+                  <template v-slot:cell(actions)="data">
                     <b-link
                       @click="showExperimentDetails(data.item.experimentId)"
                     >
@@ -282,7 +284,7 @@
           v-for="experimentTab in experimentDetailTabs"
           :key="experimentTab.experiment.experimentId"
         >
-          <template slot="title">
+          <template v-slot:title>
             {{ experimentTab.tabTitle }}
             <b-link
               @click="

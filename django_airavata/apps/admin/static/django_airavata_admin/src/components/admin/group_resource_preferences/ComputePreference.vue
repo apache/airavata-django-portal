@@ -53,8 +53,7 @@
                 "
               >
                 <template
-                  slot="null-option-label"
-                  slot-scope="nullOptionLabelScope"
+                  v-slot:null-option-label="nullOptionLabelScope"
                 >
                   <span v-if="nullOptionLabelScope.defaultCredentialSummary">
                     Use the default SSH credential for
@@ -147,14 +146,14 @@
       </div>
     </div>
     <div class="fixed-footer">
-      <b-button 
-      variant="primary" 
-      @click="save" 
+      <b-button
+      variant="primary"
+      @click="save"
       :disabled="!valid || !userHasWriteAccess"
         >Save</b-button
       >
-      <delete-button 
-      class="ml-2" 
+      <delete-button
+      class="ml-2"
       :disabled="!userHasWriteAccess"
       @delete="remove">
         Are you sure you want to remove the preferences for compute resource
@@ -244,7 +243,7 @@ export default {
       this.userHasWriteAccess=true;
     }
     this.$on("input", this.validate);
-    
+
   },
   data: function () {
     return {
