@@ -4,11 +4,9 @@ import GatewayNoticesContainer from "./components/GatewayNoticesContainer";
 const app = createApp({
   render() {
     return h(GatewayNoticesContainer, {
-      props: {
-        unreadCount: this.unreadCount,
-        notices: this.notices,
-      },
-    });
+      unreadCount: this.unreadCount,
+      notices: this.notices,
+    })
   },
   data() {
     return {
@@ -21,5 +19,5 @@ const app = createApp({
     this.unreadCount = parseInt(root.dataset.unreadCount);
     this.notices = JSON.parse(root.dataset.notices);
   },
-})
+});
 app.mount("#gateway-notices");
