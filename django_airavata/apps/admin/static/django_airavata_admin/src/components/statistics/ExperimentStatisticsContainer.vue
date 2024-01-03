@@ -14,7 +14,7 @@
                 <b-form-input
                   v-model.trim="experimentId"
                   placeholder="Experiment ID"
-                  @keydown.native.enter="
+                  @keydown.enter="
                     experimentId && showExperimentDetails(experimentId)
                   "
                 />
@@ -37,7 +37,7 @@
                 <b-form-input
                   v-model.trim="jobId"
                   placeholder="Job ID"
-                  @keydown.native.enter="
+                  @keydown.enter="
                     jobId && showExperimentDetailsForJobId(jobId)
                   "
                 />
@@ -103,7 +103,7 @@
                   <b-form-input
                     v-model="usernameFilter"
                     placeholder="Username"
-                    @keydown.native.enter="loadStatistics"
+                    @keydown.enter="loadStatistics"
                   />
                   <b-input-group-append>
                     <b-button @click="removeUsernameFilter">

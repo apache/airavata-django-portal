@@ -8,7 +8,7 @@
               <b-form-input
                 v-model="search"
                 placeholder="Search by name, email or username"
-                @keydown.native.enter="searchUsers"
+                @keydown.enter="searchUsers"
               />
               <b-input-group-append>
                 <b-button @click="resetSearch">Reset</b-button>
