@@ -242,7 +242,7 @@ export default {
     if (!this.id){
       this.userHasWriteAccess=true;
     }
-    this.$on("input", this.validate);
+    this.emitter.on("input", this.validate);
 
   },
   data: function () {
