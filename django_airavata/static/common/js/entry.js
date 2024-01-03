@@ -1,4 +1,4 @@
-import Vue from "vue";
+import { createApp } from "vue";
 import BootstrapVue from "bootstrap-vue";
 import GlobalErrorHandler from "./errors/GlobalErrorHandler";
 import AsyncComputed from "vue-async-computed";
@@ -18,8 +18,9 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
  */
 export default function entry(entryPointFunction) {
   // Common Vue configuration
-  Vue.use(BootstrapVue);
-  Vue.use(AsyncComputed)
+  const globalApp = createApp();
+  globalApp.use(BootstrapVue);
+  globalApp.use(AsyncComputed)
 
-  entryPointFunction(Vue);
+  entryPointFunction(globalApp);
 }
