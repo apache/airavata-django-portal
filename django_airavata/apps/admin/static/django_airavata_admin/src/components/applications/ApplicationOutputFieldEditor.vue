@@ -1,15 +1,17 @@
 <template>
   <b-card>
-    <template class="d-flex align-items-center" v-slot:header>
-      <div class="mr-auto">Output Field: {{ data.name }}</div>
-      <b-link
-        v-if="!readonly"
-        class="text-secondary"
-        @click="deleteApplicationOutput"
-      >
-        <i class="fa fa-trash"></i>
-        <span class="sr-only">Delete</span>
-      </b-link>
+    <template v-slot:header>
+      <div class="d-flex align-items-center" >
+        <div class="mr-auto">Output Field: {{ data.name }}</div>
+        <b-link
+          v-if="!readonly"
+          class="text-secondary"
+          @click="deleteApplicationOutput"
+        >
+          <i class="fa fa-trash"></i>
+          <span class="sr-only">Delete</span>
+        </b-link>
+      </div>
     </template>
     <b-form-group label="Name" :label-for="id + '-name'">
       <b-form-input
