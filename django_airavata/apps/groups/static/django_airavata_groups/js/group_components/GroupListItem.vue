@@ -44,7 +44,8 @@
           }}</strong
           >'?
         </p>
-        <div slot="modal-footer" class="w-100">
+       <template v-slot:modal-footer>
+        <div class="w-100">
           <b-button
             class="float-right ml-1"
             :variant="yesButtonVariant"
@@ -60,6 +61,7 @@
             >No</b-button
           >
         </div>
+       </template>
       </b-modal>
     </td>
   </tr>
