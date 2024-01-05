@@ -8,7 +8,7 @@
     :state="componentValidState"
     :disabled="readOnly"
     @input="valueChanged"
-    @input.native.stop
+    @input.stop
   />
 </template>
 

@@ -14,14 +14,14 @@
                 v-if="defaultOptionSelected"
                 v-model="search"
                 placeholder="Search Experiments"
-                @keydown.native.enter="searchExperiments"
+                @keydown.enter="searchExperiments"
               />
               <b-form-select
                 v-if="applicationSelected"
                 v-model="applicationSelect"
                 :options="applicationNameOptions"
               >
-                <template slot="first">
+                <template v-slot:first>
                   <option :value="null" disabled>
                     Select an application to search by
                   </option>
@@ -32,7 +32,7 @@
                 v-model="projectSelect"
                 :options="projectNameOptions"
               >
-                <template slot="first">
+                <template v-slot:first>
                   <option :value="null" disabled>
                     Select a project to search by
                   </option>
@@ -42,7 +42,7 @@
                 v-model="experimentAttributeSelect"
                 @input="checkSearchOptions"
               >
-                <template slot="first">
+                <template v-slot:first>
                   <option :value="null" disabled>
                     Select an attribute to search by
                   </option>
@@ -55,7 +55,7 @@
                 <option value="JOB_ID">Job Id</option>
               </b-form-select>
               <b-form-select v-model="experimentStatusSelect">
-                <template slot="first">
+                <template v-slot:first>
                   <option :value="null" disabled>
                     Select an experiment status to filter by
                   </option>

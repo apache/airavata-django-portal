@@ -35,13 +35,16 @@
           @unfavorite="markNotFavorite(item.appModule)"
           ref="favoriteApplicationCards"
         >
-          <favorite-toggle
-            slot="card-actions"
+          <template v-slot:card-actions>
+            <favorite-toggle
+
             :favorite="true"
             class="card-link"
             @favorite="markFavorite(item.appModule)"
             @unfavorite="markNotFavorite(item.appModule)"
           />
+          </template>
+
         </application-card>
       </div>
       <hr />
@@ -56,13 +59,16 @@
         @favorite="markFavorite(item.appModule)"
         @unfavorite="markNotFavorite(item.appModule)"
       >
-        <favorite-toggle
-          slot="card-actions"
+        <template v-slot:card-actions>
+          <favorite-toggle
+
           :favorite="false"
           class="card-link"
           @favorite="markFavorite(item.appModule)"
           @unfavorite="markNotFavorite(item.appModule)"
         />
+        </template>
+
       </application-card>
     </div>
   </div>

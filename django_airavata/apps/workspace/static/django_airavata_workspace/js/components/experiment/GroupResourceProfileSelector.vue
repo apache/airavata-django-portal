@@ -9,7 +9,7 @@
           required
           @change="groupResourceProfileChanged"
         >
-          <template slot="first">
+          <template v-slot:first>
             <option :value="null" disabled>Select an allocation</option>
           </template>
         </b-form-select>
