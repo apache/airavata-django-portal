@@ -11,13 +11,14 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@vue/compat": "^3.2.0",
     "bootstrap": "^4.0.0-beta.2",
-    "bootstrap-vue": "2.0.0-rc.26",
+    "bootstrap-vue": "2.23.1",
     "browserslist": "^4.16.7",
     "core-js": "^3.8.3",
     "django-airavata-api": "link:../api/",
     "django-airavata-common-ui": "link:../../static/common/",
-    "vue": "^2.5.21",
+    "vue": "^3.2.0",
     "vuelidate": "^0.7.6",
     "vuex": "^3.6.2"
   },
@@ -27,10 +28,10 @@
     "@vue/cli-plugin-babel": "~5.0.8",
     "@vue/cli-plugin-eslint": "~5.0.8",
     "@vue/cli-service": "~5.0.8",
+    "@vue/compiler-sfc": "^3.4.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "prettier": "^2.1.2",
-    "vue-template-compiler": "^2.5.21",
     "webpack": "5.0.0",
     "webpack-bundle-tracker": "^0.4.2-beta"
   },
@@ -40,7 +41,7 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/essential",
+      "plugin:vue/vue3-essential",
       "eslint:recommended"
     ],
     "rules": {},
