@@ -1,9 +1,13 @@
+import { createApp, h } from "vue";
 import { components, entry } from "django-airavata-common-ui";
 import ParserDetailsContainer from "./containers/ParserDetailsContainer.vue";
 
-entry((Vue) => {
-  new Vue({
-    render(h) {
+entry((globalApp) => {
+  //use globalApp to satisfy compiler
+  globalApp;
+
+  const app = createApp({
+    render() {
       return h(components.MainLayout, [
         h(ParserDetailsContainer, {
           props: {
@@ -23,5 +27,6 @@ entry((Vue) => {
         this.parserId = this.$el.dataset.parserId;
       }
     },
-  }).$mount("#parser-details");
+  })
+  app.mount("#parser-details");
 });

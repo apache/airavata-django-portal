@@ -1,13 +1,14 @@
+import { h } from "vue";
 import { components, entry } from "django-airavata-common-ui";
 import { mapActions } from "vuex";
 import ExperimentSummary from "./components/experiment/ExperimentSummary.vue";
 import createStore from "./store";
 
-entry((Vue) => {
-  const store = createStore(Vue);
-  new Vue({
+entry((globalApp) => {
+  const store = createStore(globalApp);
+  const app = globalApp({
     store,
-    render(h) {
+    render() {
       return h(components.MainLayout, [h(ExperimentSummary)]);
     },
     async beforeMount() {
@@ -26,5 +27,6 @@ entry((Vue) => {
         "setLaunching",
       ]),
     },
-  }).$mount("#view-experiment");
+  })
+  app.mount("#view-experiment");
 });

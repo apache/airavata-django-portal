@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import BootstrapVue from "bootstrap-vue";
 import GlobalErrorHandler from "./errors/GlobalErrorHandler";
 import AsyncComputed from "vue-async-computed";
+import mitt from "mitt";
 
 GlobalErrorHandler.init();
 
@@ -20,7 +21,12 @@ export default function entry(entryPointFunction) {
   // Common Vue configuration
   const globalApp = createApp();
   globalApp.use(BootstrapVue);
-  globalApp.use(AsyncComputed)
+  globalApp.use(AsyncComputed);
+    // Used for eventbus
+  // Replaces $on, $off, $once deprecated api
+  const emitter = mitt()
+  globalApp.config.globalProperties.emitter = emitter
+
 
   entryPointFunction(globalApp);
 }

@@ -1,3 +1,5 @@
+import { h } from "vue";
+
 import {components, entry} from "django-airavata-common-ui";
 import UserStorageContainer from "./containers/UserStorageContainer.vue";
 import UserStoragePathViewer from "./components/storage/UserStoragePathViewer.vue";
@@ -15,12 +17,13 @@ const router = new VueRouter({
   base: "/workspace/storage",
   routes: routes,
 });
-entry((Vue) => {
-  Vue.use(VueRouter);
-  new Vue({
-    render(h) {
+entry((globalApp) => {
+  globalApp.use(VueRouter);
+  const app = globalApp({
+    render() {
       return h(components.MainLayout, [h(UserStorageContainer)]);
     },
     router,
-  }).$mount("#user-storage");
+  })
+  app.mount("#user-storage");
 });

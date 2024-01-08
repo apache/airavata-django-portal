@@ -1,10 +1,14 @@
+import { createApp, h } from "vue";
 import { components, entry } from "django-airavata-common-ui";
 import CreateExperimentContainer from "./containers/CreateExperimentContainer.vue";
 import "../../scss/styles.scss";
 
-entry((Vue) => {
-  new Vue({
-    render(h) {
+entry((globalApp) => {
+  //use globalApp to satisfy compiler
+  globalApp;
+
+  const app = createApp({
+    render() {
       return h(components.MainLayout, [
         h(CreateExperimentContainer, {
           props: {
@@ -32,5 +36,6 @@ entry((Vue) => {
         this.experimentDataDir = this.$el.dataset.experimentDataDir;
       }
     },
-  }).$mount("#create-experiment");
+  })
+  app.mount("#create-experiment");
 });

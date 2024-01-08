@@ -1,12 +1,14 @@
+import { createApp, h } from "vue";
+
 import { components, entry } from "django-airavata-common-ui";
 import ExperimentListContainer from "./containers/ExperimentListContainer.vue";
 import VueFlatPickr from "vue-flatpickr-component";
 import "flatpickr/dist/flatpickr.css";
 
-entry((Vue) => {
-  Vue.use(VueFlatPickr);
-  new Vue({
-    render(h) {
+entry((globalApp) => {
+  globalApp.use(VueFlatPickr);
+  const app = createApp({
+    render() {
       return h(components.MainLayout, [
         h(ExperimentListContainer, {
           props: {
@@ -25,5 +27,6 @@ entry((Vue) => {
         this.experimentsData = JSON.parse(this.$el.dataset.experimentsData);
       }
     },
-  }).$mount("#experiment-list");
+  })
+  app.mount("#experiment-list");
 });
