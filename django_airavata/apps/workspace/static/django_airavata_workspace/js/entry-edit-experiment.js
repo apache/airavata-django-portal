@@ -1,4 +1,4 @@
-import { createApp, h } from "vue";
+import { h } from "vue";
 import { components, entry } from "django-airavata-common-ui";
 import EditExperimentContainer from "./containers/EditExperimentContainer.vue";
 import "../../scss/styles.scss";
@@ -8,10 +8,7 @@ import "../../scss/styles.scss";
 //   <div id="edit-experiment" data-experiment-id="..expid.."/>
 
 entry((globalApp) => {
-  //use globalApp to satisfy compiler
-  globalApp;
-
-  const app = createApp({
+  globalApp.mixin({
     render() {
       return h(components.MainLayout, [
         h(EditExperimentContainer, {
@@ -27,8 +24,9 @@ entry((globalApp) => {
       };
     },
     beforeMount() {
-      this.experimentId = this.$el.dataset.experimentId;
+      const root = document.getElementById('edit-experiment')
+      this.experimentId = root.dataset.experimentId;
     },
   })
-  app.mount("#edit-experiment");
+  globalApp.mount("#edit-experiment");
 });

@@ -1,7 +1,10 @@
-import { createApp, h }from "vue";
+import { createApp, h}from "vue";
 import GatewayNoticesContainer from "./components/GatewayNoticesContainer";
 
 const app = createApp({
+  compatConfig: {
+    RENDER_FUNCTION: false
+  },
   render() {
     return h(GatewayNoticesContainer, {
       unreadCount: this.unreadCount,

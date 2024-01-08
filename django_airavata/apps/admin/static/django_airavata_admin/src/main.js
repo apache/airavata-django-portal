@@ -1,4 +1,4 @@
-import { createApp, h } from "vue";
+import { h } from "vue";
 import { components, entry } from "django-airavata-common-ui";
 import VueResource from "vue-resource";
 import VueRouter from "vue-router";
@@ -18,10 +18,10 @@ entry((globalApp) => {
 
   const store = createStore(globalApp);
 
-  const app = createApp({
+  globalApp.mixin({
     store,
     render: () => h(components.MainLayout, [h(App)]),
     router,
   })
-  app.mount("#app");
+  globalApp.mount("#app");
 });

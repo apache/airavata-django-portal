@@ -19,11 +19,11 @@ const router = new VueRouter({
 });
 entry((globalApp) => {
   globalApp.use(VueRouter);
-  const app = globalApp({
+  globalApp.mixin({
     render() {
       return h(components.MainLayout, [h(UserStorageContainer)]);
     },
     router,
   })
-  app.mount("#user-storage");
+  globalApp.mount("#user-storage");
 });

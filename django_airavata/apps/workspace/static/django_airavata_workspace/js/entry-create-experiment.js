@@ -1,13 +1,10 @@
-import { createApp, h } from "vue";
+import { h } from "vue";
 import { components, entry } from "django-airavata-common-ui";
 import CreateExperimentContainer from "./containers/CreateExperimentContainer.vue";
 import "../../scss/styles.scss";
 
 entry((globalApp) => {
-  //use globalApp to satisfy compiler
-  globalApp;
-
-  const app = createApp({
+  globalApp.mixin({
     render() {
       return h(components.MainLayout, [
         h(CreateExperimentContainer, {
@@ -26,16 +23,17 @@ entry((globalApp) => {
       };
     },
     beforeMount() {
-      if (this.$el.dataset.appModuleId) {
-        this.appModuleId = this.$el.dataset.appModuleId;
+      const root = document.getElementById('create-experiment')
+      if (root.dataset.appModuleId) {
+        this.appModuleId = root.dataset.appModuleId;
       }
-      if (this.$el.dataset.userInputValues) {
-        this.userInputValues = JSON.parse(this.$el.dataset.userInputValues);
+      if (root.dataset.userInputValues) {
+        this.userInputValues = JSON.parse(root.dataset.userInputValues);
       }
-      if (this.$el.dataset.experimentDataDir) {
-        this.experimentDataDir = this.$el.dataset.experimentDataDir;
+      if (root.dataset.experimentDataDir) {
+        this.experimentDataDir = root.dataset.experimentDataDir;
       }
     },
   })
-  app.mount("#create-experiment");
+  globalApp.mount("#create-experiment");
 });

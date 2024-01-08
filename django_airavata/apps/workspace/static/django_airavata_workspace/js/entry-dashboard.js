@@ -1,14 +1,10 @@
-import { createApp, h } from "vue";
+import { h } from "vue";
 import { components, entry } from "django-airavata-common-ui";
 import DashboardContainer from "./containers/DashboardContainer.vue";
 import RecentExperimentsContainer from "./containers/RecentExperimentsContainer.vue";
 
 entry((globalApp) => {
-  //use globalApp to satisfy compiler
-  globalApp;
-
-
-  const app = createApp({
+  globalApp.mixin({
     render() {
       return h(components.MainLayout, [
         h(DashboardContainer),
@@ -28,9 +24,10 @@ entry((globalApp) => {
       };
     },
     beforeMount() {
-      this.viewAllExperiments = this.$el.dataset.viewAllExperiments;
-      this.username = this.$el.dataset.username;
+      const root = document.getElementById('dashboard')
+      this.viewAllExperiments = root.dataset.viewAllExperiments;
+      this.username = root.dataset.username;
     },
   })
-  app.mount("#dashboard");
+  globalApp.mount("#dashboard");
 });

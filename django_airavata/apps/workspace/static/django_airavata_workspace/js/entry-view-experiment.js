@@ -6,18 +6,19 @@ import createStore from "./store";
 
 entry((globalApp) => {
   const store = createStore(globalApp);
-  const app = globalApp({
+  globalApp.mixin({
     store,
     render() {
       return h(components.MainLayout, [h(ExperimentSummary)]);
     },
     async beforeMount() {
+      const root = document.getElementById('view-experiment')
       const fullExperimentData = JSON.parse(
-        this.$el.dataset.fullExperimentData
+        root.dataset.fullExperimentData
       );
       this.setInitialFullExperimentData({ fullExperimentData });
-      if ("launching" in this.$el.dataset) {
-        const launching = JSON.parse(this.$el.dataset.launching);
+      if ("launching" in root.dataset) {
+        const launching = JSON.parse(root.dataset.launching);
         this.setLaunching({ launching });
       }
     },
@@ -28,5 +29,5 @@ entry((globalApp) => {
       ]),
     },
   })
-  app.mount("#view-experiment");
+  globalApp.mount("#view-experiment");
 });
