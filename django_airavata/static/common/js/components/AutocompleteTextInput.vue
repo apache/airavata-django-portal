@@ -1,7 +1,7 @@
 <template>
   <div class="autocomplete-text-input">
     <b-input-group>
-      <b-input-group-text slot="prepend">
+      <b-input-group-text v-slot:prepend>
         <i class="fa fa-search"></i>
       </b-input-group-text>
       <b-form-input

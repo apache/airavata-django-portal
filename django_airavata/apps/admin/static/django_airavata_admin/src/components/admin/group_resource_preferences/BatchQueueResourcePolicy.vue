@@ -92,7 +92,7 @@ export default {
     },
   },
   created() {
-    this.$on("input", this.validate);
+    this.emitter.on("input", this.validate);
     this.validate();
   },
   data: function () {

@@ -113,7 +113,7 @@ export default {
     };
   },
   created() {
-    this.$on("input", this.valuesChanged);
+    this.emitter.on("input", this.valuesChanged);
   },
   computed: {
     startTimeAsString() {

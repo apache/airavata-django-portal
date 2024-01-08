@@ -5,12 +5,12 @@
     title="Group Resource Profiles"
     new-item-button-text="New Group Resource Profile"
   >
-    <template slot="item-list" slot-scope="slotProps">
+    <template v-slot:item-list="slotProps">
       <b-table striped hover :fields="fields" :items="slotProps.items">
-        <template slot="cell(updatedTime)" slot-scope="data">
+        <template v-slot:cell(updatedTime)="data">
           <human-date :date="data.value" />
         </template>
-        <template slot="cell(action)" slot-scope="data">
+        <template v-slot:cell(action)="data">
           <router-link
             class="action-link"
             v-if="data.item.userHasWriteAccess"

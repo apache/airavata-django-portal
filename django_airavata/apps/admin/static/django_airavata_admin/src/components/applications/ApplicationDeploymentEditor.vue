@@ -93,7 +93,7 @@
             @change="defaultQueueChanged"
             :disabled="readonly"
           >
-            <template slot="first">
+            <template v-slot:first>
               <option :value="null">Select a Default Queue</option>
             </template>
           </b-form-select>
@@ -174,12 +174,12 @@ export default {
     };
   },
   mounted() {
-    this.$on("input", () => {
+    this.emitter.on("input", () => {
       this.dirty = true;
     });
   },
-  destroyed() {
-    this.$off("input");
+  unmounted() {
+    this.emitter.off("input");
   },
   computed: {
     name() {

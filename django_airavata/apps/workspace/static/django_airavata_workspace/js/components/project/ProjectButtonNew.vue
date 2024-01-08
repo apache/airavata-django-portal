@@ -18,7 +18,10 @@
         @valid="valid = true"
         @invalid="valid = false"
       >
-        <div slot="title"></div>
+        <template v-slot:title>
+        <div></div>
+
+        </template>
       </project-editor>
     </b-modal>
   </div>

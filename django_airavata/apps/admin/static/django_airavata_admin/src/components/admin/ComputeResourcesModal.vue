@@ -9,7 +9,7 @@
       v-model="selectedComputeResource"
       :options="computeResourceOptions"
     >
-      <template slot="first">
+      <template v-slot:first>
         <option :value="null">Please select compute resource</option>
       </template>
     </b-form-select>
