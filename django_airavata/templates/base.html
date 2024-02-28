@@ -2,8 +2,9 @@
 {% load render_bundle from webpack_loader %}
 {% load humanize %}
 <!DOCTYPE html>
-
+<html lang="en">
 <head>
+  <title> Authentication - Gateway Accounts </title>
   {% favicon %}
   {% include "./django_airavata/google_analytics.html" %}
 
@@ -264,3 +265,4 @@
   {% block scripts %}
   {% endblock %}
 </body>
+</html>
