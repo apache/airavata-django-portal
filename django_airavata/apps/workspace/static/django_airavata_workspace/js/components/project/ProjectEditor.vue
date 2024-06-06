@@ -49,7 +49,7 @@ export default {
     },
   },
   mounted() {
-    this.$on("input", this.validate);
+    this.emitter.on("input", this.validate);
     this.validate();
   },
   data() {

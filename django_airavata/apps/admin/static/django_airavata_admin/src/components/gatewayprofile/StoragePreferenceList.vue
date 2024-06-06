@@ -6,7 +6,7 @@
     new-item-button-text="New Storage Preference"
     :new-button-disabled="readonly"
   >
-    <template slot="new-item-editor">
+    <template v-slot:new-item-editor>
       <b-card v-if="showNewItemEditor" title="New Storage Preference">
         <b-form-group label="Storage Resource" label-for="storage-resource">
           <b-form-select
@@ -31,7 +31,7 @@
         </div>
       </b-card>
     </template>
-    <template slot="item-list" slot-scope="slotProps">
+    <template v-slot:item-list="slotProps">
       <b-table
         striped
         hover
@@ -40,8 +40,7 @@
         sort-by="storageResourceId"
       >
         <template
-          slot="cell(resourceSpecificCredentialStoreToken)"
-          slot-scope="data"
+          v-slot:cell(resourceSpecificCredentialStoreToken)="data"
         >
           {{ data.value }}
           <b-badge
@@ -53,7 +52,7 @@
             Default
           </b-badge>
         </template>
-        <template slot="cell(action)" slot-scope="data">
+        <template v-slot:cell(action)="data">
           <b-link
             v-if="!readonly"
             class="action-link"
@@ -74,7 +73,7 @@
             >?
           </delete-link>
         </template>
-        <template slot="row-details" slot-scope="row">
+        <template v-slot:row-details="row">
           <b-card>
             <storage-preference-editor
               :value="row.item"

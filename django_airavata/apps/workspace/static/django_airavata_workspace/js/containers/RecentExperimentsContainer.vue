@@ -5,7 +5,7 @@
       :view-all-url="viewAllExperiments"
     />
     <sidebar-feed :feed-items="feedItems">
-      <template slot="description" slot-scope="slotProps">
+      <template v-slot:description="slotProps">
         <experiment-status-badge :status-name="slotProps.feedItem.statusName" />
         <i
           v-if="slotProps.feedItem.isProgressing"

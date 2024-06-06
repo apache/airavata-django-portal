@@ -8,7 +8,7 @@
       :max="parameter.max"
       :step="parameter.step || 'any'"
       @input="updateValue"
-      @keydown.native.enter="enterKeyPressed"
+      @keydown.enter="enterKeyPressed"
     />
     <b-input-group-append>
       <b-button variant="primary" :disabled="disabled" @click="submit"

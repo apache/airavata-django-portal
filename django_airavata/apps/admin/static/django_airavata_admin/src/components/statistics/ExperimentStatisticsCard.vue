@@ -5,12 +5,14 @@
     :header-text-variant="headerTextVariant"
     class="statistics-card"
   >
-    <div slot="header" class="text-right">
-      <div class="statistic-count text-nowrap">
-        <abbr :title="count">{{ displayedCount }}</abbr>
+    <template v-slot:header>
+      <div class="text-right">
+        <div class="statistic-count text-nowrap">
+          <abbr :title="count">{{ displayedCount }}</abbr>
+        </div>
+        <div>{{ title }}</div>
       </div>
-      <div>{{ title }}</div>
-    </div>
+    </template>
     <b-link
       :class="'text-decoration-none text-' + linkVariant"
       @click="$emit('click')"

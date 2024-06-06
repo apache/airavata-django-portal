@@ -6,7 +6,8 @@
       title="SSH Credentials"
       new-item-button-text="New SSH Credential"
     >
-      <span slot="additional-buttons">
+      <template v-slot:additional-buttons>
+        <span>
           <b-btn
             v-if="userIsAdmin"
             @click="showNewSharedSSHCredentialModel"
@@ -15,19 +16,20 @@
             <i class="fa fa-plus" aria-hidden="true"></i>
           </b-btn>
         </span>
-      <template slot="item-list" slot-scope="slotProps">
+      </template>
+      <template v-slot:item-list="slotProps">
         <b-table striped hover :fields="fields" :items="slotProps.items">
-          <template slot="cell(sharing)" slot-scope="data">
+          <template v-slot:cell(sharing)="data">
             <share-button
               :entity-id="data.item.token"
               :disallow-editing-admin-groups="false"
               :auto-add-admin-groups="false"
             />
           </template>
-          <template slot="cell(persistedTime)" slot-scope="data">
+          <template v-slot:cell(persistedTime)="data">
             <human-date :date="data.value" />
           </template>
-          <template slot="cell(action)" slot-scope="data">
+          <template v-slot:cell(action)="data">
             <clipboard-copy-link
               :text="data.item.publicKey.trim()"
               class="mr-1"
@@ -54,13 +56,13 @@
     <!--
     <list-layout class="mt-4" @add-new-item="showNewPasswordCredentialModal" :items="passwordCredentials" title="Password Credentials"
       new-item-button-text="New Password Credential">
-      <template slot="item-list" slot-scope="slotProps">
+      <template v-slot:item-list="slotProps">
 
         <b-table striped hover :fields="fields" :items="slotProps.items">
-          <template slot="cell(sharing)" slot-scope="data">
+          <template v-slot:cell(sharing)="data">
             <share-button :entity-id="data.item.token" :disallow-editing-admin-groups="false" :auto-add-admin-groups="false"/>
           </template>
-          <template slot="cell(action)" slot-scope="data">
+          <template v-slot:cell(action)="data">
             <delete-link v-if="data.item.userHasWriteAccess" @delete="deletePasswordCredential(data.item)">
               Are you sure you want to delete the
               <strong>{{ data.item.description }}</strong> password credential?

@@ -60,9 +60,11 @@
               :state="getValidationState('queueName')"
             >
             </b-form-select>
-            <div slot="description">
-              {{ queueDescription }}
-            </div>
+            <template v-slot:description>
+              <div>
+                {{ queueDescription }}
+              </div>
+            </template>
           </b-form-group>
           <div class="d-flex flex-row">
             <div class="flex-fill">
@@ -83,10 +85,12 @@
                   :state="getValidationState('nodeCount', true)"
                 >
                 </b-form-input>
-                <div slot="description">
-                  <i class="fa fa-info-circle" aria-hidden="true"></i>
-                  Max Allowed Nodes = {{ maxNodes }}
-                </div>
+                <template v-slot:description>
+                  <div>
+                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                    Max Allowed Nodes = {{ maxNodes }}
+                  </div>
+                </template>
               </b-form-group>
               <b-form-group
                 label="Total Core Count"
@@ -105,18 +109,20 @@
                   :state="getValidationState('totalCPUCount', true)"
                 >
                 </b-form-input>
-                <div slot="description">
-                  <i class="fa fa-info-circle" aria-hidden="true"></i>
-                  Max Allowed Cores = {{ maxCPUCount
-                  }}<template
-                    v-if="
-                      selectedQueueDefault &&
-                      selectedQueueDefault.cpuPerNode > 0
-                    "
-                    >. There are {{ selectedQueueDefault.cpuPerNode }} cores per
-                    node.
-                  </template>
-                </div>
+                <template v-slot:description>
+                  <div>
+                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                    Max Allowed Cores = {{ maxCPUCount
+                    }}<template
+                      v-if="
+                        selectedQueueDefault &&
+                        selectedQueueDefault.cpuPerNode > 0
+                      "
+                      >. There are {{ selectedQueueDefault.cpuPerNode }} cores
+                      per node.
+                    </template>
+                  </div>
+                </template>
               </b-form-group>
             </div>
             <div
@@ -180,10 +186,12 @@
               >
               </b-form-input>
             </b-input-group>
-            <div slot="description">
-              <i class="fa fa-info-circle" aria-hidden="true"></i>
-              Max Allowed Wall Time = {{ maxWalltime }} minutes
-            </div>
+            <template v-slot:description>
+              <div>
+                <i class="fa fa-info-circle" aria-hidden="true"></i>
+                Max Allowed Wall Time = {{ maxWalltime }} minutes
+              </div>
+            </template>
           </b-form-group>
           <b-form-group
             v-if="maxPhysicalMemory > 0"
@@ -203,10 +211,12 @@
               >
               </b-form-input>
             </b-input-group>
-            <div slot="description">
-              <i class="fa fa-info-circle" aria-hidden="true"></i>
-              Max Physical Memory = {{ maxPhysicalMemory }} MB
-            </div>
+            <template v-slot:description>
+              <div>
+                <i class="fa fa-info-circle" aria-hidden="true"></i>
+                Max Physical Memory = {{ maxPhysicalMemory }} MB
+              </div>
+            </template>
           </b-form-group>
           <div>
             <a
@@ -566,7 +576,7 @@ export default {
         this.setDefaultQueue();
       }
     });
-    this.$on("input", () => this.validate());
+    this.emitter.on("input", () => this.validate());
     this.loadApplicationInterface();
   },
 };

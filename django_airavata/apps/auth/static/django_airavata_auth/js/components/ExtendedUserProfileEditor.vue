@@ -1,9 +1,11 @@
 <template>
   <div>
-    <template v-for="extendedUserProfileField in extendedUserProfileFields">
+    <template
+      v-for="extendedUserProfileField in extendedUserProfileFields"
+      :key="extendedUserProfileField.id"
+    >
       <component
         ref="extendedUserProfileFieldComponents"
-        :key="extendedUserProfileField.id"
         :is="getEditor(extendedUserProfileField)"
         :extended-user-profile-field="extendedUserProfileField"
         @valid="recordValidChildComponent(extendedUserProfileField.id)"
