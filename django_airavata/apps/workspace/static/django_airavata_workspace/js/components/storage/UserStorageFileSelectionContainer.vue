@@ -14,7 +14,7 @@
       :selected-data-product-uris="selectedDataProductUris"
     >
     </user-storage-path-viewer>
-    <template slot="footer">
+    <template v-slot:footer>
       <div class="d-flex justify-content-end">
         <b-link class="text-secondary" @click="$emit('cancel')">Cancel</b-link>
       </div>

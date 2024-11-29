@@ -10,7 +10,7 @@
         :suggestions="usersAndGroupsSuggestions"
         @selected="suggestionSelected"
       >
-        <template slot="suggestion" slot-scope="slotProps">
+        <template v-slot:suggestion="slotProps">
           <span v-if="slotProps.suggestion.type == 'group'">
             <i class="fa fa-users"></i> {{ slotProps.suggestion.name }}
           </span>
@@ -34,7 +34,7 @@
       :items="sortedUserPermissions"
       :fields="userFields"
     >
-      <template slot="cell(name)" slot-scope="data">
+      <template v-slot:cell(name)="data">
         <span
           :title="data.item.user.userId"
           :class="userDataClasses"
@@ -45,7 +45,7 @@
           >{{ data.item.user.firstName }} {{ data.item.user.lastName }}</span
         >
       </template>
-      <template slot="cell(email)" slot-scope="data">
+      <template v-slot:cell(email)="data">
         <span
           :class="userDataClasses"
           v-if="!isPermissionReadOnly(data.item.permissionType)"
@@ -55,7 +55,7 @@
           data.item.user.email
         }}</span>
       </template>
-      <template slot="cell(permission)" slot-scope="data">
+      <template v-slot:cell(permission)="data">
         <b-form-select
           v-if="!isPermissionReadOnly(data.item.permissionType)"
           v-model="data.item.permissionType"
@@ -68,7 +68,7 @@
           >{{ data.item.permissionType.name }}</span
         >
       </template>
-      <template slot="cell(remove)" slot-scope="data">
+      <template v-slot:cell(remove)="data">
         <b-link
           v-if="!isPermissionReadOnly(data.item.permissionType)"
           @click="removeUser(data.item.user)"
@@ -84,7 +84,7 @@
       :items="sortedGroupPermissions"
       :fields="groupFields"
     >
-      <template slot="cell(name)" slot-scope="data">
+      <template v-slot:cell(name)="data">
         <span
           v-if="editingAllowed(data.item.group, data.item.permissionType)"
           >{{ data.item.group.name }}</span
@@ -93,7 +93,7 @@
           data.item.group.name
         }}</span>
       </template>
-      <template slot="cell(permission)" slot-scope="data">
+      <template v-slot:cell(permission)="data">
         <b-form-select
           v-if="editingAllowed(data.item.group, data.item.permissionType)"
           v-model="data.item.permissionType"
@@ -103,7 +103,7 @@
           data.item.permissionType.name
         }}</span>
       </template>
-      <template slot="cell(remove)" slot-scope="data">
+      <template v-slot:cell(remove)="data">
         <b-link
           v-if="editingAllowed(data.item.group, data.item.permissionType)"
           @click="removeGroup(data.item.group)"

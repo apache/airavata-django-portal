@@ -5,9 +5,9 @@
       :feed-item="feedItem"
       :key="feedItem.id"
     >
-      <div slot-scope="slotProps">
+      <template v-slot="slotProps">
         <slot name="description" :feedItem="slotProps.feedItem" />
-      </div>
+      </template>
     </sidebar-feed-item>
   </ol>
 </template>

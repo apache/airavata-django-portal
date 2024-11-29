@@ -1,20 +1,22 @@
 <template>
   <b-card>
-    <div class="d-flex align-items-center" slot="header">
-      <div v-if="!readonly" class="drag-handle mr-1 text-muted">
-        <i class="fa fa-grip-vertical"></i>
-        <span class="sr-only">Drag handle for reordering</span>
+    <template v-slot:header>
+      <div class="d-flex align-items-center">
+        <div v-if="!readonly" class="drag-handle mr-1 text-muted">
+          <i class="fa fa-grip-vertical"></i>
+          <span class="sr-only">Drag handle for reordering</span>
+        </div>
+        <div class="mr-auto">Input Field: {{ data.name }}</div>
+        <b-link
+          v-if="!readonly"
+          class="text-secondary"
+          @click="deleteApplicationInput"
+        >
+          <i class="fa fa-trash"></i>
+          <span class="sr-only">Delete</span>
+        </b-link>
       </div>
-      <div class="mr-auto">Input Field: {{ data.name }}</div>
-      <b-link
-        v-if="!readonly"
-        class="text-secondary"
-        @click="deleteApplicationInput"
-      >
-        <i class="fa fa-trash"></i>
-        <span class="sr-only">Delete</span>
-      </b-link>
-    </div>
+    </template>
     <b-collapse :id="id + '-collapse'" :visible="!collapse">
       <b-form-group label="Name" :label-for="id + '-name'">
         <b-form-input

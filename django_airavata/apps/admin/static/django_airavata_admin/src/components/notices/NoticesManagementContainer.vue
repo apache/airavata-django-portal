@@ -15,7 +15,7 @@
               new-item-button-text="New Notice"
               :new-button-disabled="!isGatewayAdmin"
             >
-              <template slot="new-item-editor">
+              <template v-slot:new-item-editor>
                 <b-card v-if="showNewItemEditor">
                   <notice-editor
                     v-model="newNotice"
@@ -23,21 +23,21 @@
                     @cancelNewNotice="cancelNewNotice"
                     @saveNewNotice="saveNewNotice"
                   >
-                    <template slot="title">
+                    <template v-slot:title>
                       <h1 class="h4 mb-4 mr-auto">New Notice</h1>
                     </template>
                   </notice-editor>
                 </b-card>
               </template>
-              <template slot="item-list">
+              <template v-slot:item-list>
                 <b-table hover :fields="fields" :items="items">
-                  <template slot="cell(publishedTime)" slot-scope="data">
+                  <template v-slot:cell(publishedTime)="data">
                     <human-date :date="data.value" /> </template
                   >row
-                  <template slot="cell(expirationTime)" slot-scope="data">
+                  <template v-slot:cell(expirationTime)="data">
                     <human-date :date="data.value" />
                   </template>
-                  <template slot="cell(action)" slot-scope="data">
+                  <template v-slot:cell(action)="data">
                     <template v-if="data.item.userHasWriteAccess">
                       <b-link class="action-link" @click="toggleDetails(data)">
                         Edit
@@ -50,14 +50,14 @@
                       </delete-link>
                     </template>
                   </template>
-                  <template slot="row-details" slot-scope="row">
+                  <template v-slot:row-details="row">
                     <b-card>
                       <notice-editor
                         :value="row.item"
                         v-model="updatedNotice"
                         @userBeginsInput="isUserBeginInput = false"
                       >
-                        <template slot="title">
+                        <template v-slot:title>
                           <h1 class="h4 mb-4 mr-auto">Update Notice</h1>
                         </template>
                       </notice-editor>
