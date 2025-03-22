@@ -3455,7 +3455,7 @@
     "model": "taggit.tag",
     "pk": 14,
     "fields": {
-        "name": "logo",
+        "name": "logo_1",
         "slug": "logo_1"
     }
 },
