@@ -6,7 +6,7 @@
     new-item-button-text="New Reservation"
     :newButtonDisabled="readonly"
   >
-    <template slot="additional-buttons">
+    <template v-slot:additional-buttons>
       <delete-button
         class="mr-2"
         @delete="deleteAllExpiredReservations"
@@ -16,7 +16,7 @@
         Are you sure you want to delete all expired reservations?
       </delete-button>
     </template>
-    <template slot="new-item-editor">
+    <template v-slot:new-item-editor>
       <b-card v-if="showNewItemEditor" title="New Reservation">
         <compute-resource-reservation-editor
           v-model="newReservation"
@@ -46,20 +46,20 @@
         </div>
       </b-card>
     </template>
-    <template slot="item-list" slot-scope="slotProps">
+    <template v-slot:item-list="slotProps">
       <b-table hover :fields="fields" :items="slotProps.items">
-        <template slot="cell(reservationName)" slot-scope="data">
+        <template v-slot:cell(reservationName)="data">
           {{ data.value }}
           <b-badge v-if="data.item.isExpired">Expired</b-badge>
           <b-badge v-if="data.item.isActive" variant="success">Active</b-badge>
           <b-badge v-if="data.item.isUpcoming" variant="info">Upcoming</b-badge>
         </template>
-        <template slot="cell(queueNames)" slot-scope="data">
+        <template v-slot:cell(queueNames)="data">
           <ul v-for="queueName in data.item.queueNames" :key="queueName">
             <li>{{ queueName }}</li>
           </ul>
         </template>
-        <template slot="cell(action)" slot-scope="data">
+        <template v-slot:cell(action)="data">
           <b-link
             v-if="!readonly"
             class="action-link"
@@ -79,7 +79,7 @@
             >?
           </delete-link>
         </template>
-        <template slot="row-details" slot-scope="row">
+        <template v-slot:row-details="row">
           <b-card>
             <compute-resource-reservation-editor
               :value="row.item"

@@ -46,28 +46,28 @@
       new-item-button-text="New Compute Preference"
       @add-new-item="createComputePreference"
     >
-      <template slot="item-list" slot-scope="slotProps">
+      <template v-slot:item-list="slotProps">
         <b-table
           hover
           :fields="computePreferencesFields"
           :items="slotProps.items"
           sort-by="computeResourceId"
         >
-          <template slot="cell(computeResourceId)" slot-scope="row">
+          <template v-slot:cell(computeResourceId)="row">
             <compute-resource-name
               :compute-resource-id="row.item.computeResourceId"
             />
           </template>
-          <template slot="cell(policy)" slot-scope="row">
+          <template v-slot:cell(policy)="row">
             <compute-resource-policy-summary
               :compute-resource-id="row.item.computeResourceId"
               :group-resource-profile="data"
             />
           </template>
-          <template slot="cell(reservations)" slot-scope="row">
+          <template v-slot:cell(reservations)="row">
             <compute-resource-reservations-summary :reservations="row.value" />
           </template>
-          <template slot="cell(action)" slot-scope="row">
+          <template v-slot:cell(action)="row">
             <router-link
               class="action-link"
               v-if="userHasWriteAccess"

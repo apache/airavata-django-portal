@@ -1,9 +1,11 @@
+import { h } from "vue";
+
 import { components, entry } from "django-airavata-common-ui";
 import GroupEditContainer from "./containers/GroupEditContainer.vue";
 
-entry((Vue) => {
-  new Vue({
-    render(h) {
+entry((globalApp) => {
+  globalApp.mixin({
+    render() {
       return h(components.MainLayout, [
         h(GroupEditContainer, {
           props: {
@@ -20,12 +22,14 @@ entry((Vue) => {
       };
     },
     beforeMount() {
-      if (this.$el.dataset.groupId) {
-        this.groupId = this.$el.dataset.groupId;
+      const root = document.getElementById('group-edit')
+      if (root.dataset.groupId) {
+        this.groupId = root.dataset.groupId;
       }
-      if (this.$el.dataset.next) {
-        this.next = this.$el.dataset.next;
+      if (root.dataset.next) {
+        this.next = root.dataset.next;
       }
     },
-  }).$mount("#group-edit");
+  })
+  globalApp.mount("#group-edit");
 });

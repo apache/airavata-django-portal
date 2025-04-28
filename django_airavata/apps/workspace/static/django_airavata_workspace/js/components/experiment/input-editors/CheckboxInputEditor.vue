@@ -9,7 +9,7 @@
     :state="componentValidState"
     :disabled="readOnly"
     @input="selectionsChanged"
-    @input.native.stop
+    @input.stop
   />
 </template>
 

@@ -1,22 +1,24 @@
+import { h } from "vue";
 import { components, entry } from "django-airavata-common-ui";
 import { mapActions } from "vuex";
 import ExperimentSummary from "./components/experiment/ExperimentSummary.vue";
 import createStore from "./store";
 
-entry((Vue) => {
-  const store = createStore(Vue);
-  new Vue({
+entry((globalApp) => {
+  const store = createStore(globalApp);
+  globalApp.mixin({
     store,
-    render(h) {
+    render() {
       return h(components.MainLayout, [h(ExperimentSummary)]);
     },
     async beforeMount() {
+      const root = document.getElementById('view-experiment')
       const fullExperimentData = JSON.parse(
-        this.$el.dataset.fullExperimentData
+        root.dataset.fullExperimentData
       );
       this.setInitialFullExperimentData({ fullExperimentData });
-      if ("launching" in this.$el.dataset) {
-        const launching = JSON.parse(this.$el.dataset.launching);
+      if ("launching" in root.dataset) {
+        const launching = JSON.parse(root.dataset.launching);
         this.setLaunching({ launching });
       }
     },
@@ -26,5 +28,6 @@ entry((Vue) => {
         "setLaunching",
       ]),
     },
-  }).$mount("#view-experiment");
+  })
+  globalApp.mount("#view-experiment");
 });

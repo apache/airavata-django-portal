@@ -1,8 +1,11 @@
 <template>
+  <template>
+
+  </template>
   <b-card title="Parameters">
     <validated-form ref="validatedForm" :items="formItems">
       <interactive-parameter-widget-container
-        slot-scope="form"
+        v-slot="form"
         :parameter="form.item"
         @valid="form.valid"
         @invalid="form.invalid"

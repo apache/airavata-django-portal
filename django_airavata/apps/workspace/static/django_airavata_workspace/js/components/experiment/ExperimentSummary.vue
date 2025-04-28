@@ -58,10 +58,12 @@
                         :link-classes="['text-reset']"
                       >
                         copy
-                        <span slot="icon"></span>
-                        <span slot="tooltip"
-                          >Copied ID!</span
-                        > </clipboard-copy-link
+                        <template v-slot:icon>
+                          <span></span>
+                        </template>
+                        <template v-slot:tooltip>
+                          <span>Copied ID!</span>
+                        </template> </clipboard-copy-link
                       >)
                     </small>
                   </td>

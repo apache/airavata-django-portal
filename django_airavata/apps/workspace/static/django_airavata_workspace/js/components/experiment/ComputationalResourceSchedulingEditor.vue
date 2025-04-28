@@ -19,7 +19,7 @@
               !computeResourceOptions || computeResourceOptions.length === 0
             "
           >
-            <template slot="first">
+            <template v-slot:first>
               <option :value="null" disabled>Select a Compute Resource</option>
             </template>
           </b-form-select>
@@ -94,7 +94,7 @@ export default {
     this.loadComputeResourceNames();
     this.loadGroupResourceProfile();
     this.validate();
-    this.$on("input", () => this.validate());
+    this.emmiter.on("input", () => this.validate());
   },
   computed: {
     localComputationalResourceScheduling() {

@@ -1,14 +1,15 @@
-import Vue from "vue";
+import { createApp, h}from "vue";
 import GatewayNoticesContainer from "./components/GatewayNoticesContainer";
 
-new Vue({
-  render(h) {
+const app = createApp({
+  compatConfig: {
+    RENDER_FUNCTION: false
+  },
+  render() {
     return h(GatewayNoticesContainer, {
-      props: {
-        unreadCount: this.unreadCount,
-        notices: this.notices,
-      },
-    });
+      unreadCount: this.unreadCount,
+      notices: this.notices,
+    })
   },
   data() {
     return {
@@ -17,7 +18,9 @@ new Vue({
     };
   },
   beforeMount() {
-    this.unreadCount = parseInt(this.$el.dataset.unreadCount);
-    this.notices = JSON.parse(this.$el.dataset.notices);
+    const root = document.getElementById('gateway-notices')
+    this.unreadCount = parseInt(root.dataset.unreadCount);
+    this.notices = JSON.parse(root.dataset.notices);
   },
-}).$mount("#gateway-notices");
+});
+app.mount("#gateway-notices");

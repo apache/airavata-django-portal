@@ -1,3 +1,4 @@
+import { h } from "vue";
 import { components, entry } from "django-airavata-common-ui";
 import EditProjectContainer from "./containers/EditProjectContainer.vue";
 
@@ -5,9 +6,9 @@ import EditProjectContainer from "./containers/EditProjectContainer.vue";
 //
 //   <div id="edit-project" data-project-id="..projectID.."/>
 
-entry((Vue) => {
-  new Vue({
-    render(h) {
+entry((globalApp) => {
+  globalApp.mixin({
+    render() {
       return h(components.MainLayout, [
         h(EditProjectContainer, {
           props: {
@@ -22,7 +23,9 @@ entry((Vue) => {
       };
     },
     beforeMount() {
-      this.projectId = this.$el.dataset.projectId;
+      const root = document.getElementById('edit-project')
+      this.projectId = root.dataset.projectId;
     },
-  }).$mount("#edit-project");
+  })
+  globalApp.mount("#edit-project");
 });

@@ -6,7 +6,7 @@
       @input="groupsUpdated"
       stacked
     >
-      <template slot="first">
+      <template v-slot:first>
         <b-form-checkbox
           v-if="gatewayUsersGroupOption"
           :value="gatewayUsersGroupOption.value"

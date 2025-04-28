@@ -28,7 +28,7 @@
         :null-option-default-credential-token="defaultCredentialStoreToken"
         :null-option-disabled="!defaultCredentialStoreToken"
       >
-        <template slot="null-option-label" slot-scope="nullOptionLabelScope">
+        <template v-slot:null-option-label="nullOptionLabelScope">
           <span v-if="nullOptionLabelScope.defaultCredentialSummary">
             Use the gateway's default SSH credential ({{
               nullOptionLabelScope.defaultCredentialSummary.username

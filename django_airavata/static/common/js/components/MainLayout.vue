@@ -6,10 +6,10 @@
     >
       <notifications-display />
       <div class="container-fluid">
-        <slot />
+        <slot></slot>
       </div>
     </main>
-    <slot name="sidebar" />
+    <slot name="sidebar"></slot>
   </div>
 </template>
 

@@ -10,21 +10,21 @@
     <b-form-group label="First Name" :disabled="disabled">
       <b-form-input
         v-model="$v.first_name.$model"
-        @keydown.native.enter="save"
+        @keydown.enter="save"
         :state="validateState($v.first_name)"
       />
     </b-form-group>
     <b-form-group label="Last Name" :disabled="disabled">
       <b-form-input
         v-model="$v.last_name.$model"
-        @keydown.native.enter="save"
+        @keydown.enter="save"
         :state="validateState($v.last_name)"
       />
     </b-form-group>
     <b-form-group label="Email" :disabled="disabled">
       <b-form-input
         v-model="$v.email.$model"
-        @keydown.native.enter="save"
+        @keydown.enter="save"
         :state="validateState($v.email)"
       />
       <b-form-invalid-feedback v-if="!$v.email.email">

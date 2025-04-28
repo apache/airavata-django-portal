@@ -1,3 +1,4 @@
+import { h } from "vue";
 import { components, entry } from "django-airavata-common-ui";
 import VueResource from "vue-resource";
 import VueRouter from "vue-router";
@@ -8,18 +9,19 @@ import router from "./router";
 import "flatpickr/dist/flatpickr.css";
 import createStore from "./store";
 
-entry((Vue) => {
-  Vue.config.productionTip = false;
+entry((globalApp) => {
+  globalApp.config.productionTip = false;
 
-  Vue.use(VueResource);
-  Vue.use(VueRouter);
-  Vue.use(VueFlatPickr);
+  globalApp.use(VueResource);
+  globalApp.use(VueRouter);
+  globalApp.use(VueFlatPickr);
 
-  const store = createStore(Vue);
+  const store = createStore(globalApp);
 
-  new Vue({
+  globalApp.mixin({
     store,
-    render: (h) => h(components.MainLayout, [h(App)]),
+    render: () => h(components.MainLayout, [h(App)]),
     router,
-  }).$mount("#app");
+  })
+  globalApp.mount("#app");
 });

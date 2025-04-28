@@ -1,9 +1,10 @@
+import { h } from "vue";
 import { components, entry } from "django-airavata-common-ui";
 import ParserDetailsContainer from "./containers/ParserDetailsContainer.vue";
 
-entry((Vue) => {
-  new Vue({
-    render(h) {
+entry((globalApp) => {
+  globalApp.mixin({
+    render() {
       return h(components.MainLayout, [
         h(ParserDetailsContainer, {
           props: {
@@ -19,9 +20,11 @@ entry((Vue) => {
       };
     },
     beforeMount() {
-      if (this.$el.dataset.parserId) {
-        this.parserId = this.$el.dataset.parserId;
+      const root = document.getElementById('parser-details')
+      if (root.dataset.parserId) {
+        this.parserId = root.dataset.parserId;
       }
     },
-  }).$mount("#parser-details");
+  })
+  globalApp.mount("#parser-details");
 });

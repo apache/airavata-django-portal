@@ -5,10 +5,10 @@
         <div class="card">
           <div class="card-body">
             <b-table hover :fields="fields" :items="items" :fixed="true">
-              <template slot="cell(creationTime)" slot-scope="data">
+              <template v-slot:cell(creationTime)="data">
                 <human-date :date="data.value" />
               </template>
-              <template slot="cell(action)" slot-scope="data">
+              <template v-slot:cell(action)="data">
                 <b-button
                   v-if="data.item.userHasWriteAccess"
                   @click="toggleDetails(data)"
@@ -16,7 +16,7 @@
                   Edit
                 </b-button>
               </template>
-              <template slot="row-details" slot-scope="data">
+              <template v-slot:row-details="data">
                 <enable-user-panel
                   v-if="!data.item.enabled && !data.item.emailVerified"
                   :username="data.item.userId"
