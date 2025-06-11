@@ -1,45 +1,61 @@
 #
-#
 # Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
+# or more contributor license agreements. See the NOTICE file
 # distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
+# regarding copyright ownership. The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
 #   http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
 # "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
+# KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations
 # under the License.
 #
 
-name: Build and Test
-on: [push, pull_request]
+name: Build and Push Docker Image for Multiple Architectures
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - improve/cicd
+    tags:
+      - 'v*.*.*'
+env:
+  DOCKER_REGISTRY: index.docker.io
+  DOCKER_USERNAME: mryash
+  IMAGE_NAME: airavata-django-portal
+  BUILDKIT_VERSION: 0.13.0
+
 jobs:
   build-js:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
+
       - name: Use Node.js as specified in .nvmrc
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: yarn
           cache-dependency-path: '**/yarn.lock'
+
       - name: Run ESLint on JavaScript code
-        run: |
-          ./lint_js.sh
+        run: ./lint_js.sh
+
       - name: Build JavaScript code
-        run: |
-          ./build_js.sh
+        run: ./build_js.sh
+
       - name: Run JavaScript unit tests
-        run: |
-          ./test_js.sh
+        run: ./test_js.sh
+
       - uses: actions/upload-artifact@v3
         with:
           name: built-javascript
@@ -57,26 +73,27 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Use Node.js as specified in .nvmrc
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
+          cache: yarn
           cache-dependency-path: '**/yarn.lock'
+
       - name: Build JavaScript code
-        run: |
-          build_js.bat
+        run: build_js.bat
         shell: cmd
 
-  build:
-    # ubuntu-22 doesn't support Python 3.6
+  test:
     runs-on: ubuntu-20.04
     needs: build-js
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        python-version: [3.6, 3.7, 3.8, 3.9, 3.10]
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -85,24 +102,77 @@ jobs:
           cache-dependency-path: |
             requirements.txt
             requirements-dev.txt
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip setuptools wheel
           pip install -r requirements-dev.txt
-      - name: Run Django Migrate and Check
+
+      - name: Run Django migrate and check
         run: |
           cp django_airavata/settings_local.py.sample django_airavata/settings_local.py
           python manage.py migrate
           python manage.py check
+
       - name: Run flake8
-        run: |
-          flake8 .
-      # Need the built frontend client code before running some of the Django tests
-      # that use the Django test Client
+        run: flake8 .
+
       - uses: actions/download-artifact@v3
         with:
           name: built-javascript
           path: django_airavata
+
       - name: Run Django unit tests
-        run: |
-          ./runtests.py
+        run: ./runtests.py
+
+  build-docker:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [build-js, test]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker BuildX
+        uses: docker/setup-buildx-action@v3
+        with:
+          version: v${{ env.BUILDKIT_VERSION }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Download built JavaScript artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: built-javascript
+          path: django_airavata
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push multi-platform Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
