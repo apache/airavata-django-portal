@@ -1,5 +1,6 @@
 import logging
 import ssl
+from django.conf import settings
 from contextlib import contextmanager
 
 import thrift_connector.connection_pool as connection_pool
@@ -46,12 +47,13 @@ def get_unsecure_transport(hostname, port):
 def get_secure_transport(hostname, port):
 
     # Create a socket to the Airavata Server
-    # TODO: validate server certificate
-    transport = TSSLSocket.TSSLSocket(hostname, port, validate=False)
-
-    # Use Buffered Protocol to speedup over raw sockets
-    transport = TTransport.TBufferedTransport(transport)
-    return transport
+    transport = TSSLSocket.TSSLSocket(
+        hostname,
+        port,
+        cert_reqs=ssl.CERT_REQUIRED,
+        ca_certs=settings.CA_CERTS_PATH,
+    )
+    return TTransport.TBufferedTransport(transport)
 
 
 def get_transport(hostname, port, secure=True):
@@ -181,10 +183,13 @@ class CustomThriftClient(connection_pool.ThriftClient):
             return super().get_socket_factory()
         else:
             def factory(host, port):
-                return TSSLSocket.TSSLSocket(host, port,
-                                             cert_reqs=(ssl.CERT_REQUIRED
-                                                        if cls.validate
-                                                        else ssl.CERT_NONE))
+                return TSSLSocket.TSSLSocket(
+                    host,
+                    port,
+                    cert_reqs=ssl.CERT_REQUIRED,
+                    ca_certs=settings.CA_CERTS_PATH,
+                )
+
             return factory
 
     def ping(self):
