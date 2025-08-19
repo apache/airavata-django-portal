@@ -78,7 +78,7 @@ def redirect_login(request, idp_alias):
         if passthrough_query_param in request.GET:
             redirect_uri += f"&{passthrough_query_param}={quote(request.GET[passthrough_query_param])}"
     oauth2_session = OAuth2Session(
-        client_id, scope='openid', redirect_uri=redirect_uri)
+        client_id, scope='openid profile email', redirect_uri=redirect_uri)
     authorization_url, state = oauth2_session.authorization_url(
         base_authorize_url)
     authorization_url += '&kc_idp_hint=' + quote(idp_alias)
@@ -145,10 +145,7 @@ def handle_login(request):
 
 def start_logout(request):
     logout(request)
-    redirect_url = request.build_absolute_uri(
-        resolve_url(settings.LOGOUT_REDIRECT_URL))
-    return redirect(settings.KEYCLOAK_LOGOUT_URL +
-                    "?redirect_uri=" + quote(redirect_url))
+    return redirect(settings.KEYCLOAK_LOGOUT_URL)
 
 
 def callback(request):
