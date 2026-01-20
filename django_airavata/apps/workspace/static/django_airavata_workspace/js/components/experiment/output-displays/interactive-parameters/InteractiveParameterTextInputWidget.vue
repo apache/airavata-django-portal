@@ -4,7 +4,7 @@
       ref="textInput"
       :value="value"
       @input="currentValue = $event"
-      @keydown.native.enter="enterKeyPressed"
+      @keydown.enter="enterKeyPressed"
     />
     <b-input-group-append>
       <b-button variant="primary" :disabled="disabled" @click="submit"

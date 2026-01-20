@@ -69,7 +69,7 @@ export default {
   mounted() {
     this.setFileContent();
   },
-  destroyed() {
+  unmounted() {
     // this.editor is created only when the file is small enough to be
     // previewed/edited in browser
     if (this.editor) {

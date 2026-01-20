@@ -7,7 +7,7 @@
       new-item-button-text="New Deployment"
       :new-button-disabled="readonly"
     >
-      <template slot="item-list" slot-scope="slotProps">
+      <template v-slot:item-list="slotProps">
         <b-table
           striped
           hover
@@ -15,7 +15,7 @@
           :items="slotProps.items"
           sort-by="computeHostId"
         >
-          <template slot="cell(action)" slot-scope="data">
+          <template v-slot:cell(action)="data">
             <router-link
               class="action-link"
               v-if="!data.item.userHasWriteAccess"

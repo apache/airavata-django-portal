@@ -1,10 +1,11 @@
+import { h } from "vue";
 import { components, entry } from "django-airavata-common-ui";
 import DashboardContainer from "./containers/DashboardContainer.vue";
 import RecentExperimentsContainer from "./containers/RecentExperimentsContainer.vue";
 
-entry((Vue) => {
-  new Vue({
-    render(h) {
+entry((globalApp) => {
+  globalApp.mixin({
+    render() {
       return h(components.MainLayout, [
         h(DashboardContainer),
         h(RecentExperimentsContainer, {
@@ -23,8 +24,10 @@ entry((Vue) => {
       };
     },
     beforeMount() {
-      this.viewAllExperiments = this.$el.dataset.viewAllExperiments;
-      this.username = this.$el.dataset.username;
+      const root = document.getElementById('dashboard')
+      this.viewAllExperiments = root.dataset.viewAllExperiments;
+      this.username = root.dataset.username;
     },
-  }).$mount("#dashboard");
+  })
+  globalApp.mount("#dashboard");
 });

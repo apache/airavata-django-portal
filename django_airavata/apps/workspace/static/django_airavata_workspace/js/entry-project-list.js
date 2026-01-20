@@ -1,9 +1,11 @@
+import { h } from "vue";
+
 import { components, entry } from "django-airavata-common-ui";
 import ProjectListContainer from "./containers/ProjectListContainer.vue";
 
-entry((Vue) => {
-  new Vue({
-    render(h) {
+entry((globalApp) => {
+  globalApp.mixin({
+    render() {
       return h(components.MainLayout, [
         h(ProjectListContainer, {
           props: {
@@ -18,9 +20,11 @@ entry((Vue) => {
       };
     },
     beforeMount() {
-      if (this.$el.dataset.projectsData) {
-        this.projectsData = JSON.parse(this.$el.dataset.projectsData);
+      const root = document.getElementById('project-list')
+      if (root.dataset.projectsData) {
+        this.projectsData = JSON.parse(root.dataset.projectsData);
       }
     },
-  }).$mount("#project-list");
+  })
+  globalApp.mount("#project-list");
 });

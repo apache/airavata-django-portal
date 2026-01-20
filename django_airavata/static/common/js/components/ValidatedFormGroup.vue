@@ -1,7 +1,7 @@
 <template>
   <b-form-group :label="label" :state="state" :description="description">
     <slot></slot>
-    <template slot="invalid-feedback">
+    <template v-slot:invalid-feedback>
       <ul v-if="feedbackMessages && feedbackMessages.length > 1">
         <li v-for="feedback in feedbackMessages" :key="feedback">
           {{ feedback }}

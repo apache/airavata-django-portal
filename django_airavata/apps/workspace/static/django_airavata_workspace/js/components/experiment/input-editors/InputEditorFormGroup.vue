@@ -6,7 +6,7 @@
     :description="description"
   >
     <slot></slot>
-    <template slot="invalid-feedback">
+    <template v-slot:invalid-feedback>
       <ul v-if="feedbackMessages && feedbackMessages.length > 1">
         <li v-for="feedback in feedbackMessages" :key="feedback">
           {{ feedback }}
@@ -16,7 +16,10 @@
         {{ feedbackMessages[0] }}
       </div>
     </template>
-    <linkify slot="description">{{ description }}</linkify>
+    <template v-slot:description>
+      <linkify >{{ description }}</linkify>
+    </template>
+
   </b-form-group>
 </template>
 

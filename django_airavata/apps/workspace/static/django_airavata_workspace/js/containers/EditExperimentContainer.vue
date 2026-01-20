@@ -7,7 +7,10 @@
     @saved="handleSavedExperiment"
     @savedAndLaunched="handleSavedAndLaunchedExperiment"
   >
-    <span slot="title">Edit Experiment</span>
+    <template v-slot:title>
+      <span >Edit Experiment</span>
+
+    </template>
   </experiment-editor>
 </template>
 

@@ -38,10 +38,12 @@
           :readonly="true"
           class="mt-4"
         >
-          <span slot="permissions-header"
-            >Inherited {{ parentEntityLabel }} Permissions
-            <!-- <small class="text-muted" v-if="parentEntityOwner">Owned by {{parentEntityOwner.firstName}} {{parentEntityOwner.lastName}} ({{parentEntityOwner.email}})</small> -->
-          </span>
+          <template v-slot:permissions-header>
+            <span>
+              Inherited {{ parentEntityLabel }} Permissions
+              <!-- <small class="text-muted" v-if="parentEntityOwner">Owned by {{parentEntityOwner.firstName}} {{parentEntityOwner.lastName}} ({{parentEntityOwner.email}})</small> -->
+            </span>
+          </template>
         </shared-entity-editor>
       </template>
     </b-modal>

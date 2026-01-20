@@ -6,9 +6,11 @@
 
           <b-form-group>
             <b-input-group>
-              <b-input-group-text slot="prepend">
+              <template v-slot:prepend>
+                <b-input-group-text>
                 <i class="fa fa-filter"></i>
               </b-input-group-text>
+              </template>
               <b-form-input
                 v-model="userFilter"
                 placeholder="Filter list of users"
@@ -32,19 +34,19 @@
             sort-by="name"
             @row-selected="onUsersRowSelected"
           >
-           <template slot="cell(selected)" slot-scope="data">
+           <template v-slot:cell(selected)="data">
               <span v-if="isUserSelected(data.item)">
                 <i class="far fa-check-circle"></i>
               </span>
            </template>
 
-            <template slot="cell(action)" slot-scope="data">
+            <template v-slot:cell(action)="data">
               <b-button @click="toggleDetails(data)">
                 {{data.detailsShowing ? 'Hide' : 'Show'}} Details
               </b-button>
             </template>
 
-            <template slot="row-details" slot-scope="data">
+            <template v-slot:row-details="data">
               <group-members-details-container
                 :userProfile="data.item"
                 :name="data.item.name"
@@ -104,18 +106,20 @@
               Do you really want to remove all members from
               '<strong>{{group.name}}</strong>'?
             </p>
-            <div slot="modal-footer" class="w-100">
-              <b-button
-                class="float-right ml-1"
-                @click="removeAllMembers">
-                Yes
-              </b-button>
-              <b-button
-                class="float-right ml-1"
-                @click="showRemove = false">
-                No
-              </b-button>
+            <template v-slot:modal-footer>
+              <div class="w-100">
+                <b-button
+                  class="float-right ml-1"
+                  @click="removeAllMembers">
+                  Yes
+                </b-button>
+                <b-button
+                  class="float-right ml-1"
+                  @click="showRemove = false">
+                  No
+                </b-button>
             </div>
+            </template>
           </b-modal>
 
           <b-modal
@@ -125,18 +129,21 @@
               Do you really want to add all users to
               '<strong>{{group.name}}</strong>'?
             </p>
-            <div slot="modal-footer" class="w-100">
-              <b-button
-                class="float-right ml-1"
-                @click="addAllMembers">
-                Yes
-              </b-button>
-              <b-button
-                class="float-right ml-1"
-                @click="showAdd = false">
-                No
-              </b-button>
-            </div>
+            <template v-slot:modal-footer>
+              <div class="w-100">
+                <b-button
+                  class="float-right ml-1"
+                  @click="addAllMembers">
+                  Yes
+                </b-button>
+                <b-button
+                  class="float-right ml-1"
+                  @click="showAdd = false">
+                  No
+                </b-button>
+              </div>
+            </template>
+
           </b-modal>
 
         </b-button-group>
@@ -147,9 +154,11 @@
 
           <b-form-group>
             <b-input-group>
-              <b-input-group-text slot="prepend">
-                <i class="fa fa-filter"></i>
-              </b-input-group-text>
+              <template v-slot:prepend>
+                <b-input-group-text>
+                  <i class="fa fa-filter"></i>
+                </b-input-group-text>
+              </template>
               <b-form-input
                 v-model="memberFilter"
                 placeholder="Filter list of members"
@@ -176,13 +185,13 @@
             @row-clicked="handleOwnerSelected"
           >
 
-           <template slot="cell(selected)" slot-scope="data">
+           <template v-slot:cell(selected)="data">
               <span v-if="isMemberSelected(data.item)">
                 <i class="far fa-check-circle"></i>
               </span>
            </template>
 
-            <template slot="cell(username)" slot-scope="data" >
+            <template v-slot:cell(username)="data" >
               {{data.value}}
               <span
                 v-if= "data.item.role == 'OWNER'"
@@ -191,13 +200,13 @@
               </span>
             </template>
 
-            <template slot="cell(action)" slot-scope="data" >
+            <template v-slot:cell(action)="data" >
               <b-button @click="toggleDetails(data)">
                 {{data.detailsShowing ? 'Hide' : 'Show'}} Details
               </b-button>
             </template>
 
-            <template slot="row-details" slot-scope="data">
+            <template v-slot:row-details="data">
               <group-members-details-container
                 :userProfile="data.item"
                 :name="data.item.name"

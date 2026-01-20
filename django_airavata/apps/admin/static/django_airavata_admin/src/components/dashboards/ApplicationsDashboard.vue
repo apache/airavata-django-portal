@@ -7,7 +7,7 @@
     new-item-button-text="New Application"
     :new-button-disabled="!isGatewayAdmin"
   >
-    <template slot="item-list" slot-scope="slotProps">
+    <template v-slot:item-list="slotProps">
       <div class="row">
         <application-card
           v-for="item in slotProps.items"

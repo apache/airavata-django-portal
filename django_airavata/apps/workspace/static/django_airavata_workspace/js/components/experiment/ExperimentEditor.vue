@@ -62,7 +62,7 @@
               required
               :state="getValidationState('projectId')"
             >
-              <template slot="first">
+              <template v-slot:first>
                 <option :value="null" disabled>Select a Project</option>
               </template>
               <optgroup label="My Projects">

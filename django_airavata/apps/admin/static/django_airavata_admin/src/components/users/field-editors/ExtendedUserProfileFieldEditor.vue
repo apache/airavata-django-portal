@@ -39,8 +39,9 @@
         <template
           v-for="({ $model: choice, display_text: $v_display_text },
           index) in $v.choices.$each.$iter"
+          :key="choice.key"
         >
-          <b-form-group :key="choice.key" :disabled="disabled">
+          <b-form-group :disabled="disabled">
             <b-input-group>
               <b-form-input
                 :value="choice.display_text"

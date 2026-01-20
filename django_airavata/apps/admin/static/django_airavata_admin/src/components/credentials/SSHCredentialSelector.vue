@@ -6,9 +6,9 @@
         :options="credentialStoreTokenOptions"
         :disabled="readonly"
       >
-        <option
+        <template v-slot:first>
+          <option
           v-if="nullOption"
-          slot="first"
           :value="null"
           :disabled="nullOptionDisabled"
         >
@@ -24,6 +24,7 @@
             <span v-else> Unset the default SSH credential </span>
           </slot>
         </option>
+        </template>
       </b-form-select>
       <b-input-group-append>
         <clipboard-copy-button variant="secondary" :text="copySSHPublicKeyText">

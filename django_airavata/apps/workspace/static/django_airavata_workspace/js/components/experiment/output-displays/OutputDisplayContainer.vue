@@ -1,17 +1,20 @@
 <template>
   <b-card>
-    <div slot="header" class="d-flex align-items-baseline">
-      <h6>{{ experimentOutput.name }}</h6>
-      <b-dropdown v-if="showMenu" :text="currentView['name']" class="ml-auto">
-        <b-dropdown-item
-          v-for="(view, index) in outputViews"
-          :key="view['provider-id']"
-          :active="view['provider-id'] === currentView['provider-id']"
-          @click="selectView(index)"
-          >{{ view["name"] }}</b-dropdown-item
-        >
-      </b-dropdown>
-    </div>
+    <template v-slot:header >
+      <div class="d-flex align-items-baseline">
+        <h6>{{ experimentOutput.name }}</h6>
+        <b-dropdown v-if="showMenu" :text="currentView['name']" class="ml-auto">
+          <b-dropdown-item
+            v-for="(view, index) in outputViews"
+            :key="view['provider-id']"
+            :active="view['provider-id'] === currentView['provider-id']"
+            @click="selectView(index)"
+            >{{ view["name"] }}</b-dropdown-item
+          >
+        </b-dropdown>
+      </div>
+    </template>
+
     <component
       :is="outputDisplayComponentName"
       :view-data="viewData"
@@ -24,8 +27,9 @@
       :parameters="viewData.interactive"
       @input="parametersUpdated"
     />
-    <div
-      slot="footer"
+    <template v-slot:footer>
+      <div
+
       v-if="dataProducts.length > 0 || isExecuting"
       class="d-flex justify-content-end align-items-baseline"
     >
@@ -47,6 +51,8 @@
         >
       </template>
     </div>
+    </template>
+
   </b-card>
 </template>
 

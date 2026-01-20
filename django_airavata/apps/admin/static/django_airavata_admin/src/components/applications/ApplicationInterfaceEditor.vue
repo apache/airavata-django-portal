@@ -32,10 +32,10 @@
             :disabled="readonly"
           >
           </b-form-radio-group>
-          <div slot="description">
+          <template v-slot:description>
             Show a queue selector along with queue related settings (nodes,
             cores, walltime limit).
-          </div>
+          </template>
         </b-form-group>
         <b-form-group
           label="Queue Settings Calculator"
@@ -46,7 +46,7 @@
             :options="queueSettingsCalculatorOptions"
             :disabled="queueSettingsCalculatorOptions.length === 0"
           >
-            <template slot="first">
+            <template v-slot:first>
               <option :value="null">
                 If applicable, select a queue settings calculator
               </option>

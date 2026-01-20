@@ -6,7 +6,10 @@
       @valid="valid = true"
       @invalid="valid = false"
     >
-      <share-button slot="buttons" :entity-id="projectId" />
+      <template v-slot:buttons >
+        <share-button :entity-id="projectId" />
+
+      </template>
     </project-editor>
     <div class="d-flex justify-content-end">
       <b-button @click="saveProject" variant="primary" :disabled="!valid"
