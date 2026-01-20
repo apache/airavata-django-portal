@@ -32,7 +32,7 @@
     "linkifyjs": "^2.1.9",
     "moment": "^2.24.0",
     "popper.js": "^1.14.6",
-    "terser": "^4.1.2",
+    "terser": "^4.8.1",
     "vue": "^2.5.22",
     "vue-async-computed": "^3.9.0"
   },
