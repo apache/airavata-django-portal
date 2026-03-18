@@ -9,8 +9,8 @@
   "license": "Apache-2.0",
   "repository": "https://github.com/apache/airavata-django-portal",
   "scripts": {
-    "build": "webpack",
-    "watch": "webpack --watch",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack",
+    "watch": "NODE_OPTIONS=--openssl-legacy-provider webpack --watch",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint ./static/django_airavata_api/js/",
@@ -39,7 +39,7 @@
     "prettier": "^2.1.2",
     "regenerator-runtime": "^0.13.1",
     "webpack": "^5",
-    "webpack-cli": "^3.3.4"
+    "webpack-cli": "^5.1.4"
   },
   "eslintConfig": {
     "root": true,
