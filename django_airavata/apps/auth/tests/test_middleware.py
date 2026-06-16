@@ -1,5 +1,5 @@
 
-from unittest.mock import MagicMock, sentinel
+from unittest.mock import MagicMock, patch, sentinel
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
+from django_airavata import middleware as airavata_middleware
 from django_airavata.apps.auth import models
 from django_airavata.apps.auth.middleware import (
     user_profile_completeness_check
@@ -121,3 +122,28 @@ class UserProfileCompletenessCheckTestCase(TestCase):
         self.assertTrue(request.user.is_authenticated)
         self.assertFalse(self.user_profile.is_complete)
         self._middleware_passes_through(request)
+
+
+class AiravataClientMiddlewareTestCase(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_uses_client_from_pool_connection_context(self):
+        request = self.factory.get(reverse('django_airavata_workspace:dashboard'))
+        pool = MagicMock()
+        pool.connection.return_value.__enter__.return_value = sentinel.airavata_client
+
+        def get_response(request):
+            self.assertIs(request.airavata_client, sentinel.airavata_client)
+            return sentinel.response
+
+        with patch.object(
+                airavata_middleware.utils,
+                "airavata_api_client_pool",
+                pool):
+            response = airavata_middleware.AiravataClientMiddleware(
+                get_response)(request)
+
+        self.assertIs(response, sentinel.response)
+        pool.connection.assert_called_once_with()

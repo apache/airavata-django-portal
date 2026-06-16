@@ -85,7 +85,14 @@
         :disabled="readonly"
       />
     </b-form-group>
-    <b-button size="sm" @click="setPlainText">Plain Text</b-button>
+    <div>
+      <b-button size="sm" @click="setPlainText" :disabled="readonly"
+        >Plain Text</b-button
+      >
+      <b-button size="sm" class="ml-2" @click="setHtml" :disabled="readonly"
+        >HTML</b-button
+      >
+    </div>
   </b-card>
 </template>
 
@@ -138,11 +145,39 @@ export default {
     deleteApplicationOutput() {
       this.$emit("delete");
     },
+    cloneMetadata() {
+      return this.data.metaData
+        ? JSON.parse(JSON.stringify(this.data.metaData))
+        : {};
+    },
     setPlainText() {
-      const metadata = this.data.metaData || {};
+      const metadata = this.cloneMetadata();
       metadata["file-metadata"] = { "mime-type": "text/plain" };
-      // Clone so that JSONEditor updates with new value
-      this.data.metaData = JSON.parse(JSON.stringify(metadata));
+      if (Array.isArray(metadata["output-view-providers"])) {
+        const outputViewProviders = metadata["output-view-providers"].filter(
+          (providerId) => providerId !== "html-file"
+        );
+        if (outputViewProviders.length > 0) {
+          metadata["output-view-providers"] = outputViewProviders;
+        } else {
+          delete metadata["output-view-providers"];
+        }
+      }
+      this.data.metaData = metadata;
+    },
+    setHtml() {
+      const metadata = this.cloneMetadata();
+      metadata["file-metadata"] = { "mime-type": "text/html" };
+      const outputViewProviders = Array.isArray(
+        metadata["output-view-providers"]
+      )
+        ? metadata["output-view-providers"].slice()
+        : [];
+      if (!outputViewProviders.includes("html-file")) {
+        outputViewProviders.push("html-file");
+      }
+      metadata["output-view-providers"] = outputViewProviders;
+      this.data.metaData = metadata;
     },
   },
   mounted() {

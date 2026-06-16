@@ -4,12 +4,14 @@ import json
 import logging
 import os
 from functools import partial
+from urllib.parse import urlencode
 
 import nbformat
 import papermill as pm
 from airavata.model.application.io.ttypes import DataType
 from airavata_django_portal_sdk import user_storage
 from django.conf import settings
+from django.urls import reverse
 from nbconvert import HTMLExporter
 
 logger = logging.getLogger(__name__)
@@ -34,6 +36,42 @@ class DefaultViewProvider:
             **kwargs):
         return {
         }
+
+
+class HtmlFileViewProvider:
+    display_type = 'html-iframe'
+    name = "HTML File"
+    mime_type = "text/html"
+
+    def generate_data(
+            self,
+            request,
+            experiment_output,
+            experiment,
+            output_file=None,
+            **kwargs):
+        data_product_uri = self._get_first_data_product_uri(experiment_output)
+        if data_product_uri is None:
+            return {
+                'url': None,
+            }
+        query_params = urlencode({
+            'data-product-uri': data_product_uri,
+            'mime-type': self.mime_type,
+        })
+        return {
+            'url': request.build_absolute_uri(
+                f"{reverse('airavata_django_portal_sdk:download')}?{query_params}")
+        }
+
+    def _get_first_data_product_uri(self, experiment_output):
+        value = getattr(experiment_output, 'value', None)
+        if not value:
+            return None
+        data_product_uri = value.split(",", 1)[0].strip()
+        if data_product_uri.startswith("airavata-dp"):
+            return data_product_uri
+        return None
 
 
 class ParameterizedNotebookViewProvider:
@@ -71,7 +109,8 @@ class ParameterizedNotebookViewProvider:
 
 
 DEFAULT_VIEW_PROVIDERS = {
-    'default': DefaultViewProvider()
+    'default': DefaultViewProvider(),
+    'html-file': HtmlFileViewProvider(),
 }
 
 

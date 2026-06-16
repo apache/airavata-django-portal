@@ -54,6 +54,7 @@
 import { models } from "django-airavata-api";
 import { components } from "django-airavata-common-ui";
 import DefaultOutputDisplay from "./DefaultOutputDisplay";
+import HtmlIframeOutputDisplay from "./HtmlIframeOutputDisplay";
 import HtmlOutputDisplay from "./HtmlOutputDisplay";
 import ImageOutputDisplay from "./ImageOutputDisplay";
 import LinkOutputDisplay from "./LinkOutputDisplay";
@@ -74,6 +75,7 @@ export default {
   components: {
     "data-product-viewer": components.DataProductViewer,
     DefaultOutputDisplay,
+    HtmlIframeOutputDisplay,
     HtmlOutputDisplay,
     ImageOutputDisplay,
     LinkOutputDisplay,
@@ -151,6 +153,10 @@ export default {
         },
         html: {
           component: "html-output-display",
+          url: "/api/html-output/",
+        },
+        "html-iframe": {
+          component: "html-iframe-output-display",
           url: "/api/html-output/",
         },
         image: {
