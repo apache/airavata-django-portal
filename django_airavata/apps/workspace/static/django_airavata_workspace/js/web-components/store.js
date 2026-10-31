@@ -315,10 +315,11 @@ export const actions = {
     } else {
       commit("updateTotalCPUCount", { totalCPUCount });
     }
-    if (enableNodeCountToCpuCheck && getters.queue.cpuPerNode > 0) {
+    const queue = getters.queue;
+    if (enableNodeCountToCpuCheck && queue && queue.cpuPerNode > 0) {
       const totalCPUCountInt = parseInt(totalCPUCount);
       const nodeCount = Math.min(
-        Math.ceil(totalCPUCountInt / getters.queue.cpuPerNode),
+        Math.ceil(totalCPUCountInt / queue.cpuPerNode),
         getters.maxAllowedNodes
       );
       if (state.experiment) {
@@ -337,10 +338,11 @@ export const actions = {
     } else {
       commit("updateNodeCount", { nodeCount });
     }
-    if (enableNodeCountToCpuCheck && getters.queue.cpuPerNode > 0) {
+    const queue = getters.queue;
+    if (enableNodeCountToCpuCheck && queue && queue.cpuPerNode > 0) {
       const nodeCountInt = parseInt(nodeCount);
       const totalCPUCount = Math.min(
-        nodeCountInt * getters.queue.cpuPerNode,
+        nodeCountInt * queue.cpuPerNode,
         getters.maxAllowedCores
       );
       if (state.experiment) {

@@ -767,6 +767,27 @@ test("updateNodeCount: only update nodeCount when cpuPerNode <= 0", (done) => {
   });
 });
 
+test("updateNodeCount: only update nodeCount when queue is null", (done) => {
+  const nodeCount = 7;
+  const enableNodeCountToCpuCheck = true;
+  const mockGetters = {
+    queue: null,
+    maxAllowedCores: 1000,
+  };
+  const expectedMutations = [
+    { type: "updateNodeCount", payload: { nodeCount } },
+  ];
+  testAction(actions.updateNodeCount, {
+    payload: {
+      nodeCount,
+      enableNodeCountToCpuCheck,
+    },
+    getters: mockGetters,
+    expectedMutations,
+    done,
+  });
+});
+
 test("updateNodeCount: update also totalCPUCount when cpuPerNode > 0", (done) => {
   const nodeCount = 4;
   const enableNodeCountToCpuCheck = true;
@@ -828,6 +849,27 @@ test("updateTotalCPUCount: only update totalCPUCount when cpuPerNode <= 0", (don
   testAction(actions.updateTotalCPUCount, {
     payload: {
       totalCPUCount,
+    },
+    getters: mockGetters,
+    expectedMutations,
+    done,
+  });
+});
+
+test("updateTotalCPUCount: only update totalCPUCount when queue is null", (done) => {
+  const totalCPUCount = 23;
+  const enableNodeCountToCpuCheck = true;
+  const mockGetters = {
+    queue: null,
+    maxAllowedNodes: 1000,
+  };
+  const expectedMutations = [
+    { type: "updateTotalCPUCount", payload: { totalCPUCount } },
+  ];
+  testAction(actions.updateTotalCPUCount, {
+    payload: {
+      totalCPUCount,
+      enableNodeCountToCpuCheck,
     },
     getters: mockGetters,
     expectedMutations,
